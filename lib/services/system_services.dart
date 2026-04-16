@@ -53,13 +53,41 @@ class SystemService {
   }
 
   static Future<void> setGlobalGovernor(String governor) async {
-    try {
-      await Process.run('su', [
-        '-c',
-        'echo $governor | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
-      ]);
-    } catch (e) {
-      print("Error trying to set governor: $e");
+    final result = await Process.run('su', [
+      '-c',
+      'echo $governor | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor',
+    ]);
+
+    if (result.exitCode != 0) {
+      throw Exception("Couldn't apply governor ${result.stderr}");
     }
+  }
+
+  static Stream<Map<String, double>> getRamStream() {
+    return Stream.periodic(const Duration(seconds: 2), (_) async {
+      try {
+        final result = await Process.run('cat', ['/proc/meminfo']);
+        final lines = result.stdout.toString().split('\n');
+
+        double total = 0;
+        double available = 0;
+
+        for (var line in lines) {
+          if (line.startsWith('MemTotal:')) {
+            total = double.parse(line.split(RegExp(r'\s+'))[1]);
+          }
+          if (line.startsWith('MemAvailable:')) {
+            available = double.parse(line.split(RegExp(r'\s+'))[1]);
+          }
+        }
+
+        double used = (total - available) / 1024 / 1024;
+        double totalGB = total / 1024 / 1024;
+
+        return {'used': used, 'total': totalGB};
+      } catch (e) {
+        return {'used': 0.0, 'total': 0.0};
+      }
+    }).asyncMap((event) => event);
   }
 }
