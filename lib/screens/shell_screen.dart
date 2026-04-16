@@ -1,3 +1,4 @@
+import 'package:core_tuner/screens/dashboard_screen.dart';
 import 'package:core_tuner/widgets/appbar_component.dart';
 import 'package:core_tuner/navigation/drawer_navigator.dart';
 import 'package:core_tuner/screens/battery_screen.dart';
@@ -17,6 +18,7 @@ class _ShellScreenState extends State<ShellScreen> {
   int _currentIndex = 0;
 
   final List<Map<String, dynamic>> _pages = [
+    {'title': 'Dashboard', 'screen': DashboardScreen()},
     {'title': 'CPU', 'screen': const CpuScreen()},
     {'title': 'RAM', 'screen': const RamScreen()},
     {'title': 'Battery', 'screen': const BatteryScreen()},

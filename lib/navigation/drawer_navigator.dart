@@ -11,6 +11,7 @@ class DrawerNavigator extends StatelessWidget {
       selectedIndex: currentIndex,
       onDestinationSelected: onTap,
       children: [
+        const NavigationDrawerDestination(icon: Icon(Icons.dashboard), label: Text("Dashboard")),
         const NavigationDrawerDestination(icon: Icon(Icons.memory), label: Text("CPU")),
         const NavigationDrawerDestination(icon: Icon(Icons.bolt), label: Text("RAM")),
         const NavigationDrawerDestination(icon: Icon(Icons.battery_charging_full), label: Text("Battery")),
