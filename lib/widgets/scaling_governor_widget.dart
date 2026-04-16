@@ -46,37 +46,63 @@ class ScalingGovernorWidget extends StatelessWidget {
             ),
             onSelected: (String? value) async {
               if (value != null) {
-                await SystemService.setGlobalGovernor(value);
-                print("Governor aplicado: $value");
+                try {
+                  await SystemService.setGlobalGovernor(value);
+
+                  if (!context.mounted) return;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Governor set to $value"),
+                      duration: const Duration(seconds: 1),
+                      backgroundColor: AppColors.royalBlue.withValues(alpha: 0.7),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.redAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      content: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.white),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              "Root access denied or system error.",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
               }
             },
             dropdownMenuEntries: const [
               DropdownMenuEntry(
                 value: 'performance',
                 label: 'performance',
-                leadingIcon: Icon(
-                  Icons.bolt,
-                  color: Colors.orangeAccent,
-                  size: 18,
-                ),
+                leadingIcon: Icon(Icons.bolt, color: Colors.orangeAccent, size: 18),
               ),
               DropdownMenuEntry(
                 value: 'schedutil',
                 label: 'schedutil',
-                leadingIcon: Icon(
-                  Icons.auto_awesome,
-                  color: Colors.blueAccent,
-                  size: 18,
-                ),
+                leadingIcon: Icon(Icons.auto_awesome, color: Colors.blueAccent, size: 18),
               ),
               DropdownMenuEntry(
                 value: 'powersave',
                 label: 'powersave',
-                leadingIcon: Icon(
-                  Icons.eco,
-                  color: Colors.greenAccent,
-                  size: 18,
-                ),
+                leadingIcon: Icon(Icons.eco, color: Colors.greenAccent, size: 18),
               ),
             ],
           ),
