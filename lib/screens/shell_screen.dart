@@ -1,5 +1,5 @@
 import 'package:core_tuner/screens/dashboard_screen.dart';
-import 'package:core_tuner/widgets/appbar_component.dart';
+import 'package:core_tuner/widgets/appbar_widget.dart';
 import 'package:core_tuner/navigation/drawer_navigator.dart';
 import 'package:core_tuner/screens/battery_screen.dart';
 import 'package:core_tuner/screens/cpu_screen.dart';
