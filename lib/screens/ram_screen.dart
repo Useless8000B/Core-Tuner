@@ -1,3 +1,4 @@
+import 'package:core_tuner/widgets/ram_widget.dart';
 import 'package:flutter/material.dart';
 
 class RamScreen extends StatelessWidget {
@@ -5,6 +6,18 @@ class RamScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsetsGeometry.all(20),
+          child: Column(
+            children: [
+              RamWidget(),
+              const SizedBox(height: 20,),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
