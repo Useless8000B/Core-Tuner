@@ -44,7 +44,7 @@ class CoresWidget extends StatelessWidget {
         border: Border(
           left: BorderSide(
             color: isHighLoad
-                ? Colors.redAccent
+                ? AppColors.red
                 : AppColors.royalBlue.withValues(alpha: 0.3),
             width: 3,
           ),
@@ -70,7 +70,7 @@ class CoresWidget extends StatelessWidget {
               Text(
                 "${freq.toStringAsFixed(1)} GHz",
                 style: TextStyle(
-                  color: isHighLoad ? Colors.redAccent : Colors.white,
+                  color: isHighLoad ? AppColors.red : Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SpaceGrotesk',
@@ -80,7 +80,7 @@ class CoresWidget extends StatelessWidget {
                 "${percentage.toInt()}%",
                 style: TextStyle(
                   color: isHighLoad
-                      ? Colors.redAccent.withValues(alpha: 0.7)
+                      ? AppColors.red.withValues(alpha: 0.7)
                       : Colors.white38,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -92,7 +92,7 @@ class CoresWidget extends StatelessWidget {
           LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.white10,
-            color: isHighLoad ? Colors.redAccent : AppColors.royalBlue,
+            color: isHighLoad ? AppColors.red : AppColors.royalBlue,
             minHeight: 2,
           ),
         ],
