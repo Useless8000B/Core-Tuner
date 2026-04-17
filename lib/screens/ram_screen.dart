@@ -1,4 +1,3 @@
-import 'package:core_tuner/widgets/ram_tweaks.dart';
 import 'package:core_tuner/widgets/ram_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +13,6 @@ class RamScreen extends StatelessWidget {
           child: Column(
             children: [
               RamWidget(),
-              const SizedBox(height: 20,),
-              RamTweaks()
             ],
           ),
         ),
