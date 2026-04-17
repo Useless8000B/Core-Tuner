@@ -64,7 +64,7 @@ class ScalingGovernorWidget extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       behavior: SnackBarBehavior.floating,
-                      backgroundColor: Colors.redAccent,
+                      backgroundColor: AppColors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
