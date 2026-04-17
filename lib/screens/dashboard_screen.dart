@@ -28,11 +28,10 @@ class DashboardScreen extends StatelessWidget {
                 onAction: (value) async {
                   try {
                     await SystemService.setWifiThrottling(value);
-
                     if (context.mounted) {
                       CoreSnack.show(
                         context,
-                        "Wi-Fi throttling ${value ? 'Activated' : 'Deactivated'}",
+                        "Wi-Fi Scan Throttling",
                       );
                     }
                   } catch (e) {
