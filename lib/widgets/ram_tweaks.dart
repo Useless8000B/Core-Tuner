@@ -26,7 +26,7 @@ class _RamTweaksState extends State<RamTweaks> {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
       _lmkEnabled = _prefs.getBool('lmk_enabled') ?? false;
-      _ksmEnabled = _prefs.getBool('ksm_enabled') ?? false;
+      _ksmEnabled = _prefs.getBool('zram_swap_enabled') ?? false;
       _isInitialized = true;
     });
   }
@@ -52,11 +52,11 @@ class _RamTweaksState extends State<RamTweaks> {
         ),
         const SizedBox(height: 10),
         _buildTweakSwitch(
-          title: 'KSM Optimization',
+          title: 'ZRAM Swap',
           value: _ksmEnabled,
           onChanged: (val) {
             setState(() => _ksmEnabled = val);
-            _saveSetting('ksm_enabled', val);
+            _saveSetting('zram_swap_enabled', val);
           },
         ),
       ],
