@@ -1,28 +1,29 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/system_services.dart';
 import 'package:flutter/material.dart';
-import 'package:storage_space/storage_space.dart';
 
 class StorageWidget extends StatelessWidget {
   const StorageWidget({super.key});
 
-  double parseGbString(String? value) {
-    if (value == null) return 0.0;
-    return double.tryParse(value.replaceAll(' GB', '').trim()) ?? 0.0;
+  double parseValue(String? value) {
+    if (value == null || value == "--") return 0.0;
+    String cleanValue = value
+        .replaceAll(RegExp(r'[^0-9.,]'), '')
+        .replaceFirst(',', '.');
+    return double.tryParse(cleanValue) ?? 0.0;
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<StorageSpace>(
+    return StreamBuilder<Map<String, String>>(
       stream: SystemService.getStorageStream(),
       builder: (context, snapshot) {
         final storage = snapshot.data;
-        final double totalGb = parseGbString(storage?.totalSize.toString());
-        final double freeGb = parseGbString(storage?.freeSize.toString());
-        final double usedGb = totalGb - freeGb;
-        final double progress = (totalGb > 0)
-            ? (usedGb / totalGb).clamp(0.0, 1.0)
-            : 0.0;
+
+        final String usedStr = storage?['used'] ?? "--";
+        final String percentStr = storage?['percent'] ?? "0%";
+
+        final double progress = (parseValue(percentStr) / 100).clamp(0.0, 1.0);
 
         return Container(
           padding: const EdgeInsets.all(24),
@@ -31,7 +32,7 @@ class StorageWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.lightBlack,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.01)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Stack(
             children: [
@@ -65,7 +66,10 @@ class StorageWidget extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        storage != null ? usedGb.toStringAsFixed(1) : "--",
+                        usedStr.replaceAll(
+                          RegExp(r'[a-zA-Z]'),
+                          '',
+                        ),
                         style: TextStyle(
                           color: AppColors.royalBlue,
                           fontSize: 68,
@@ -74,9 +78,7 @@ class StorageWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        storage != null
-                            ? " / ${totalGb.toStringAsFixed(0)} GB"
-                            : " / -- GB",
+                        " / ${storage?['total'] ?? "--"}",
                         style: TextStyle(
                           color: AppColors.gray.withValues(alpha: 0.5),
                           fontSize: 20,
@@ -90,10 +92,10 @@ class StorageWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Container(
-                          height: 4,
+                          height: 6,
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: FractionallySizedBox(
                             alignment: Alignment.centerLeft,
@@ -103,14 +105,15 @@ class StorageWidget extends StatelessWidget {
                                 color: storage != null
                                     ? AppColors.royalBlue
                                     : AppColors.gray.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(2),
+                                borderRadius: BorderRadius.circular(3),
                                 boxShadow: storage != null
                                     ? [
                                         BoxShadow(
                                           color: AppColors.royalBlue.withValues(
-                                            alpha: 0.5,
+                                            alpha: 0.3,
                                           ),
-                                          blurRadius: 6,
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
                                         ),
                                       ]
                                     : [],
@@ -121,11 +124,11 @@ class StorageWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        "${(progress * 100).toStringAsFixed(0)}%",
-                        style: TextStyle(
-                          fontSize: 10,
+                        percentStr,
+                        style: const TextStyle(
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
+                          color: Colors.white,
                         ),
                       ),
                     ],

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:storage_space/storage_space.dart';
+import 'dart:math';
+import 'package:flutter/material.dart';
 
 class SystemService {
   static Future<String> runCommand(String command, {bool root = false}) async {
@@ -92,15 +93,49 @@ class SystemService {
     }).asyncMap((event) => event);
   }
 
-  static Stream<StorageSpace> getStorageStream() async* {
+  static Stream<Map<String, String>> getStorageStream() async* {
     while (true) {
-      StorageSpace space = await getStorageSpace(
-        fractionDigits: 0,
-        lowOnSpaceThreshold: 2 * 1024 * 1024 * 1024,
-      );
-      yield space;
-      await Future.delayed(const Duration(seconds: 30));
+      try {
+        final result = await Process.run('su', ['-c', 'busybox df -m /data']);
+
+        if (result.exitCode == 0) {
+          final lines = result.stdout.toString().trim().split('\n');
+          final parts = lines[1].split(RegExp(r'\s+'));
+
+          if (parts.length >= 4) {
+            double totalPartM = double.parse(parts[1]);
+            double freeM = double.parse(parts[3]);
+            double nominalTotalGb = _getNominalSize(totalPartM / 1024);
+
+            double usedGb = nominalTotalGb - (freeM / 1024);
+            double hardwareMargin = nominalTotalGb * 0.045;
+            double displayUsedGb = usedGb - hardwareMargin;
+
+            int percent = ((displayUsedGb / nominalTotalGb) * 100).round();
+
+            yield {
+              'total': "${nominalTotalGb.toStringAsFixed(0)} GB",
+              'used': displayUsedGb.toStringAsFixed(1),
+              'percent': "$percent%",
+            };
+          }
+        }
+      } catch (e) {
+        debugPrint("Storage Error: $e");
+      }
+      await Future.delayed(const Duration(seconds: 15));
     }
+  }
+
+  static double _getNominalSize(double partitionSizeGb) {
+    double power = log(partitionSizeGb) / log(2);
+    double nextPower = pow(2, power.ceil()).toDouble();
+
+    if ((nextPower - partitionSizeGb) > (nextPower * 0.4)) {
+      return nextPower / 2;
+    }
+
+    return nextPower;
   }
 
   static Future<void> clearDalvik() async {
@@ -124,5 +159,4 @@ class SystemService {
       throw Exception("Couldn't set Wi-Fi throttling: ${result.stderr}");
     }
   }
-
 }
