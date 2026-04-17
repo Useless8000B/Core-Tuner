@@ -3,11 +3,42 @@ import 'package:core_tuner/services/system_services.dart';
 import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 
-class ScalingGovernorWidget extends StatelessWidget {
+class ScalingGovernorWidget extends StatefulWidget {
   const ScalingGovernorWidget({super.key});
 
   @override
+  State<ScalingGovernorWidget> createState() => _ScalingGovernorWidgetState();
+}
+
+class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
+  String? _selectedGovernor;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentGovernor();
+  }
+
+  Future<void> _loadCurrentGovernor() async {
+    final governor = await SystemService.getCurrentGovernor();
+    if (mounted) {
+      setState(() {
+        _selectedGovernor = governor;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const SizedBox(
+        height: 65,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -29,7 +60,7 @@ class ScalingGovernorWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           DropdownMenu<String>(
-            initialSelection: 'schedutil',
+            initialSelection: _selectedGovernor,
             expandedInsets: EdgeInsets.zero,
             inputDecorationTheme: const InputDecorationTheme(
               filled: false,
@@ -50,12 +81,13 @@ class ScalingGovernorWidget extends StatelessWidget {
                 try {
                   await SystemService.setGlobalGovernor(value);
 
-                  if (!context.mounted) return;
+                  setState(() => _selectedGovernor = value);
 
+                  if (!context.mounted) return;
                   CoreSnack.show(context, 'Governor set to $value');
                 } catch (e) {
                   if (!context.mounted) return;
-                  CoreSnack.show(context, 'Root access denied or system error.');
+                  CoreSnack.show(context, 'Error applying: $e', isError: true);
                 }
               }
             },
@@ -63,17 +95,29 @@ class ScalingGovernorWidget extends StatelessWidget {
               DropdownMenuEntry(
                 value: 'performance',
                 label: 'performance',
-                leadingIcon: Icon(Icons.bolt, color: Colors.orangeAccent, size: 18),
+                leadingIcon: Icon(
+                  Icons.bolt,
+                  color: AppColors.orange,
+                  size: 18,
+                ),
               ),
               DropdownMenuEntry(
                 value: 'schedutil',
                 label: 'schedutil',
-                leadingIcon: Icon(Icons.auto_awesome, color: Colors.blueAccent, size: 18),
+                leadingIcon: Icon(
+                  Icons.auto_awesome,
+                  color: AppColors.royalBlue,
+                  size: 18,
+                ),
               ),
               DropdownMenuEntry(
                 value: 'powersave',
                 label: 'powersave',
-                leadingIcon: Icon(Icons.eco, color: Colors.greenAccent, size: 18),
+                leadingIcon: Icon(
+                  Icons.eco,
+                  color: AppColors.green,
+                  size: 18,
+                ),
               ),
             ],
           ),
