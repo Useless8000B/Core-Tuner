@@ -30,11 +30,18 @@ class DashboardScreen extends StatelessWidget {
                     await SystemService.setWifiThrottling(value);
 
                     if (context.mounted) {
-                      CoreSnack.show(context, "Wi-Fi throttling ${value ? 'Activated' : 'Deactivated'}");
+                      CoreSnack.show(
+                        context,
+                        "Wi-Fi throttling ${value ? 'Activated' : 'Deactivated'}",
+                      );
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      CoreSnack.show(context, "Error applying: $e", isError: true);
+                      CoreSnack.show(
+                        context,
+                        "Error applying: $e",
+                        isError: true,
+                      );
                     }
                   }
                 },
