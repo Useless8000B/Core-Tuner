@@ -53,9 +53,9 @@ class ScalingGovernorWidget extends StatelessWidget {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Governor set to $value"),
+                      content: Text("Governor set to $value", style: TextStyle(color: AppColors.white),),
                       duration: const Duration(seconds: 1),
-                      backgroundColor: AppColors.royalBlue.withValues(alpha: 0.7),
+                      backgroundColor: AppColors.lightBlack,
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
