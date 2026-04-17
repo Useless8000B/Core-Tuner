@@ -102,4 +102,27 @@ class SystemService {
       await Future.delayed(const Duration(seconds: 30));
     }
   }
+
+  static Future<void> clearDalvik() async {
+    final command =
+        'rm -rf /data/dalvik-cache/*; rm -rf /data/resource-cache/*; rm -rf /data/system/package_cache/*';
+    final result = await Process.run('su', ['-c', command]);
+
+    if (result.exitCode != 0) {
+      throw Exception("Couldn't wipe cache: ${result.stderr}");
+    }
+  }
+
+  static Future<void> setWifiThrottling(bool enabled) async {
+    final value = enabled ? '1' : '0';
+    final result = await Process.run('su', [
+      '-c',
+      'settings put global wifi_scan_throttle_enabled $value',
+    ]);
+
+    if (result.exitCode != 0) {
+      throw Exception("Couldn't set Wi-Fi throttling: ${result.stderr}");
+    }
+  }
+
 }
