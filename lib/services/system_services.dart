@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemService {
   static Future<String> runCommand(String command, {bool root = false}) async {
@@ -68,25 +69,26 @@ class SystemService {
   static Stream<Map<String, double>> getRamStream() {
     return Stream.periodic(const Duration(seconds: 2), (_) async {
       try {
-        final result = await Process.run('cat', ['/proc/meminfo']);
-        final lines = result.stdout.toString().split('\n');
+        final content = await runCommand("cat /proc/meminfo", root: false);
+        final lines = content.split('\n');
 
         double total = 0;
-        double available = 0;
+        double free = 0;
+        double buffers = 0;
+        double cached = 0;
 
         for (var line in lines) {
-          if (line.startsWith('MemTotal:')) {
-            total = double.parse(line.split(RegExp(r'\s+'))[1]);
-          }
-          if (line.startsWith('MemAvailable:')) {
-            available = double.parse(line.split(RegExp(r'\s+'))[1]);
-          }
+          final parts = line.split(RegExp(r'\s+'));
+          if (line.startsWith('MemTotal:')) total = double.parse(parts[1]);
+          if (line.startsWith('MemFree:')) free = double.parse(parts[1]);
+          if (line.startsWith('Buffers:')) buffers = double.parse(parts[1]);
+          if (line.startsWith('Cached:')) cached = double.parse(parts[1]);
         }
 
-        double used = (total - available) / 1024 / 1024;
+        double usedReal = (total - free - buffers - cached) / 1024 / 1024;
         double totalGB = total / 1024 / 1024;
 
-        return {'used': used, 'total': totalGB};
+        return {'used': usedReal, 'total': totalGB};
       } catch (e) {
         return {'used': 0.0, 'total': 0.0};
       }
@@ -121,7 +123,6 @@ class SystemService {
               double ratioValue = 1.0;
               if (comprBytes > 0 && origBytes > 0) {
                 ratioValue = origBytes / comprBytes;
-                if (ratioValue > 5.0 || ratioValue < 0.8) ratioValue = 1.0;
               }
 
               yield {
@@ -155,37 +156,33 @@ class SystemService {
   static Future<void> applyZramTweak(bool enable) async {
     if (enable) {
       final script = '''
-      current_size=\$(cat /sys/block/zram0/disksize 2>/dev/null || echo 0)
-      total_mem=\$(cat /proc/meminfo | grep MemTotal | awk '{print \$2}')
-      target_size=\$((total_mem * 1024 / 2))
+        magiskpolicy --live "allow init self capability sys_admin" 2>/dev/null
+        magiskpolicy --live "allow priv_app sysfs_zram dir search" 2>/dev/null
+        magiskpolicy --live "allow priv_app sysfs_zram file { getattr open write }" 2>/dev/null
 
-      if swapon -s | grep -q "/dev/block/zram0" && [ "\$current_size" -eq "\$target_size" ]; then
-        exit 0
-      fi
+        /system/bin/toybox swapoff /dev/block/zram0 > /dev/null 2>&1
+        echo 1 > /sys/block/zram0/reset 2>/dev/null
 
-      swapoff /dev/block/zram0 > /dev/null 2>&1
+        echo lz4 > /sys/block/zram0/comp_algorithm 2>/dev/null
 
-      echo 1 > /sys/block/zram0/reset
+        echo 8 > /sys/block/zram0/max_comp_streams 2>/dev/null
 
-      echo zstd > /sys/block/zram0/comp_algorithm || echo lz4 > /sys/block/zram0/comp_algorithm
+        echo 2147483648 > /sys/block/zram0/disksize || echo 1G > /sys/block/zram0/disksize
 
-      echo \$target_size > /sys/block/zram0/disksize
+        /system/bin/toybox mkswap /dev/block/zram0
+        /system/bin/toybox swapon /dev/block/zram0 -p 100
 
-      mkswap /dev/block/zram0 > /dev/null 2>&1
-      swapon /dev/block/zram0 -p 100 > /dev/null 2>&1
-    ''';
+        sysctl -w vm.swappiness=150
+        sysctl -w vm.vfs_cache_pressure=100
+        sysctl -w vm.dirty_ratio=40
+        sysctl -w vm.dirty_background_ratio=10
+      ''';
 
-      final result = await Process.run('su', ['-c', script]);
-      if (result.exitCode != 0) {
-        throw Exception("Erro ao configurar kernel: \${result.stderr}");
-      }
+      await runCommand(script);
     } else {
-      final script = '''
-      swapoff /dev/block/zram0 > /dev/null 2>&1
-      echo 1 > /sys/block/zram0/reset
-    ''';
-
-      await Process.run('su', ['-c', script]);
+      await runCommand(
+        "/system/bin/toybox swapoff /dev/block/zram0 && echo 1 > /sys/block/zram0/reset",
+      );
     }
   }
 
@@ -217,7 +214,7 @@ class SystemService {
           }
         }
       } catch (e) {
-        debugPrint("Storage Error: $e");
+        throw Exception("Storage Error: $e");
       }
       await Future.delayed(const Duration(seconds: 15));
     }
@@ -297,15 +294,12 @@ class SystemService {
   }
 
   static Future<bool> isZramActive() async {
-    final disksize = await runCommand("cat /sys/block/zram0/disksize");
-    final totalMemRaw = await runCommand(
-      "cat /proc/meminfo | grep MemTotal | awk '{print \$2}'",
-    );
-
-    double current = double.tryParse(disksize) ?? 0;
-    double total = (double.tryParse(totalMemRaw) ?? 0) * 1024;
-
-    return (current - (total / 2)).abs() < 10 * 1024 * 1024 && current > 0;
+    try {
+      final result = await Process.run('cat', ['/proc/swaps']);
+      return result.stdout.toString().contains('zram0');
+    } catch (_) {
+      return false;
+    }
   }
 
   static Future<bool> isWifiThrottleEnabled() async {
@@ -324,6 +318,19 @@ class SystemService {
       return trimmed.isNotEmpty ? trimmed : "schedutil";
     } catch (e) {
       return "schedutil";
+    }
+  }
+
+  static Future<void> syncZramState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool shouldBeEnabled = prefs.getBool('zram_swap') ?? false;
+
+    if (!shouldBeEnabled) return;
+
+    final bool isCurrentlyActive = await isZramActive();
+
+    if (!isCurrentlyActive) {
+      await applyZramTweak(true);
     }
   }
 }
