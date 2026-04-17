@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:storage_space/storage_space.dart';
 
 class SystemService {
   static Future<String> runCommand(String command, {bool root = false}) async {
@@ -89,5 +90,16 @@ class SystemService {
         return {'used': 0.0, 'total': 0.0};
       }
     }).asyncMap((event) => event);
+  }
+
+  static Stream<StorageSpace> getStorageStream() async* {
+    while (true) {
+      StorageSpace space = await getStorageSpace(
+        fractionDigits: 0,
+        lowOnSpaceThreshold: 2 * 1024 * 1024 * 1024,
+      );
+      yield space;
+      await Future.delayed(const Duration(seconds: 30));
+    }
   }
 }
