@@ -3,6 +3,7 @@ import 'package:core_tuner/colors.dart';
 
 class CoreSnack {
   static void show(BuildContext context, String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
