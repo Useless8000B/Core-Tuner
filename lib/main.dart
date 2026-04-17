@@ -7,6 +7,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   bool hasRoot = await SystemService.checkRootAccess();
+  SystemService.syncZramState();
 
   runApp(CoreTuner(hasRoot: hasRoot));
 }
@@ -25,7 +26,7 @@ class CoreTuner extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.royalBlue,
           brightness: Brightness.dark,
-          surface: AppColors.black
+          surface: AppColors.black,
         ),
         scaffoldBackgroundColor: AppColors.black,
 
@@ -36,7 +37,7 @@ class CoreTuner extends StatelessWidget {
         ),
         navigationDrawerTheme: NavigationDrawerThemeData(
           backgroundColor: AppColors.lightBlack,
-        )
+        ),
       ),
       home: const ShellScreen(),
     );
