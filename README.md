@@ -27,6 +27,30 @@
 * **Hardware:** This project was developed and tested primarily on **Snapdragon** devices. Operation on **MediaTek** or **Exynos** chipsets is not guaranteed and may cause instability.
 * **Responsability:** By using this app, you understand that you are modifying hardware limits that may void the manufacturer's warranty.
 
+## 🛠️ Requirements & Troubleshooting (ZRAM/Swap)
+
+### 🇧🇷 Português
+Para que as funcionalidades de **ZRAM/Swap** funcionem corretamente, o Core Tuner depende de binários específicos do Linux.
+
+1. **BusyBox:** É altamente recomendado ter o BusyBox instalado (via módulo Magisk ou app) para garantir a compatibilidade dos comandos de Shell (`mkswap`, `swapon`, `grep`).
+2. **Magisk Mount Namespace:** Em algumas versões do Magisk, é necessário garantir que o app tenha visibilidade global:
+    * Abra o **Magisk** > **Configurações**.
+    * Selecione **"Namespace de Montagem Global"** (Global Mount Namespace).
+    * Reinicie o dispositivo.
+*Isso evita que as alterações de swap fiquem isoladas apenas dentro do processo do app.*
+
+---
+
+### 🇺🇸 English
+For **ZRAM/Swap** features to work properly, Core Tuner relies on specific Linux binaries.
+
+1. **BusyBox:** It is highly recommended to have BusyBox installed (via Magisk module or app) to ensure compatibility with Shell commands (`mkswap`, `swapon`, `grep`).
+2. **Magisk Mount Namespace:** On some Magisk versions, you must ensure that the app has system-wide visibility:
+    * Open **Magisk** > **Settings**.
+    * Select **"Global Mount Namespace"**.
+    * Reboot your device.
+*This prevents swap changes from being isolated only within the app's process.*
+
 ## Building from source
 Clone the repository and run: 
 ```bash
