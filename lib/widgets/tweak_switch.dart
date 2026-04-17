@@ -7,12 +7,14 @@ class TweakSwitch extends StatefulWidget {
   final String title;
   final String storageKey;
   final Function(bool) onAction;
+  final Future<bool> Function()? checkStatus;
 
   const TweakSwitch({
     super.key,
     required this.title,
     required this.storageKey,
     required this.onAction,
+    this.checkStatus,
   });
 
   @override
@@ -31,10 +33,21 @@ class _TweakSwitchState extends State<TweakSwitch> {
 
   Future<void> _loadState() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isEnabled = prefs.getBool(widget.storageKey) ?? false;
-      _isLoading = false;
-    });
+
+    bool actualStatus;
+    if (widget.checkStatus != null) {
+      actualStatus = await widget.checkStatus!();
+      await prefs.setBool(widget.storageKey, actualStatus);
+    } else {
+      actualStatus = prefs.getBool(widget.storageKey) ?? false;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isEnabled = actualStatus;
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _toggle(bool value) async {
@@ -47,13 +60,14 @@ class _TweakSwitchState extends State<TweakSwitch> {
       await widget.onAction(value);
 
       await prefs.setBool(widget.storageKey, value);
-      
+
       if (mounted) {
-        CoreSnack.show(context, "${widget.title} aplicado!");
+        final String status = value ? "Activated" : "Deactivated";
+        CoreSnack.show(context, "${widget.title} $status!");
       }
     } catch (e) {
       setState(() => _isEnabled = originalValue);
-      
+
       await prefs.setBool(widget.storageKey, originalValue);
 
       if (mounted) {
