@@ -51,8 +51,11 @@ For **ZRAM/Swap** features to work properly, Core Tuner relies on specific Linux
     * Reboot your device.
 *This prevents swap changes from being isolated only within the app's process.*
 
-## Building from source
-Clone the repository and run: 
-```bash
-flutter pub get && flutter build apk --release
-```
+---
+
+### 🇧🇷 Português
+Este app ainda está em desenvolvimento, futuras versões incluirão apks disponibilizados.
+
+### 🇺🇸 English
+This app is still in development, future versions are going to include apk releases.
+
