@@ -1,5 +1,6 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 
 class ScalingGovernorWidget extends StatelessWidget {
@@ -51,40 +52,10 @@ class ScalingGovernorWidget extends StatelessWidget {
 
                   if (!context.mounted) return;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Governor set to $value", style: TextStyle(color: AppColors.white),),
-                      duration: const Duration(seconds: 1),
-                      backgroundColor: AppColors.lightBlack,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                  CoreSnack.show(context, 'Governor set to $value');
                 } catch (e) {
                   if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: AppColors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      content: Row(
-                        children: [
-                          const Icon(Icons.error_outline, color: Colors.white),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Text(
-                              "Root access denied or system error.",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  CoreSnack.show(context, 'Root access denied or system error.');
                 }
               }
             },
