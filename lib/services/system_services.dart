@@ -4,6 +4,17 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemService {
+  static Future<void> saveForMagisk(String key, String value) async {
+    try {
+      await Process.run('su', [
+        '-c',
+        'mkdir -p /data/core_tuner && echo "$value" > /data/core_tuner/$key'
+      ]);
+    } catch (e) {
+      throw Exception('Error saving for magisk: $e');
+    }
+  }
+
   static Future<String> runCommand(String command, {bool root = false}) async {
     try {
       ProcessResult result;
@@ -62,6 +73,8 @@ class SystemService {
 
     if (result.exitCode != 0) {
       throw Exception("Couldn't apply governor ${result.stderr}");
+    } else {
+      await saveForMagisk('governor', governor);
     }
   }
 
@@ -153,6 +166,7 @@ class SystemService {
   }
 
   static Future<void> applyZramTweak(bool enable) async {
+    await saveForMagisk('zram_enabled', enable ? '1' : '0');
     if (enable) {
       final script = '''
         magiskpolicy --live "allow init self capability sys_admin" 2>/dev/null
@@ -171,7 +185,7 @@ class SystemService {
         /system/bin/toybox mkswap /dev/block/zram0
         /system/bin/toybox swapon /dev/block/zram0 -p 100
 
-        sysctl -w vm.swappiness=150
+        sysctl -w vm.swappiness=100
         sysctl -w vm.vfs_cache_pressure=100
         sysctl -w vm.dirty_ratio=40
         sysctl -w vm.dirty_background_ratio=10
@@ -330,6 +344,26 @@ class SystemService {
 
     if (!isCurrentlyActive) {
       await applyZramTweak(true);
+    }
+  }
+
+  static Future<void> applySwappiness(int value) async {
+    try {
+      await Process.run('su', ['-c', 'echo $value > /proc/sys/vm/swappiness']);
+      await saveForMagisk('swappiness', value.toString());
+    } catch (e) {
+      throw Exception("Error applying swappiness: $e");
+    }
+  }
+
+  static Future<void> applySavedTweaks() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.containsKey('swappiness_value')) {
+      await applySwappiness(prefs.getInt('swappiness_value') ?? 100);
+    }
+    if (prefs.containsKey('cpu_governor')) {
+      await setGlobalGovernor(prefs.getString('cpu_governor') ?? "schedutil");
     }
   }
 }
