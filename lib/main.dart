@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemService.applySavedTweaks();
 
   bool hasRoot = await SystemService.checkRootAccess();
-  SystemService.syncZramState();
 
   runApp(CoreTuner(hasRoot: hasRoot));
 }
@@ -37,6 +37,16 @@ class CoreTuner extends StatelessWidget {
         ),
         navigationDrawerTheme: NavigationDrawerThemeData(
           backgroundColor: AppColors.lightBlack,
+        ),
+
+        sliderTheme: SliderThemeData(
+          trackHeight: 4,
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+          activeTrackColor: AppColors.royalBlue,
+          inactiveTrackColor: AppColors.white.withValues(alpha: 0.1),
+          thumbColor: AppColors.royalBlue,
+          valueIndicatorColor: AppColors.royalBlue,
         ),
       ),
       home: const ShellScreen(),
