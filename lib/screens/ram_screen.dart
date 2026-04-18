@@ -1,5 +1,6 @@
 import 'package:core_tuner/services/system_services.dart';
 import 'package:core_tuner/widgets/ram_widget.dart';
+import 'package:core_tuner/widgets/swappiness_widget.dart';
 import 'package:core_tuner/widgets/tweak_switch.dart';
 import 'package:core_tuner/widgets/zram_widget.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,8 @@ class _RamScreenState extends State<RamScreen> {
                   await SystemService.applyZramTweak(value);
                 },
               ),
+              const SizedBox(height: 20,),
+              SwappinessWidget()
             ],
           ),
         ),
