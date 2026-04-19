@@ -508,13 +508,14 @@ class SystemService {
   static Stream<double> getBatteryTempStream() async* {
     while (true) {
       try {
-        String raw = await runCommand("cat /sys/devices/virtual/thermal/thermal_zone40/temp",);
+        String raw = await runCommand(
+          "cat /sys/devices/virtual/thermal/thermal_zone40/temp",
+        );
         double temp = double.tryParse(raw.trim()) ?? 0.0;
 
         if (temp >= 1000) {
           temp /= 1000;
-        }
-        else if (temp >= 100) {
+        } else if (temp >= 100) {
           temp /= 10;
         }
 
@@ -584,6 +585,46 @@ class SystemService {
 
     if (result.exitCode != 0) {
       throw Exception("Couldn't wipe cache: ${result.stderr}");
+    }
+  }
+
+  static Future<String> runStorageTrim() async {
+    try {
+      String result = await runCommand(
+        "fstrim -v /data && fstrim -v /cache",
+        root: true,
+      );
+
+      if (result.isEmpty) {
+        return "Optimization completed.";
+      }
+
+      return result.trim();
+    } catch (e) {
+      return "Error during optimization: $e";
+    }
+  }
+
+  static Future<void> clearSystemLogs() async {
+    try {
+      String cmd = """
+        logcat -c && 
+        rm -rf /data/tombstones/* && 
+        rm -rf /data/anr/*
+      """;
+
+      await runCommand(cmd, root: true);
+    } catch (e) {
+      throw Exception("Error clearing logs: $e");
+    }
+  }
+
+  static Future<void> clearTempFiles() async {
+    try {
+      String cmd = "rm -rf /data/local/tmp/*";
+      await runCommand(cmd, root: true);
+    } catch (e) {
+      throw Exception("Error clearing tmp files: $e");
     }
   }
 
