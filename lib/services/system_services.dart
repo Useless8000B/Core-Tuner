@@ -342,26 +342,8 @@ class SystemService {
   }
 
   static Future<void> setBatteryIdleMode(bool enabled) async {
-    final value = enabled ? '1' : '0';
-
-    final List<String> paths = [
-      '/sys/class/power_supply/battery/input_suspend',
-      '/sys/class/power_supply/battery/battery_charging_enabled',
-      '/sys/class/power_supply/battery/charging_enabled',
-    ];
-
-    try {
-      for (String path in paths) {
-        final exists = await runCommand('ls $path');
-        if (!exists.contains('No such file')) {
-          await runCommand('echo $value > $path', root: true);
-        }
-      }
-
-      await saveForMagisk('battery_idle_mode', value);
-    } catch (e) {
-      throw Exception("Erro ao aplicar Battery Idle: $e");
-    }
+    await setBatterySuspension(enabled);
+    await saveForMagisk('battery_idle_mode', enabled ? '1' : '0');
   }
 
   static Future<bool> isZramActive() async {
@@ -442,6 +424,10 @@ class SystemService {
     if (prefs.containsKey('low_memory_killer')) {
       await applyLmkProfile(prefs.getInt('low_memory_killer') ?? 0);
     }
+
+    if (prefs.containsKey('charge_limit')) {
+      await applyChargeLimit(prefs.getInt('charge_limit') ?? 80);
+    }
   }
 
   static Future<void> applyDirtyRatio(int value) async {
@@ -468,23 +454,58 @@ class SystemService {
   }
 
   static Future<void> applyLmkProfile(int level) async {
-  final List<String> profiles = [
-    "15360,19200,23040,26880,34415,43737",   // Stock
-    "18432,23040,27648,32256,55296,80640",   // Balanced
-    "23040,28160,33280,38400,61440,92160",   // Aggressive
-    "28160,33280,38400,43520,81920,115200",  // Extreme
-  ];
+    final List<String> profiles = [
+      "15360,19200,23040,26880,34415,43737",  // Stock
+      "18432,23040,27648,32256,55296,80640",  // Balanced
+      "23040,28160,33280,38400,61440,92160",  // Aggressive
+      "28160,33280,38400,43520,81920,115200", // Extreme
+    ];
 
-  final String selected = profiles[level.clamp(0, 3)];
+    final String selected = profiles[level.clamp(0, 3)];
 
-  final command = '''
-    setprop persist.sys.lmk.minfree_levels "$selected"
-    setprop sys.lmk.minfree_levels "$selected"
-    chown system:system /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
-    echo "$selected" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
-  ''';
+    final command =
+        '''
+      setprop persist.sys.lmk.minfree_levels "$selected"
+      setprop sys.lmk.minfree_levels "$selected"
+      chown system:system /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
+      echo "$selected" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
+    ''';
 
-  await runCommand(command, root: true);
-  await saveForMagisk('lmk_minfree', selected);
-}
+    await runCommand(command, root: true);
+    await saveForMagisk('lmk_minfree', selected);
+  }
+
+  static Future<void> setBatterySuspension(bool suspend) async {
+    final List<String> chargeControlPaths = [
+      '/sys/class/power_supply/battery/input_suspend',             // Redmi note 11 - My device
+      '/sys/class/power_supply/battery/charging_enabled',          // Qualcomm Universal
+      '/sys/class/power_supply/battery/battery_charging_enabled',  // Sony/Pixel
+      '/sys/class/power_supply/battery/charge_control_limit_max',  // Modern Kernels
+    ];
+
+    final value = suspend ? '1' : '0';
+    String cmd = "";
+    for (String path in chargeControlPaths) {
+      cmd += "if [ -f $path ]; then echo $value > $path; fi; ";
+    }
+
+    await runCommand(cmd, root: true);
+  }
+
+  static Future<void> applyChargeLimit(int limit) async {
+    try {
+      await saveForMagisk('charge_limit', limit.toString());
+
+      final String rawLevel = await runCommand('cat /sys/class/power_supply/battery/capacity', root: true);
+      final int currentLevel = int.tryParse(rawLevel) ?? 0;
+
+      if (currentLevel >= limit) {
+        await setBatterySuspension(true);
+      } else {
+        await setBatterySuspension(false);
+      }
+    } catch (e) {
+      throw Exception("Error applying charge limit: $e");
+    }
+  }
 }
