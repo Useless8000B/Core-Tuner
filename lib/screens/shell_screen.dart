@@ -3,7 +3,6 @@ import 'package:core_tuner/widgets/appbar_widget.dart';
 import 'package:core_tuner/navigation/drawer_navigator.dart';
 import 'package:core_tuner/screens/battery_screen.dart';
 import 'package:core_tuner/screens/cpu_screen.dart';
-import 'package:core_tuner/screens/kernel_screen.dart';
 import 'package:core_tuner/screens/ram_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +20,7 @@ class _ShellScreenState extends State<ShellScreen> {
     {'title': 'Dashboard', 'screen': DashboardScreen()},
     {'title': 'CPU', 'screen': const CpuScreen()},
     {'title': 'RAM', 'screen': const RamScreen()},
-    {'title': 'Battery', 'screen': const BatteryScreen()},
-    {'title': 'Kernel', 'screen': const KernelScreen()}
+    {'title': 'Battery', 'screen': const BatteryScreen()}
   ];
 
   void _navigate(int index) {
