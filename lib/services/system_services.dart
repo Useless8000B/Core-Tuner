@@ -8,7 +8,7 @@ class SystemService {
     try {
       await Process.run('su', [
         '-c',
-        'mkdir -p /data/core_tuner && echo "$value" > /data/core_tuner/$key'
+        'mkdir -p /data/core_tuner && echo "$value" > /data/core_tuner/$key',
       ]);
     } catch (e) {
       throw Exception('Error saving for magisk: $e');
@@ -29,13 +29,45 @@ class SystemService {
     }
   }
 
+  static String? _cachedThermalZone;
+
+  static Future<String> _findBestThermalZone() async {
+    if (_cachedThermalZone != null) return _cachedThermalZone!;
+
+    List<String> targets = [
+      'cpu-thermal',
+      'hepta-cpu-max-step',
+      'cpuss-0-usr',
+      'soc-thermal',
+      'cpu-0-0-usr',
+    ];
+
+    for (String name in targets) {
+      String zoneNum = await runCommand(
+        "for i in /sys/class/thermal/thermal_zone*; do if grep -q '$name' \$i/type; then echo \${i##*zone}; break; fi; done",
+      );
+
+      if (zoneNum.isNotEmpty && zoneNum != "0") {
+        _cachedThermalZone = zoneNum;
+        return zoneNum;
+      }
+    }
+
+    return "0";
+  }
+
   static Stream<double> getTemperatureStream() async* {
+    String zone = await _findBestThermalZone();
+
     while (true) {
       await Future.delayed(const Duration(seconds: 2));
       String raw = await runCommand(
-        "cat /sys/class/thermal/thermal_zone0/temp",
+        "cat /sys/class/thermal/thermal_zone$zone/temp",
       );
-      double temp = (double.tryParse(raw) ?? 0.0) / 1000;
+
+      double temp = (double.tryParse(raw) ?? 0.0);
+      if (temp > 1000) temp /= 1000;
+
       yield temp;
     }
   }
@@ -124,45 +156,53 @@ class SystemService {
             final double totalBytes = double.tryParse(output[1]) ?? 0.0;
             final double totalGb = totalBytes / (1024 * 1024 * 1024);
 
-            if (stats.length >= 2) {
+            if (stats.length >= 3) {
               double origBytes = double.tryParse(stats[0]) ?? 0.0;
-              double comprBytes = double.tryParse(stats[1]) ?? 0.0;
+              double secondCol = double.tryParse(stats[1]) ?? 0.0;
+              double thirdCol = double.tryParse(stats[2]) ?? 0.0;
 
-              if (comprBytes > totalBytes || comprBytes < 0) {
-                comprBytes = origBytes;
+              double comprBytes;
+
+              if (secondCol > 1099511627776 || secondCol < 0) {
+                comprBytes = thirdCol;
+              } else {
+                comprBytes = secondCol;
               }
 
-              double ratioValue = 1.0;
+              if (origBytes < 1024 * 1024) {
+                origBytes = 0.0;
+                comprBytes = 0.0;
+              }
+
+              double ratioValue = 0.0;
               if (comprBytes > 0 && origBytes > 0) {
                 ratioValue = origBytes / comprBytes;
+
+                if (ratioValue < 0.1 || ratioValue > 20.0) ratioValue = 1.0;
               }
 
               yield {
                 'orig_mb': origBytes / (1024 * 1024),
                 'compr_mb': comprBytes / (1024 * 1024),
                 'total_gb': totalGb,
-                'ratio': ratioValue.toStringAsFixed(1),
+                'ratio': ratioValue == 0.0
+                    ? "0.0"
+                    : ratioValue.toStringAsFixed(1),
               };
             }
           }
         } else {
-          yield {
-            'orig_mb': 0.0,
-            'compr_mb': 0.0,
-            'total_gb': 0.0,
-            'ratio': "1.0",
-          };
+          yield _emptyZram();
         }
       } catch (e) {
-        yield {
-          'orig_mb': 0.0,
-          'compr_mb': 0.0,
-          'total_gb': 0.0,
-          'ratio': "1.0",
-        };
+        yield _emptyZram();
       }
       await Future.delayed(const Duration(seconds: 4));
     }
+  }
+
+  static Map<String, dynamic> _emptyZram() {
+    return {'orig_mb': 0.0, 'compr_mb': 0.0, 'total_gb': 0.0, 'ratio': "0.0"};
   }
 
   static Future<void> applyZramTweak(bool enable) async {
@@ -172,30 +212,25 @@ class SystemService {
         magiskpolicy --live "allow init self capability sys_admin" 2>/dev/null
         magiskpolicy --live "allow priv_app sysfs_zram dir search" 2>/dev/null
         magiskpolicy --live "allow priv_app sysfs_zram file { getattr open write }" 2>/dev/null
-
         /system/bin/toybox swapoff /dev/block/zram0 > /dev/null 2>&1
         echo 1 > /sys/block/zram0/reset 2>/dev/null
-
         echo lz4 > /sys/block/zram0/comp_algorithm 2>/dev/null
-
         echo 8 > /sys/block/zram0/max_comp_streams 2>/dev/null
-
         echo 2147483648 > /sys/block/zram0/disksize || echo 1G > /sys/block/zram0/disksize
-
         /system/bin/toybox mkswap /dev/block/zram0
         /system/bin/toybox swapon /dev/block/zram0 -p 100
-
-        sysctl -w vm.swappiness=100
         sysctl -w vm.vfs_cache_pressure=100
-        sysctl -w vm.dirty_ratio=40
-        sysctl -w vm.dirty_background_ratio=10
       ''';
 
       await runCommand(script);
     } else {
-      await runCommand(
-        "/system/bin/toybox swapoff /dev/block/zram0 && echo 1 > /sys/block/zram0/reset",
-      );
+      final disableScript = '''
+        echo 3 > /proc/sys/vm/drop_caches
+        timeout 3 /system/bin/toybox swapoff /dev/block/zram0 || true
+        echo 1 > /sys/block/zram0/reset || true
+      ''';
+
+      await runCommand(disableScript);
     }
   }
 
@@ -306,6 +341,29 @@ class SystemService {
     }
   }
 
+  static Future<void> setBatteryIdleMode(bool enabled) async {
+    final value = enabled ? '1' : '0';
+
+    final List<String> paths = [
+      '/sys/class/power_supply/battery/input_suspend',
+      '/sys/class/power_supply/battery/battery_charging_enabled',
+      '/sys/class/power_supply/battery/charging_enabled',
+    ];
+
+    try {
+      for (String path in paths) {
+        final exists = await runCommand('ls $path');
+        if (!exists.contains('No such file')) {
+          await runCommand('echo $value > $path', root: true);
+        }
+      }
+
+      await saveForMagisk('battery_idle_mode', value);
+    } catch (e) {
+      throw Exception("Erro ao aplicar Battery Idle: $e");
+    }
+  }
+
   static Future<bool> isZramActive() async {
     try {
       final result = await Process.run('cat', ['/proc/swaps']);
@@ -359,11 +417,74 @@ class SystemService {
   static Future<void> applySavedTweaks() async {
     final prefs = await SharedPreferences.getInstance();
 
-    if (prefs.containsKey('swappiness_value')) {
-      await applySwappiness(prefs.getInt('swappiness_value') ?? 100);
-    }
     if (prefs.containsKey('cpu_governor')) {
       await setGlobalGovernor(prefs.getString('cpu_governor') ?? "schedutil");
     }
+
+    if (prefs.containsKey('battery_idle_mode')) {
+      await setBatteryIdleMode(prefs.getBool('battery_idle_mode') ?? false);
+    }
+
+    if (prefs.containsKey('swappiness_value')) {
+      await applySwappiness(prefs.getInt('swappiness_value') ?? 100);
+    }
+
+    if (prefs.containsKey('vm_dirty_ratio')) {
+      await applyDirtyRatio(prefs.getInt('vm_dirty_ratio') ?? 20);
+    }
+
+    if (prefs.containsKey('vm_dirty_background_ratio')) {
+      await applyDirtyBackgroundRatio(
+        prefs.getInt('vm_dirty_background_ratio') ?? 10,
+      );
+    }
+
+    if (prefs.containsKey('low_memory_killer')) {
+      await applyLmkProfile(prefs.getInt('low_memory_killer') ?? 0);
+    }
   }
+
+  static Future<void> applyDirtyRatio(int value) async {
+    try {
+      int safeValue = value.clamp(0, 100);
+      await runCommand('sysctl -w vm.dirty_ratio=$safeValue', root: true);
+      await saveForMagisk('vm_dirty_ratio', safeValue.toString());
+    } catch (e) {
+      throw Exception("Error applying dirty_ratio: $e");
+    }
+  }
+
+  static Future<void> applyDirtyBackgroundRatio(int value) async {
+    try {
+      int safeValue = value.clamp(0, 100);
+      await runCommand(
+        'sysctl -w vm.dirty_background_ratio=$safeValue',
+        root: true,
+      );
+      await saveForMagisk('vm_dirty_background_ratio', safeValue.toString());
+    } catch (e) {
+      throw Exception("Error applying dirty_background_ratio: $e");
+    }
+  }
+
+  static Future<void> applyLmkProfile(int level) async {
+  final List<String> profiles = [
+    "15360,19200,23040,26880,34415,43737",   // Stock
+    "18432,23040,27648,32256,55296,80640",   // Balanced
+    "23040,28160,33280,38400,61440,92160",   // Aggressive
+    "28160,33280,38400,43520,81920,115200",  // Extreme
+  ];
+
+  final String selected = profiles[level.clamp(0, 3)];
+
+  final command = '''
+    setprop persist.sys.lmk.minfree_levels "$selected"
+    setprop sys.lmk.minfree_levels "$selected"
+    chown system:system /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
+    echo "$selected" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
+  ''';
+
+  await runCommand(command, root: true);
+  await saveForMagisk('lmk_minfree', selected);
+}
 }
