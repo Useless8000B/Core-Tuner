@@ -81,10 +81,28 @@ For **ZRAM/Swap** features to work properly:
     * Select **"Global Mount Namespace"**.
     * Reboot your device.
 
----
+## 🧩 Fragmentação de Kernels & Compatibilidade / Kernel Fragmentation
 
 ### 🇧🇷 Português
-Este app ainda está em desenvolvimento.
+O ecossistema Android é altamente fragmentado. Cada fabricante (Xiaomi, Motorola, Samsung) e cada versão de Kernel pode alterar os caminhos dos arquivos de sistema (`/sys`), especialmente os sensores térmicos e controles de GPU.
+
+* **Caminhos Fixos:** Atualmente, o monitoramento térmico está otimizado para o **Redmi Note 11 (Snapdragon 680)**. Em outros dispositivos, o widget de temperatura pode exibir `--` caso o caminho do sensor seja diferente.
+* **Como contribuir:** Se o seu sensor não for detectado, você pode ajudar a tornar o Core Tuner universal:
+    1. Abra um terminal (ADB ou Termux) com acesso root.
+    2. Execute o comando:  
+       `for i in /sys/devices/virtual/thermal/thermal_zone*; do echo "$i | $(cat $i/type)"; done`
+    3. Identifique qual zona corresponde ao tipo `battery` ou `bms`.
+    4. Abra uma **Issue** no GitHub informando o modelo do aparelho e o caminho encontrado.
+
+---
 
 ### 🇺🇸 English
-This app is still in development.
+The Android ecosystem is highly fragmented. Each manufacturer (Xiaomi, Motorola, Samsung) and each Kernel version can change system file paths (`/sys`), especially thermal sensors and GPU controls.
+
+* **Hardcoded Paths:** Currently, thermal monitoring is optimized for the **Redmi Note 11 (Snapdragon 680)**. On other devices, the thermal widget may display `--` if the sensor path differs.
+* **How to contribute:** If your sensor is not detected, you can help make Core Tuner universal:
+    1. Open a terminal (ADB or Termux) with root access.
+    2. Run the following command:  
+       `for i in /sys/devices/virtual/thermal/thermal_zone*; do echo "$i | $(cat $i/type)"; done`
+    3. Identify which zone corresponds to the `battery` or `bms` type.
+    4. Open a GitHub **Issue** reporting your device model and the discovered path.
