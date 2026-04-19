@@ -1,4 +1,4 @@
-package com.uselsss.core_tuner
+package com.useless.core_tuner
 
 import io.flutter.embedding.android.FlutterActivity
 
