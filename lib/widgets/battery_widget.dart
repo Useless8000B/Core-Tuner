@@ -72,7 +72,6 @@ class BatteryWidget extends StatelessWidget {
                             color: accentColor,
                             fontSize: 60,
                             fontWeight: FontWeight.w600,
-                            fontFamily: 'SpaceGrotesk',
                           ),
                         ),
                         Text(
@@ -116,7 +115,6 @@ class BatteryWidget extends StatelessWidget {
                                 color: isCharging ? Colors.greenAccent : Colors.redAccent,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'SpaceGrotesk',
                               ),
                             ),
                             Text(
@@ -133,7 +131,6 @@ class BatteryWidget extends StatelessWidget {
                               style: TextStyle(
                                 color: AppColors.gray.withValues(alpha: 0.7),
                                 fontSize: 13,
-                                fontFamily: 'SpaceGrotesk',
                               ),
                             ),
                           ],

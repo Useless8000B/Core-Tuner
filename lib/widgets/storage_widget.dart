@@ -74,7 +74,6 @@ class StorageWidget extends StatelessWidget {
                           color: AppColors.royalBlue,
                           fontSize: 68,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'SpaceGrotesk',
                         ),
                       ),
                       Text(

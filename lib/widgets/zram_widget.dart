@@ -75,7 +75,6 @@ class ZramWidget extends StatelessWidget {
                           color: zramColor,
                           fontSize: 68,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'SpaceGrotesk',
                         ),
                       ),
                       Text(
@@ -96,7 +95,6 @@ class ZramWidget extends StatelessWidget {
                               color: zramColor,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'SpaceGrotesk',
                             ),
                           ),
                           Text(

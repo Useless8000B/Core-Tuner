@@ -70,8 +70,6 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
             textStyle: const TextStyle(
               color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'SpaceGrotesk',
             ),
             menuStyle: MenuStyle(
               backgroundColor: WidgetStateProperty.all(AppColors.lightBlack),

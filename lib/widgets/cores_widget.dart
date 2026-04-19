@@ -73,7 +73,6 @@ class CoresWidget extends StatelessWidget {
                   color: isHighLoad ? AppColors.red : Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'SpaceGrotesk',
                 ),
               ),
               Text(
@@ -84,7 +83,6 @@ class CoresWidget extends StatelessWidget {
                       : Colors.white38,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  fontFamily: 'SpaceGrotesk',
                 ),
               ),
             ],
