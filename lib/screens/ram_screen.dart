@@ -1,6 +1,6 @@
 import 'package:core_tuner/services/system_services.dart';
 import 'package:core_tuner/widgets/ram_widget.dart';
-import 'package:core_tuner/widgets/swappiness_widget.dart';
+import 'package:core_tuner/widgets/tweak_slider.dart';
 import 'package:core_tuner/widgets/tweak_switch.dart';
 import 'package:core_tuner/widgets/zram_widget.dart';
 import 'package:flutter/material.dart';
@@ -62,8 +62,34 @@ class _RamScreenState extends State<RamScreen> {
                   await SystemService.applyZramTweak(value);
                 },
               ),
-              const SizedBox(height: 20,),
-              SwappinessWidget()
+              const SizedBox(height: 20),
+              TweakSlider(
+                title: 'Swappiness',
+                storageKey: 'swappiness',
+                labelLeft: 'performance',
+                labelRight: 'Multitasking',
+                onAction: (value) {
+                  SystemService.applySwappiness(value);
+                },
+              ),
+              TweakSlider(
+                title: 'Vm Dirty Ratio',
+                storageKey: 'vm_dirty_ratio',
+                labelLeft: 'Integrity',
+                labelRight: 'Performance',
+                onAction: (value) async {
+                  await SystemService.applyDirtyRatio(value);
+                },
+              ),
+              TweakSlider(
+                title: 'Aggressive LMK',
+                storageKey: 'low_memory_killer',
+                min: 0,
+                max: 3,
+                onAction: (value) async {
+                  await SystemService.applyLmkProfile(value);
+                },
+              ),
             ],
           ),
         ),
