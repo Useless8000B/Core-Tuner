@@ -15,7 +15,6 @@ class DrawerNavigator extends StatelessWidget {
         const NavigationDrawerDestination(icon: Icon(Icons.memory), label: Text("CPU")),
         const NavigationDrawerDestination(icon: Icon(Icons.bolt), label: Text("RAM")),
         const NavigationDrawerDestination(icon: Icon(Icons.battery_charging_full), label: Text("Battery")),
-        const NavigationDrawerDestination(icon: Icon(Icons.build), label: Text("Kernel")),
       ],
     );
   }
