@@ -20,6 +20,14 @@ class StorageScreen extends StatelessWidget {
                 title: 'Wipe Dalvik Cache',
                 onAction: SystemService.clearDalvik,
               ),
+              TweakButton(
+                title: 'Run FSTRIM',
+                onAction: () => SystemService.runStorageTrim(),
+              ),
+              TweakButton(
+                title: 'Clear logs',
+                onAction: () => SystemService.clearSystemLogs(),
+              ),
             ],
           ),
         ),
