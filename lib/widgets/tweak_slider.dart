@@ -32,12 +32,13 @@ class TweakSlider extends StatefulWidget {
 }
 
 class _TweakSliderState extends State<TweakSlider> {
-  double _currentValue = 0;
+  late double _currentValue;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _currentValue = widget.defaultValue;
     _loadValue();
   }
 
@@ -45,8 +46,8 @@ class _TweakSliderState extends State<TweakSlider> {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
-        _currentValue =
-            prefs.getInt(widget.storageKey)?.toDouble() ?? widget.defaultValue;
+        _currentValue = prefs.getInt(widget.storageKey)?.toDouble() ?? widget.defaultValue;
+        _currentValue = _currentValue.clamp(widget.min, widget.max);
         _isLoading = false;
       });
     }
