@@ -1,4 +1,5 @@
 import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/widgets/battery_thermal_widget.dart';
 import 'package:core_tuner/widgets/battery_widget.dart';
 import 'package:core_tuner/widgets/tweak_slider.dart';
 import 'package:core_tuner/widgets/tweak_switch.dart';
@@ -16,6 +17,8 @@ class BatteryScreen extends StatelessWidget {
           child: Column(
             children: [
               BatteryWidget(),
+              const SizedBox(height: 12),
+              BatteryThermalWidget(),
               const SizedBox(height: 12),
               TweakSwitch(
                 title: 'Wi-Fi Scan Throttling',
