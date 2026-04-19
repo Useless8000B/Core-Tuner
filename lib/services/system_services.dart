@@ -4,14 +4,18 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemService {
-  static Future<void> saveForMagisk(String key, String value) async {
+  /*
+    ************************************************
+    ******* 1. CORE & INFRASTRUCTURE (Root/Magisk) *
+    ************************************************
+  */
+
+  static Future<bool> checkRootAccess() async {
     try {
-      await Process.run('su', [
-        '-c',
-        'mkdir -p /data/core_tuner && echo "$value" > /data/core_tuner/$key',
-      ]);
-    } catch (e) {
-      throw Exception('Error saving for magisk: $e');
+      var result = await Process.run('su', ['-c', 'id']);
+      return result.exitCode == 0;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -23,9 +27,144 @@ class SystemService {
       } else {
         result = await Process.run('sh', ['-c', command]);
       }
-      return result.stdout.toString().trim();
+      String output = result.stdout.toString().trim();
+      return output;
     } catch (e) {
-      return "0";
+      throw Exception('Error running command: $e');
+    }
+  }
+
+  static Future<void> saveForMagisk(String key, String value) async {
+    try {
+      await Process.run('su', [
+        '-c',
+        'mkdir -p /data/core_tuner && echo "$value" > /data/core_tuner/$key',
+      ]);
+    } catch (e) {
+      throw Exception('Error saving for magisk: $e');
+    }
+  }
+
+  /*
+    ************************************************
+    ******* 2. APP STATE & SYNC (SharedPrefs) ******
+    ************************************************
+  */
+
+  static Future<void> syncAppWithSystem() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String dr = await runCommand('cat /proc/sys/vm/dirty_ratio', root: true);
+    if (dr.isNotEmpty) {
+      await prefs.setInt('vm_dirty_ratio', int.tryParse(dr) ?? 20);
+    }
+
+    String sw = await runCommand('cat /proc/sys/vm/swappiness', root: true);
+    if (sw.isNotEmpty) {
+      await prefs.setInt('swappiness', int.tryParse(sw) ?? 100);
+    }
+
+    String gov = await runCommand(
+      'cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor',
+      root: true,
+    );
+    if (gov.isNotEmpty) await prefs.setString('cpu_governor', gov.trim());
+
+    String cl = await runCommand(
+      'cat /data/core_tuner/charge_limit',
+      root: true,
+    );
+    if (cl.isNotEmpty) {
+      await prefs.setInt('charge_limit', int.tryParse(cl) ?? 80);
+    }
+  }
+
+  static Future<void> applySavedTweaks() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.containsKey('cpu_governor')) {
+      await setGlobalGovernor(prefs.getString('cpu_governor') ?? "schedutil");
+    }
+
+    if (prefs.containsKey('battery_idle_mode')) {
+      await setBatteryIdleMode(prefs.getBool('battery_idle_mode') ?? false);
+    }
+
+    if (prefs.containsKey('swappiness')) {
+      await applySwappiness(prefs.getInt('swappiness') ?? 100);
+    }
+
+    if (prefs.containsKey('vm_dirty_ratio')) {
+      await applyDirtyRatio(prefs.getInt('vm_dirty_ratio') ?? 20);
+    }
+
+    if (prefs.containsKey('vm_dirty_background_ratio')) {
+      await applyDirtyBackgroundRatio(
+        prefs.getInt('vm_dirty_background_ratio') ?? 10,
+      );
+    }
+
+    if (prefs.containsKey('low_memory_killer')) {
+      await applyLmkProfile(prefs.getInt('low_memory_killer') ?? 0);
+    }
+
+    if (prefs.containsKey('charge_limit')) {
+      await applyChargeLimit(prefs.getInt('charge_limit') ?? 80);
+    }
+  }
+
+  /*
+    ************************************************
+    ******* 3. CPU & THERMAL MONITORING ************
+    ************************************************
+  */
+
+  static Future<double> getMaxCpuFreq() async {
+    String raw = await runCommand(
+      "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
+    );
+    double freq = (double.tryParse(raw) ?? 2000000) / 1000000;
+    return freq;
+  }
+
+  static Stream<List<double>> getCpuFrequenciesStream() async* {
+    while (true) {
+      await Future.delayed(const Duration(seconds: 1));
+      List<double> freqs = [];
+
+      for (int i = 0; i < 8; i++) {
+        String raw = await runCommand(
+          "cat /sys/devices/system/cpu/cpu$i/cpufreq/scaling_cur_freq",
+        );
+        double ghz = (double.tryParse(raw) ?? 0.0) / 1000000;
+        freqs.add(ghz);
+      }
+      yield freqs;
+    }
+  }
+
+  static Future<void> setGlobalGovernor(String governor) async {
+    final result = await Process.run('su', [
+      '-c',
+      'echo $governor | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor',
+    ]);
+
+    if (result.exitCode != 0) {
+      throw Exception("Couldn't apply governor ${result.stderr}");
+    } else {
+      await saveForMagisk('governor', governor);
+    }
+  }
+
+  static Future<String> getCurrentGovernor() async {
+    try {
+      final result = await runCommand(
+        "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
+      );
+      final trimmed = result.trim();
+      return trimmed.isNotEmpty ? trimmed : "schedutil";
+    } catch (e) {
+      return "schedutil";
     }
   }
 
@@ -72,43 +211,11 @@ class SystemService {
     }
   }
 
-  static Stream<List<double>> getCpuFrequenciesStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 1));
-      List<double> freqs = [];
-
-      for (int i = 0; i < 8; i++) {
-        String raw = await runCommand(
-          "cat /sys/devices/system/cpu/cpu$i/cpufreq/scaling_cur_freq",
-        );
-        double ghz = (double.tryParse(raw) ?? 0.0) / 1000000;
-        freqs.add(ghz);
-      }
-      yield freqs;
-    }
-  }
-
-  static Future<bool> checkRootAccess() async {
-    try {
-      var result = await Process.run('su', ['-c', 'id']);
-      return result.exitCode == 0;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  static Future<void> setGlobalGovernor(String governor) async {
-    final result = await Process.run('su', [
-      '-c',
-      'echo $governor | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor',
-    ]);
-
-    if (result.exitCode != 0) {
-      throw Exception("Couldn't apply governor ${result.stderr}");
-    } else {
-      await saveForMagisk('governor', governor);
-    }
-  }
+  /*
+    ************************************************
+    ******* 4. RAM, ZRAM & VIRTUAL MEMORY **********
+    ************************************************
+  */
 
   static Stream<Map<String, double>> getRamStream() {
     return Stream.periodic(const Duration(seconds: 2), (_) async {
@@ -137,6 +244,38 @@ class SystemService {
         return {'used': 0.0, 'total': 0.0};
       }
     }).asyncMap((event) => event);
+  }
+
+  static Future<void> applySwappiness(int value) async {
+    try {
+      await Process.run('su', ['-c', 'echo $value > /proc/sys/vm/swappiness']);
+      await saveForMagisk('swappiness', value.toString());
+    } catch (e) {
+      throw Exception("Error applying swappiness: $e");
+    }
+  }
+
+  static Future<void> applyDirtyRatio(int value) async {
+    try {
+      int safeValue = value.clamp(0, 100);
+      await runCommand('sysctl -w vm.dirty_ratio=$safeValue', root: true);
+      await saveForMagisk('vm_dirty_ratio', safeValue.toString());
+    } catch (e) {
+      throw Exception("Error applying dirty_ratio: $e");
+    }
+  }
+
+  static Future<void> applyDirtyBackgroundRatio(int value) async {
+    try {
+      int safeValue = value.clamp(0, 100);
+      await runCommand(
+        'sysctl -w vm.dirty_background_ratio=$safeValue',
+        root: true,
+      );
+      await saveForMagisk('vm_dirty_background_ratio', safeValue.toString());
+    } catch (e) {
+      throw Exception("Error applying dirty_background_ratio: $e");
+    }
   }
 
   static Stream<Map<String, dynamic>> getZramDetailedStream() async* {
@@ -234,6 +373,144 @@ class SystemService {
     }
   }
 
+  static Future<bool> isZramActive() async {
+    try {
+      final result = await Process.run('cat', ['/proc/swaps']);
+      return result.stdout.toString().contains('zram0');
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<void> syncZramState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool shouldBeEnabled = prefs.getBool('zram_swap') ?? false;
+
+    if (!shouldBeEnabled) return;
+
+    final bool isCurrentlyActive = await isZramActive();
+
+    if (!isCurrentlyActive) {
+      await applyZramTweak(true);
+    }
+  }
+
+  static Future<void> applyLmkProfile(int level) async {
+    final List<String> profiles = [
+      "15360,19200,23040,26880,34415,43737", // Stock
+      "18432,23040,27648,32256,55296,80640", // Balanced
+      "23040,28160,33280,38400,61440,92160", // Aggressive
+      "28160,33280,38400,43520,81920,115200", // Extreme
+    ];
+
+    final String selected = profiles[level.clamp(0, 3)];
+
+    final command =
+        '''
+      setprop persist.sys.lmk.minfree_levels "$selected"
+      setprop sys.lmk.minfree_levels "$selected"
+      chown system:system /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
+      echo "$selected" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
+    ''';
+
+    await runCommand(command, root: true);
+    await saveForMagisk('lmk_minfree', selected);
+  }
+
+  /*
+    ************************************************
+    ******* 5. BATTERY & CHARGING ******************
+    ************************************************
+  */
+
+  static Stream<Map<String, dynamic>> getBatteryStream() async* {
+    while (true) {
+      try {
+        final result = await Process.run('su', [
+          '-c',
+          'cat /sys/class/power_supply/battery/capacity /sys/class/power_supply/battery/voltage_now /sys/class/power_supply/battery/current_now /sys/class/power_supply/battery/status',
+        ]);
+
+        if (result.exitCode == 0) {
+          final lines = result.stdout.toString().trim().split('\n');
+          if (lines.length >= 4) {
+            double level = double.tryParse(lines[0]) ?? 0;
+            double voltage = (double.tryParse(lines[1]) ?? 0) / 1000000;
+            double current = (double.tryParse(lines[2]) ?? 0) / 1000;
+
+            String status = lines[3].trim().toLowerCase();
+            bool isCharging = status == "charging" || status == "full";
+
+            yield {
+              'level': level,
+              'voltage': voltage.toStringAsFixed(2),
+              'current': current.toInt(),
+              'isCharging': isCharging,
+              'status': status.toUpperCase(),
+            };
+          }
+        }
+      } catch (e) {
+        yield {
+          'level': 0.0,
+          'voltage': '0.0',
+          'current': 0,
+          'isCharging': false,
+          'status': 'UNKNOWN',
+        };
+      }
+      await Future.delayed(const Duration(seconds: 1));
+    }
+  }
+
+  static Future<void> setBatterySuspension(bool suspend) async {
+    final List<String> chargeControlPaths = [
+      '/sys/class/power_supply/battery/input_suspend', // Redmi note 11 - My device
+      '/sys/class/power_supply/battery/charging_enabled', // Qualcomm Universal
+      '/sys/class/power_supply/battery/battery_charging_enabled', // Sony/Pixel
+      '/sys/class/power_supply/battery/charge_control_limit_max', // Modern Kernels
+    ];
+
+    final value = suspend ? '1' : '0';
+    String cmd = "";
+    for (String path in chargeControlPaths) {
+      cmd += "if [ -f $path ]; then echo $value > $path; fi; ";
+    }
+
+    await runCommand(cmd, root: true);
+  }
+
+  static Future<void> applyChargeLimit(int limit) async {
+    try {
+      await saveForMagisk('charge_limit', limit.toString());
+
+      final String rawLevel = await runCommand(
+        'cat /sys/class/power_supply/battery/capacity',
+        root: true,
+      );
+      final int currentLevel = int.tryParse(rawLevel) ?? 0;
+
+      if (currentLevel >= limit) {
+        await setBatterySuspension(true);
+      } else {
+        await setBatterySuspension(false);
+      }
+    } catch (e) {
+      throw Exception("Error applying charge limit: $e");
+    }
+  }
+
+  static Future<void> setBatteryIdleMode(bool enabled) async {
+    await setBatterySuspension(enabled);
+    await saveForMagisk('battery_idle_mode', enabled ? '1' : '0');
+  }
+
+  /*
+    ************************************************
+    ******* 6. STORAGE & SYSTEM UTILS **************
+    ************************************************
+  */
+
   static Stream<Map<String, String>> getStorageStream() async* {
     while (true) {
       try {
@@ -301,211 +578,10 @@ class SystemService {
     }
   }
 
-  static Stream<Map<String, dynamic>> getBatteryStream() async* {
-    while (true) {
-      try {
-        final result = await Process.run('su', [
-          '-c',
-          'cat /sys/class/power_supply/battery/capacity /sys/class/power_supply/battery/voltage_now /sys/class/power_supply/battery/current_now /sys/class/power_supply/battery/status',
-        ]);
-
-        if (result.exitCode == 0) {
-          final lines = result.stdout.toString().trim().split('\n');
-          if (lines.length >= 4) {
-            double level = double.tryParse(lines[0]) ?? 0;
-            double voltage = (double.tryParse(lines[1]) ?? 0) / 1000000;
-            double current = (double.tryParse(lines[2]) ?? 0) / 1000;
-
-            String status = lines[3].trim().toLowerCase();
-            bool isCharging = status == "charging" || status == "full";
-
-            yield {
-              'level': level,
-              'voltage': voltage.toStringAsFixed(2),
-              'current': current.toInt(),
-              'isCharging': isCharging,
-              'status': status.toUpperCase(),
-            };
-          }
-        }
-      } catch (e) {
-        yield {
-          'level': 0.0,
-          'voltage': '0.0',
-          'current': 0,
-          'isCharging': false,
-          'status': 'UNKNOWN',
-        };
-      }
-      await Future.delayed(const Duration(seconds: 1));
-    }
-  }
-
-  static Future<void> setBatteryIdleMode(bool enabled) async {
-    await setBatterySuspension(enabled);
-    await saveForMagisk('battery_idle_mode', enabled ? '1' : '0');
-  }
-
-  static Future<bool> isZramActive() async {
-    try {
-      final result = await Process.run('cat', ['/proc/swaps']);
-      return result.stdout.toString().contains('zram0');
-    } catch (_) {
-      return false;
-    }
-  }
-
   static Future<bool> isWifiThrottleEnabled() async {
     final val = await runCommand(
       "settings get global wifi_scan_throttle_enabled",
     );
     return val == "1";
-  }
-
-  static Future<String> getCurrentGovernor() async {
-    try {
-      final result = await runCommand(
-        "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
-      );
-      final trimmed = result.trim();
-      return trimmed.isNotEmpty ? trimmed : "schedutil";
-    } catch (e) {
-      return "schedutil";
-    }
-  }
-
-  static Future<void> syncZramState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool shouldBeEnabled = prefs.getBool('zram_swap') ?? false;
-
-    if (!shouldBeEnabled) return;
-
-    final bool isCurrentlyActive = await isZramActive();
-
-    if (!isCurrentlyActive) {
-      await applyZramTweak(true);
-    }
-  }
-
-  static Future<void> applySwappiness(int value) async {
-    try {
-      await Process.run('su', ['-c', 'echo $value > /proc/sys/vm/swappiness']);
-      await saveForMagisk('swappiness', value.toString());
-    } catch (e) {
-      throw Exception("Error applying swappiness: $e");
-    }
-  }
-
-  static Future<void> applySavedTweaks() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    if (prefs.containsKey('cpu_governor')) {
-      await setGlobalGovernor(prefs.getString('cpu_governor') ?? "schedutil");
-    }
-
-    if (prefs.containsKey('battery_idle_mode')) {
-      await setBatteryIdleMode(prefs.getBool('battery_idle_mode') ?? false);
-    }
-
-    if (prefs.containsKey('swappiness_value')) {
-      await applySwappiness(prefs.getInt('swappiness_value') ?? 100);
-    }
-
-    if (prefs.containsKey('vm_dirty_ratio')) {
-      await applyDirtyRatio(prefs.getInt('vm_dirty_ratio') ?? 20);
-    }
-
-    if (prefs.containsKey('vm_dirty_background_ratio')) {
-      await applyDirtyBackgroundRatio(
-        prefs.getInt('vm_dirty_background_ratio') ?? 10,
-      );
-    }
-
-    if (prefs.containsKey('low_memory_killer')) {
-      await applyLmkProfile(prefs.getInt('low_memory_killer') ?? 0);
-    }
-
-    if (prefs.containsKey('charge_limit')) {
-      await applyChargeLimit(prefs.getInt('charge_limit') ?? 80);
-    }
-  }
-
-  static Future<void> applyDirtyRatio(int value) async {
-    try {
-      int safeValue = value.clamp(0, 100);
-      await runCommand('sysctl -w vm.dirty_ratio=$safeValue', root: true);
-      await saveForMagisk('vm_dirty_ratio', safeValue.toString());
-    } catch (e) {
-      throw Exception("Error applying dirty_ratio: $e");
-    }
-  }
-
-  static Future<void> applyDirtyBackgroundRatio(int value) async {
-    try {
-      int safeValue = value.clamp(0, 100);
-      await runCommand(
-        'sysctl -w vm.dirty_background_ratio=$safeValue',
-        root: true,
-      );
-      await saveForMagisk('vm_dirty_background_ratio', safeValue.toString());
-    } catch (e) {
-      throw Exception("Error applying dirty_background_ratio: $e");
-    }
-  }
-
-  static Future<void> applyLmkProfile(int level) async {
-    final List<String> profiles = [
-      "15360,19200,23040,26880,34415,43737",  // Stock
-      "18432,23040,27648,32256,55296,80640",  // Balanced
-      "23040,28160,33280,38400,61440,92160",  // Aggressive
-      "28160,33280,38400,43520,81920,115200", // Extreme
-    ];
-
-    final String selected = profiles[level.clamp(0, 3)];
-
-    final command =
-        '''
-      setprop persist.sys.lmk.minfree_levels "$selected"
-      setprop sys.lmk.minfree_levels "$selected"
-      chown system:system /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
-      echo "$selected" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
-    ''';
-
-    await runCommand(command, root: true);
-    await saveForMagisk('lmk_minfree', selected);
-  }
-
-  static Future<void> setBatterySuspension(bool suspend) async {
-    final List<String> chargeControlPaths = [
-      '/sys/class/power_supply/battery/input_suspend',             // Redmi note 11 - My device
-      '/sys/class/power_supply/battery/charging_enabled',          // Qualcomm Universal
-      '/sys/class/power_supply/battery/battery_charging_enabled',  // Sony/Pixel
-      '/sys/class/power_supply/battery/charge_control_limit_max',  // Modern Kernels
-    ];
-
-    final value = suspend ? '1' : '0';
-    String cmd = "";
-    for (String path in chargeControlPaths) {
-      cmd += "if [ -f $path ]; then echo $value > $path; fi; ";
-    }
-
-    await runCommand(cmd, root: true);
-  }
-
-  static Future<void> applyChargeLimit(int limit) async {
-    try {
-      await saveForMagisk('charge_limit', limit.toString());
-
-      final String rawLevel = await runCommand('cat /sys/class/power_supply/battery/capacity', root: true);
-      final int currentLevel = int.tryParse(rawLevel) ?? 0;
-
-      if (currentLevel >= limit) {
-        await setBatterySuspension(true);
-      } else {
-        await setBatterySuspension(false);
-      }
-    } catch (e) {
-      throw Exception("Error applying charge limit: $e");
-    }
   }
 }
