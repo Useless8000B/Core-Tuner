@@ -1,4 +1,5 @@
 import 'package:core_tuner/colors.dart';
+import 'package:core_tuner/services/system_services.dart';
 import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,10 +45,26 @@ class _TweakSliderState extends State<TweakSlider> {
 
   Future<void> _loadValue() async {
     final prefs = await SharedPreferences.getInstance();
+
+    int? savedValue = prefs.getInt(widget.storageKey);
+
+    if (savedValue == null || (savedValue == 0 && widget.defaultValue != 0)) {
+      String raw = "";
+      if (widget.storageKey == 'vm_dirty_ratio') {
+        raw = await SystemService.runCommand('cat /proc/sys/vm/dirty_ratio');
+      } else if (widget.storageKey == 'swappiness_value') {
+        raw = await SystemService.runCommand('cat /proc/sys/vm/swappiness');
+      }
+
+      if (raw.isNotEmpty && raw != "0") {
+        savedValue = int.tryParse(raw);
+        if (savedValue != null) await prefs.setInt(widget.storageKey, savedValue);
+      }
+    }
+
     if (mounted) {
       setState(() {
-        _currentValue = prefs.getInt(widget.storageKey)?.toDouble() ?? widget.defaultValue;
-        _currentValue = _currentValue.clamp(widget.min, widget.max);
+        _currentValue = (savedValue ?? widget.defaultValue.toInt()).toDouble();
         _isLoading = false;
       });
     }
