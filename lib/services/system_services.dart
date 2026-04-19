@@ -505,6 +505,27 @@ class SystemService {
     await saveForMagisk('battery_idle_mode', enabled ? '1' : '0');
   }
 
+  static Stream<double> getBatteryTempStream() async* {
+    while (true) {
+      try {
+        String raw = await runCommand("cat /sys/devices/virtual/thermal/thermal_zone40/temp",);
+        double temp = double.tryParse(raw.trim()) ?? 0.0;
+
+        if (temp >= 1000) {
+          temp /= 1000;
+        }
+        else if (temp >= 100) {
+          temp /= 10;
+        }
+
+        yield temp;
+      } catch (e) {
+        yield 0.0;
+      }
+      await Future.delayed(const Duration(seconds: 3));
+    }
+  }
+
   /*
     ************************************************
     ******* 6. STORAGE & SYSTEM UTILS **************
