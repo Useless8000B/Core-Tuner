@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemService.applySavedTweaks();
-
   bool hasRoot = await SystemService.checkRootAccess();
+
+  await SystemService.syncAppWithSystem();
+  await SystemService.applySavedTweaks();
+
 
   runApp(CoreTuner(hasRoot: hasRoot));
 }
