@@ -17,7 +17,7 @@ class _ShellScreenState extends State<ShellScreen> {
   int _currentIndex = 0;
 
   final List<Map<String, dynamic>> _pages = [
-    {'title': 'Dashboard', 'screen': StorageScreen()},
+    {'title': 'Dashboard', 'screen': const StorageScreen()},
     {'title': 'CPU', 'screen': const CpuScreen()},
     {'title': 'RAM', 'screen': const RamScreen()},
     {'title': 'Battery', 'screen': const BatteryScreen()}
