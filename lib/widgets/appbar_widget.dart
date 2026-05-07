@@ -13,10 +13,7 @@ class AppbarComponent extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsetsGeometry.only(right: 18),
           child: Text(
             title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
       ],

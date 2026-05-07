@@ -66,10 +66,7 @@ class StorageWidget extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        usedStr.replaceAll(
-                          RegExp(r'[a-zA-Z]'),
-                          '',
-                        ),
+                        usedStr.replaceAll(RegExp(r'[a-zA-Z]'), ''),
                         style: TextStyle(
                           color: AppColors.royalBlue,
                           fontSize: 68,

@@ -20,7 +20,7 @@ class _ShellScreenState extends State<ShellScreen> {
     {'title': 'Dashboard', 'screen': const StorageScreen()},
     {'title': 'CPU', 'screen': const CpuScreen()},
     {'title': 'RAM', 'screen': const RamScreen()},
-    {'title': 'Battery', 'screen': const BatteryScreen()}
+    {'title': 'Battery', 'screen': const BatteryScreen()},
   ];
 
   void _navigate(int index) {
@@ -32,8 +32,8 @@ class _ShellScreenState extends State<ShellScreen> {
         });
       }
     });
-
   }
+
   void navigateFromDrawer(int index) {
     Navigator.pop(context);
     _navigate(index);
@@ -48,7 +48,10 @@ class _ShellScreenState extends State<ShellScreen> {
         currentIndex: _currentIndex,
       ),
       body: SafeArea(
-        child: IndexedStack(index: _currentIndex, children: _pages.map((e) => e['screen'] as Widget).toList(),),
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _pages.map((e) => e['screen'] as Widget).toList(),
+        ),
       ),
     );
   }

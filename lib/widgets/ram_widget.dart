@@ -13,7 +13,7 @@ class RamWidget extends StatelessWidget {
         final data = snapshot.data ?? {'used': 0.0, 'total': 8.0};
         double used = data['used']!;
         double total = data['total']!;
-        
+
         double progress = (total > 0) ? (used / total).clamp(0.0, 1.0) : 0.0;
 
         return Container(
@@ -32,11 +32,7 @@ class RamWidget extends StatelessWidget {
                 right: -5,
                 child: Opacity(
                   opacity: 0.1,
-                  child: Icon(
-                    Icons.memory,
-                    color: AppColors.gray,
-                    size: 80,
-                  ),
+                  child: Icon(Icons.memory, color: AppColors.gray, size: 80),
                 ),
               ),
               Column(
@@ -93,7 +89,9 @@ class RamWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(2),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.royalBlue.withValues(alpha: 0.5),
+                                    color: AppColors.royalBlue.withValues(
+                                      alpha: 0.5,
+                                    ),
                                     blurRadius: 6,
                                   ),
                                 ],
@@ -108,7 +106,9 @@ class RamWidget extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: progress > 0.8 ? Colors.orange : AppColors.royalBlue,
+                          color: progress > 0.8
+                              ? Colors.orange
+                              : AppColors.royalBlue,
                           letterSpacing: 1,
                         ),
                       ),

@@ -18,13 +18,11 @@ class CpuScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ScalingGovernorWidget(),
               const SizedBox(height: 20),
-              CoresWidget()
+              CoresWidget(),
             ],
           ),
         ),
       ),
     );
   }
-
-  
 }

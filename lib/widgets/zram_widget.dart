@@ -10,19 +10,16 @@ class ZramWidget extends StatelessWidget {
     return StreamBuilder<Map<String, dynamic>>(
       stream: SystemService.getZramDetailedStream(),
       builder: (context, snapshot) {
-        final data = snapshot.data ?? {
-          'orig_mb': 0.0,
-          'compr_mb': 0.0,
-          'total_gb': 2.0,
-          'ratio': "0.0"
-        };
+        final data =
+            snapshot.data ??
+            {'orig_mb': 0.0, 'compr_mb': 0.0, 'total_gb': 2.0, 'ratio': "0.0"};
 
         double origMb = data['orig_mb'];
         double totalGb = data['total_gb'];
         String ratio = data['ratio'];
-        
-        double progress = (totalGb > 0) 
-            ? ((origMb / 1024) / totalGb).clamp(0.0, 1.0) 
+
+        double progress = (totalGb > 0)
+            ? ((origMb / 1024) / totalGb).clamp(0.0, 1.0)
             : 0.0;
 
         const Color zramColor = Colors.deepPurpleAccent;
@@ -68,8 +65,8 @@ class ZramWidget extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        origMb > 1024 
-                            ? (origMb / 1024).toStringAsFixed(1) 
+                        origMb > 1024
+                            ? (origMb / 1024).toStringAsFixed(1)
                             : origMb.toStringAsFixed(0),
                         style: TextStyle(
                           color: zramColor,

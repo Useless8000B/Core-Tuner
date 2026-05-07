@@ -67,10 +67,7 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            textStyle: const TextStyle(color: Colors.white, fontSize: 16),
             menuStyle: MenuStyle(
               backgroundColor: WidgetStateProperty.all(AppColors.lightBlack),
             ),
@@ -111,11 +108,7 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
               DropdownMenuEntry(
                 value: 'powersave',
                 label: 'powersave',
-                leadingIcon: Icon(
-                  Icons.eco,
-                  color: AppColors.green,
-                  size: 18,
-                ),
+                leadingIcon: Icon(Icons.eco, color: AppColors.green, size: 18),
               ),
             ],
           ),

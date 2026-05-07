@@ -58,7 +58,8 @@ class _TweakSliderState extends State<TweakSlider> {
 
       if (raw.isNotEmpty && raw != "0") {
         savedValue = int.tryParse(raw);
-        if (savedValue != null) await prefs.setInt(widget.storageKey, savedValue);
+        if (savedValue != null)
+          await prefs.setInt(widget.storageKey, savedValue);
       }
     }
 

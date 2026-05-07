@@ -10,12 +10,9 @@ class BatteryWidget extends StatelessWidget {
     return StreamBuilder<Map<String, dynamic>>(
       stream: SystemService.getBatteryStream(),
       builder: (context, snapshot) {
-        final data = snapshot.data ?? {
-          'level': 0.0,
-          'voltage': '0.0',
-          'current': 0,
-          'isCharging': false
-        };
+        final data =
+            snapshot.data ??
+            {'level': 0.0, 'voltage': '0.0', 'current': 0, 'isCharging': false};
 
         double level = data['level'];
         int current = data['current'];
@@ -23,7 +20,9 @@ class BatteryWidget extends StatelessWidget {
         bool isCharging = data['isCharging'];
 
         double progress = (level / 100).clamp(0.0, 1.0);
-        Color accentColor = isCharging ? Colors.greenAccent : AppColors.royalBlue;
+        Color accentColor = isCharging
+            ? Colors.greenAccent
+            : AppColors.royalBlue;
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -61,7 +60,7 @@ class BatteryWidget extends StatelessWidget {
                       color: AppColors.gray.withValues(alpha: 0.5),
                     ),
                   ),
-                  
+
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,15 +80,20 @@ class BatteryWidget extends StatelessWidget {
                             fontSize: 18,
                           ),
                         ),
-                        
+
                         const SizedBox(width: 8),
 
                         if (isCharging)
                           Flexible(
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.greenAccent.withValues(alpha: 0.1),
+                                color: Colors.greenAccent.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(
@@ -102,7 +106,7 @@ class BatteryWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                        
+
                         const Spacer(),
 
                         Column(
@@ -112,7 +116,9 @@ class BatteryWidget extends StatelessWidget {
                             Text(
                               "${current.abs()} mA",
                               style: TextStyle(
-                                color: isCharging ? Colors.greenAccent : Colors.redAccent,
+                                color: isCharging
+                                    ? Colors.greenAccent
+                                    : Colors.redAccent,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),

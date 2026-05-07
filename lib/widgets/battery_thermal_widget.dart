@@ -133,10 +133,7 @@ class _ProgressBar extends StatelessWidget {
             color: color,
             borderRadius: BorderRadius.circular(2),
             boxShadow: [
-              BoxShadow(
-                color: color.withValues(alpha: 0.5),
-                blurRadius: 6,
-              ),
+              BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 6),
             ],
           ),
         ),

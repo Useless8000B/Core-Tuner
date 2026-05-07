@@ -5,11 +5,7 @@ class TweakButton extends StatefulWidget {
   final String title;
   final Future<void> Function() onAction;
 
-  const TweakButton({
-    super.key,
-    required this.title,
-    required this.onAction,
-  });
+  const TweakButton({super.key, required this.title, required this.onAction});
 
   @override
   State<TweakButton> createState() => _TweakButtonState();
@@ -22,14 +18,18 @@ class _TweakButtonState extends State<TweakButton> {
     if (_isExecuting) return;
 
     setState(() => _isExecuting = true);
-    
+
     try {
       await widget.onAction();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${widget.title} executed!", style: TextStyle(
-            color: AppColors.white
-          ),),backgroundColor: AppColors.lightBlack,),
+          SnackBar(
+            content: Text(
+              "${widget.title} executed!",
+              style: TextStyle(color: AppColors.white),
+            ),
+            backgroundColor: AppColors.lightBlack,
+          ),
         );
       }
     } finally {
@@ -58,18 +58,30 @@ class _TweakButtonState extends State<TweakButton> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.title, 
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              _isExecuting 
-                ? const SizedBox(
-                    height: 20, 
-                    width: 20, 
-                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.royalBlue)
-                  )
-                : const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white24, size: 16),
+              _isExecuting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.royalBlue,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.white24,
+                      size: 16,
+                    ),
             ],
           ),
         ),
