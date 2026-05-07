@@ -2,9 +2,11 @@ import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/screens/shell_screen.dart';
 import 'package:core_tuner/services/system_services.dart';
 import 'package:flutter/material.dart';
+import 'package:core_tuner/src/rust/frb_generated.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await RustLib.init();
   final hasRoot = await SystemService.checkRootAccess();
 
   if (hasRoot) {
@@ -59,3 +61,4 @@ class CoreTuner extends StatelessWidget {
     );
   }
 }
+
