@@ -25,7 +25,7 @@ impl Sensor {
 	pub fn cpu_sensors() -> Vec<Sensor> {
 		vec![
 			// Redmi Note 11 (spes)
-			Sensor::new("performance_core", "/sys/class/thermal/thermal_zone7/type")
+			Sensor::new("performance_core", "/sys/class/thermal/thermal_zone7/temp")
 		]
 	}
 
