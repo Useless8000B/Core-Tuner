@@ -1,5 +1,6 @@
 import 'package:core_tuner/src/rust/api/simple.dart';
 import 'package:core_tuner/src/rust/models/battery_model.dart';
+import 'package:core_tuner/src/rust/models/ram_model.dart';
 
 class SystemServicesRust {
   static Stream<BatteryModel> getBatteryStream() async* {
@@ -22,6 +23,19 @@ class SystemServicesRust {
       } catch (e) {
         throw Exception("Error reading cpu temperature: $e");
       }
+      await Future.delayed(const Duration(seconds: 1));
+    }
+  }
+
+  static Stream<RamModel> getRamStream() async* {
+    while(true) {
+      try {
+        final info = getRamInfo();
+        yield info;
+      } catch (e) {
+        throw Exception("Couldn't get ram stream: $e");
+      }
+
       await Future.delayed(const Duration(seconds: 1));
     }
   }
