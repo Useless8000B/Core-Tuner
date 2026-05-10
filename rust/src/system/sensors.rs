@@ -13,31 +13,31 @@ impl Sensor {
         }
     }
 
-	pub fn battery_sensors() -> Vec<Sensor>{
-		vec![
-			// Redmi Note 11 (spes)
-			Sensor::new("temperature", "/sys/class/thermal/thermal_zone36/temp"),
-			Sensor::new("voltage", "/sys/class/power_supply/battery/voltage_now"),
-			Sensor::new("current", "/sys/class/power_supply/battery/current_now"),
-		]
-	}
+    pub fn battery_sensors() -> Vec<Sensor> {
+        vec![
+            // Redmi Note 11 (spes)
+            Sensor::new("temperature", "/sys/class/thermal/thermal_zone36/temp"),
+            Sensor::new("voltage", "/sys/class/power_supply/battery/voltage_now"),
+            Sensor::new("current", "/sys/class/power_supply/battery/current_now"),
+        ]
+    }
 
-	pub fn cpu_sensors() -> Vec<Sensor> {
-		vec![
-			// Redmi Note 11 (spes)
-			Sensor::new("performance_core", "/sys/class/thermal/thermal_zone7/temp")
-		]
-	}
+    pub fn cpu_sensors() -> Vec<Sensor> {
+        vec![
+            // Redmi Note 11 (spes)
+            Sensor::new("performance_core", "/sys/class/thermal/thermal_zone7/temp"),
+        ]
+    }
 
-	pub fn read_sensor(&self) -> Result<f32, String> {
-		let raw_content = match fs::read_to_string(&self.path) {
-			Ok(c) => c,
-			Err(e) => return Err(format!("Error reading {}: {}", self.name, e))
-		};
+    pub fn read_sensor(&self) -> Result<f32, String> {
+        let raw_content = match fs::read_to_string(&self.path) {
+            Ok(c) => c,
+            Err(e) => return Err(format!("Error reading {}: {}", self.name, e)),
+        };
 
-		match raw_content.trim().parse::<f32>() {
-			Ok(c) => Ok(c),
-			Err(_) => Err(format!("Invalid value from {}", self.name))
-		}
-	}
+        match raw_content.trim().parse::<f32>() {
+            Ok(c) => Ok(c),
+            Err(_) => Err(format!("Invalid value from {}", self.name)),
+        }
+    }
 }
