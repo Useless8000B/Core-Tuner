@@ -1,5 +1,5 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:flutter/material.dart';
 
 class ThermalWidget extends StatelessWidget {
@@ -8,7 +8,7 @@ class ThermalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<double>(
-      stream: SystemService.getTemperatureStream(),
+      stream: SystemServicesRust.getCpuTemperatureStream(),
       builder: (context, snapshot) {
         double temp = snapshot.data ?? 0.0;
         double progress = ((temp - 20) / (80 - 20)).clamp(0.0, 1.0);

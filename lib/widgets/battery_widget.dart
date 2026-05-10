@@ -1,5 +1,6 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/src/rust/models/battery_model.dart';
 import 'package:flutter/material.dart';
 
 class BatteryWidget extends StatelessWidget {
@@ -7,17 +8,15 @@ class BatteryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Map<String, dynamic>>(
-      stream: SystemService.getBatteryStream(),
+    return StreamBuilder<BatteryModel>(
+      stream: SystemServicesRust.getBatteryStream(),
       builder: (context, snapshot) {
-        final data =
-            snapshot.data ??
-            {'level': 0.0, 'voltage': '0.0', 'current': 0, 'isCharging': false};
+        final data = snapshot.data!;
 
-        double level = data['level'];
-        int current = data['current'];
-        String voltage = data['voltage'];
-        bool isCharging = data['isCharging'];
+        double level = data.level.toDouble();
+        double current = data.current;
+        String voltage = (data.voltage).toStringAsFixed(2);
+        bool isCharging = data.isCharging;
 
         double progress = (level / 100).clamp(0.0, 1.0);
         Color accentColor = isCharging
