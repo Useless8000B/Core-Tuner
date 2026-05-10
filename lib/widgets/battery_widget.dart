@@ -11,12 +11,12 @@ class BatteryWidget extends StatelessWidget {
     return StreamBuilder<BatteryModel>(
       stream: SystemServicesRust.getBatteryStream(),
       builder: (context, snapshot) {
-        final data = snapshot.data!;
+        final data = snapshot.data;
 
-        double level = data.level.toDouble();
-        double current = data.current;
-        String voltage = (data.voltage).toStringAsFixed(2);
-        bool isCharging = data.isCharging;
+        double level = data?.level.toDouble() ?? 0.0;
+        double current = data?.current ?? 0.0;
+        String voltage = (data?.voltage)?.toStringAsFixed(2) ?? "0.0";
+        bool isCharging = data?.isCharging ?? false;
 
         double progress = (level / 100).clamp(0.0, 1.0);
         Color accentColor = isCharging
