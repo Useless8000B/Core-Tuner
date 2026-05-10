@@ -1,4 +1,3 @@
-import 'package:core_tuner/services/system_services.dart';
 import 'package:core_tuner/widgets/battery_thermal_widget.dart';
 import 'package:core_tuner/widgets/battery_widget.dart';
 import 'package:core_tuner/widgets/tweak_slider.dart';
@@ -24,21 +23,21 @@ class BatteryScreen extends StatelessWidget {
                 title: 'Wi-Fi Scan Throttling',
                 storageKey: 'wifi_scan_throttling',
                 onAction: (value) async {
-                  await SystemService.setWifiThrottling(value);
+                  // TODO implement logic
                 },
               ),
               TweakSwitch(
                 title: 'Battery Idle Mode',
                 storageKey: 'battery_idle_mode',
                 onAction: (value) async {
-                  await SystemService.setBatteryIdleMode(value);
+                  // TODO implement logic
                 },
               ),
               TweakSlider(
                 title: 'Battery Charge Limit',
                 storageKey: 'charge_limit',
                 onAction: (value) async {
-                  await SystemService.applyChargeLimit(value);
+                  // TODO implement logic
                 },
                 min: 50,
                 max: 100,
