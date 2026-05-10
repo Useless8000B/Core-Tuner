@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 359936535;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 655817343;
 
 // Section: executor
 
@@ -99,6 +99,35 @@ fn wire__crate__api__simple__get_cpu_temperature_impl(
             deserializer.end();
             transform_result_sse::<_, String>((move || {
                 let output_ok = crate::api::simple::get_cpu_temperature()?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__api__simple__get_ram_info_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_ram_info",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            transform_result_sse::<_, String>((move || {
+                let output_ok = crate::api::simple::get_ram_info()?;
                 Ok(output_ok)
             })())
         },
@@ -179,6 +208,13 @@ impl SseDecode for f32 {
     }
 }
 
+impl SseDecode for f64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_f64::<NativeEndian>().unwrap()
+    }
+}
+
 impl SseDecode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -188,6 +224,18 @@ impl SseDecode for Vec<u8> {
             ans_.push(<u8>::sse_decode(deserializer));
         }
         return ans_;
+    }
+}
+
+impl SseDecode for crate::models::ram_model::RamModel {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_total = <f64>::sse_decode(deserializer);
+        let mut var_used = <f64>::sse_decode(deserializer);
+        return crate::models::ram_model::RamModel {
+            total: var_total,
+            used: var_used,
+        };
     }
 }
 
@@ -219,7 +267,7 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        3 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -234,6 +282,7 @@ fn pde_ffi_dispatcher_sync_impl(
     match func_id {
         1 => wire__crate__api__simple__get_battery_info_impl(ptr, rust_vec_len, data_len),
         2 => wire__crate__api__simple__get_cpu_temperature_impl(ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__simple__get_ram_info_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -260,6 +309,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::models::battery_model::BatteryMode
     for crate::models::battery_model::BatteryModel
 {
     fn into_into_dart(self) -> crate::models::battery_model::BatteryModel {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::models::ram_model::RamModel {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.total.into_into_dart().into_dart(),
+            self.used.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::models::ram_model::RamModel
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::ram_model::RamModel>
+    for crate::models::ram_model::RamModel
+{
+    fn into_into_dart(self) -> crate::models::ram_model::RamModel {
         self
     }
 }
@@ -295,6 +365,13 @@ impl SseEncode for f32 {
     }
 }
 
+impl SseEncode for f64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_f64::<NativeEndian>(self).unwrap();
+    }
+}
+
 impl SseEncode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -302,6 +379,14 @@ impl SseEncode for Vec<u8> {
         for item in self {
             <u8>::sse_encode(item, serializer);
         }
+    }
+}
+
+impl SseEncode for crate::models::ram_model::RamModel {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <f64>::sse_encode(self.total, serializer);
+        <f64>::sse_encode(self.used, serializer);
     }
 }
 

@@ -1,3 +1,4 @@
+use crate::models::ram_model::RamModel;
 use crate::system::reader;
 use crate::models::battery_model::BatteryModel;
 
@@ -18,4 +19,11 @@ pub fn get_cpu_temperature() -> Result<f32, String> {
     let cpu_temperature = reader::cpu_temperature()?;
 
     Ok(cpu_temperature)
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn get_ram_info() -> Result<RamModel, String> {
+    let memory_info = reader::ram_info()?;
+
+    Ok(memory_info)
 }
