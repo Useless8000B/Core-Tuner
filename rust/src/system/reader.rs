@@ -1,6 +1,8 @@
 use crate::models::battery_model::BatteryModel;
+use crate::models::ram_model::RamModel;
 use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
+use crate::utils::extract_from_file::extract_from_file;
 
 pub fn battery_info() -> Result<BatteryModel, String> {
     let sensors = Sensor::battery_sensors();
@@ -53,4 +55,17 @@ pub fn cpu_temperature() -> Result<f32, String> {
         .map_err(|e| format!("Critical error reading sensor: {e}"))?;
 
     Ok(cpu_temperature / 1000.0)
+}
+
+pub fn ram_info() -> Result<RamModel, String> {
+    const MEM_INFO: &str = "/proc/meminfo";
+    let total = extract_from_file(MEM_INFO, "MemTotal")?;
+    let available = extract_from_file(MEM_INFO, "MemAvailable")?;
+
+    Ok(
+        RamModel {
+            total: total / 1024.0 / 1024.0,
+            used: (total - available) / 1024.0 / 1024.0
+        }
+    )
 }
