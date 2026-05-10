@@ -168,83 +168,11 @@ class SystemService {
     }
   }
 
-  static String? _cachedThermalZone;
-
-  static Future<String> _findBestThermalZone() async {
-    if (_cachedThermalZone != null) return _cachedThermalZone!;
-
-    List<String> targets = [
-      'cpu-thermal',
-      'hepta-cpu-max-step',
-      'cpuss-0-usr',
-      'soc-thermal',
-      'cpu-0-0-usr',
-    ];
-
-    for (String name in targets) {
-      String zoneNum = await runCommand(
-        "for i in /sys/class/thermal/thermal_zone*; do if grep -q '$name' \$i/type; then echo \${i##*zone}; break; fi; done",
-      );
-
-      if (zoneNum.isNotEmpty && zoneNum != "0") {
-        _cachedThermalZone = zoneNum;
-        return zoneNum;
-      }
-    }
-
-    return "0";
-  }
-
-  static Stream<double> getTemperatureStream() async* {
-    String zone = await _findBestThermalZone();
-
-    while (true) {
-      await Future.delayed(const Duration(seconds: 2));
-      String raw = await runCommand(
-        "cat /sys/class/thermal/thermal_zone$zone/temp",
-      );
-
-      double temp = (double.tryParse(raw) ?? 0.0);
-      if (temp > 1000) temp /= 1000;
-
-      yield temp;
-    }
-  }
-
   /*
     ************************************************
     ******* 4. RAM, ZRAM & VIRTUAL MEMORY **********
     ************************************************
   */
-
-  static Stream<Map<String, double>> getRamStream() {
-    return Stream.periodic(const Duration(seconds: 2), (_) async {
-      try {
-        final content = await runCommand("cat /proc/meminfo", root: false);
-        final lines = content.split('\n');
-
-        double total = 0;
-        double free = 0;
-        double buffers = 0;
-        double cached = 0;
-
-        for (var line in lines) {
-          final parts = line.split(RegExp(r'\s+'));
-          if (line.startsWith('MemTotal:')) total = double.parse(parts[1]);
-          if (line.startsWith('MemFree:')) free = double.parse(parts[1]);
-          if (line.startsWith('Buffers:')) buffers = double.parse(parts[1]);
-          if (line.startsWith('Cached:')) cached = double.parse(parts[1]);
-        }
-
-        double usedReal = (total - free - buffers - cached) / 1024 / 1024;
-        double totalGB = total / 1024 / 1024;
-
-        return {'used': usedReal, 'total': totalGB};
-      } catch (e) {
-        return {'used': 0.0, 'total': 0.0};
-      }
-    }).asyncMap((event) => event);
-  }
 
   static Future<void> applySwappiness(int value) async {
     try {
@@ -423,45 +351,6 @@ class SystemService {
     ************************************************
   */
 
-  static Stream<Map<String, dynamic>> getBatteryStream() async* {
-    while (true) {
-      try {
-        final result = await Process.run('su', [
-          '-c',
-          'cat /sys/class/power_supply/battery/capacity /sys/class/power_supply/battery/voltage_now /sys/class/power_supply/battery/current_now /sys/class/power_supply/battery/status',
-        ]);
-
-        if (result.exitCode == 0) {
-          final lines = result.stdout.toString().trim().split('\n');
-          if (lines.length >= 4) {
-            double level = double.tryParse(lines[0]) ?? 0;
-            double voltage = (double.tryParse(lines[1]) ?? 0) / 1000000;
-            double current = (double.tryParse(lines[2]) ?? 0) / 1000;
-
-            String status = lines[3].trim().toLowerCase();
-            bool isCharging = status == "charging" || status == "full";
-
-            yield {
-              'level': level,
-              'voltage': voltage.toStringAsFixed(2),
-              'current': current.toInt(),
-              'isCharging': isCharging,
-              'status': status.toUpperCase(),
-            };
-          }
-        }
-      } catch (e) {
-        yield {
-          'level': 0.0,
-          'voltage': '0.0',
-          'current': 0,
-          'isCharging': false,
-          'status': 'UNKNOWN',
-        };
-      }
-      await Future.delayed(const Duration(seconds: 1));
-    }
-  }
 
   static Future<void> setBatterySuspension(bool suspend) async {
     final List<String> chargeControlPaths = [
