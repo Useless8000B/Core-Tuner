@@ -1,5 +1,6 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/src/rust/models/ram_model.dart';
 import 'package:flutter/material.dart';
 
 class RamWidget extends StatelessWidget {
@@ -7,12 +8,12 @@ class RamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Map<String, double>>(
-      stream: SystemService.getRamStream(),
+    return StreamBuilder<RamModel>(
+      stream: SystemServicesRust.getRamStream(),
       builder: (context, snapshot) {
-        final data = snapshot.data ?? {'used': 0.0, 'total': 8.0};
-        double used = data['used']!;
-        double total = data['total']!;
+        final data = snapshot.data;
+        double used = data?.used ?? 0.0;
+        double total = data?.total ?? 0.0;
 
         double progress = (total > 0) ? (used / total).clamp(0.0, 1.0) : 0.0;
 
