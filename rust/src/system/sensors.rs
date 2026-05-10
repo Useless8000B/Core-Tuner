@@ -15,7 +15,6 @@ impl Sensor {
 
     pub fn battery_sensors() -> Vec<Sensor> {
         vec![
-            // Redmi Note 11 (spes)
             Sensor::new("temperature", "/sys/class/thermal/thermal_zone36/temp"),
             Sensor::new("voltage", "/sys/class/power_supply/battery/voltage_now"),
             Sensor::new("current", "/sys/class/power_supply/battery/current_now"),
@@ -24,7 +23,6 @@ impl Sensor {
 
     pub fn cpu_sensors() -> Vec<Sensor> {
         vec![
-            // Redmi Note 11 (spes)
             Sensor::new("performance_core", "/sys/class/thermal/thermal_zone7/temp"),
         ]
     }
