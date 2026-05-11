@@ -1,6 +1,5 @@
 import 'package:core_tuner/widgets/battery_thermal_widget.dart';
 import 'package:core_tuner/widgets/battery_widget.dart';
-import 'package:core_tuner/widgets/tweak_slider.dart';
 import 'package:core_tuner/widgets/tweak_switch.dart';
 import 'package:flutter/material.dart';
 
@@ -32,16 +31,6 @@ class BatteryScreen extends StatelessWidget {
                 onAction: (value) async {
                   // TODO implement logic
                 },
-              ),
-              TweakSlider(
-                title: 'Battery Charge Limit',
-                storageKey: 'charge_limit',
-                onAction: (value) async {
-                  // TODO implement logic
-                },
-                min: 50,
-                max: 100,
-                defaultValue: 80,
               ),
             ],
           ),
