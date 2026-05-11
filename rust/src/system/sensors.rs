@@ -15,7 +15,7 @@ impl Sensor {
 
     pub fn battery_sensors() -> Vec<Sensor> {
         vec![
-            Sensor::new("temperature", "/sys/class/thermal/thermal_zone36/temp"),
+            Sensor::new("temperature", "/sys/class/thermal/thermal_zone40/temp"),
             Sensor::new("voltage", "/sys/class/power_supply/battery/voltage_now"),
             Sensor::new("current", "/sys/class/power_supply/battery/current_now"),
         ]
