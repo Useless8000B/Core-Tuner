@@ -86,6 +86,7 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
                 }
               }
             },
+
             dropdownMenuEntries: const [
               DropdownMenuEntry(
                 value: 'performance',
