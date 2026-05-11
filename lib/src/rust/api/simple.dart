@@ -15,6 +15,9 @@ BatteryModel getBatteryInfo() =>
 double getCpuTemperature() =>
     RustLib.instance.api.crateApiSimpleGetCpuTemperature();
 
+Float64List getCpuFrequencies() =>
+    RustLib.instance.api.crateApiSimpleGetCpuFrequencies();
+
 RamModel getRamInfo() => RustLib.instance.api.crateApiSimpleGetRamInfo();
 
 ZramModel getSwapInfo() => RustLib.instance.api.crateApiSimpleGetSwapInfo();
