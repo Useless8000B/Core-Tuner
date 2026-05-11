@@ -16,6 +16,13 @@ pub fn get_battery_info() -> Result<BatteryModel, String> {
 }
 
 #[flutter_rust_bridge::frb(sync)]
+pub fn get_battery_temperature() -> Result<f64, String> {
+    let battery_temperature = reader::battery_temperature()?;
+
+    Ok(battery_temperature)
+}
+
+#[flutter_rust_bridge::frb(sync)]
 pub fn get_cpu_temperature() -> Result<f32, String> {
     let cpu_temperature = reader::cpu_temperature()?;
     
