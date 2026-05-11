@@ -59,7 +59,7 @@ class _RamScreenState extends State<RamScreen> {
                 onAction: (value) async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('zram_swap', value);
-                  await SystemService.applyZramTweak(value);
+                  // TODO Implement logic
                 },
               ),
               const SizedBox(height: 20),
@@ -69,7 +69,7 @@ class _RamScreenState extends State<RamScreen> {
                 labelLeft: 'performance',
                 labelRight: 'Multitasking',
                 onAction: (value) {
-                  SystemService.applySwappiness(value);
+                  // TODO Implement logic
                 },
               ),
               TweakSlider(
@@ -78,7 +78,7 @@ class _RamScreenState extends State<RamScreen> {
                 labelLeft: 'Integrity',
                 labelRight: 'Performance',
                 onAction: (value) async {
-                  await SystemService.applyDirtyRatio(value);
+                  // TODO Implement logic
                 },
               ),
               TweakSlider(
@@ -87,7 +87,7 @@ class _RamScreenState extends State<RamScreen> {
                 min: 0,
                 max: 3,
                 onAction: (value) async {
-                  await SystemService.applyLmkProfile(value);
+                  // TODO Implement logic
                 },
               ),
             ],
