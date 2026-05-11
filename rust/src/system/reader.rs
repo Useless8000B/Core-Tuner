@@ -47,6 +47,18 @@ pub fn battery_info() -> Result<BatteryModel, String> {
     })
 }
 
+pub fn battery_temperature() -> Result<f64, String> {
+    let sensors = Sensor::battery_sensors();
+
+    let temperature = sensors
+        .iter()
+        .find(|v| v.name == "temperature")
+        .ok_or("temperature sensor not found")?
+        .read_sensor()?;
+
+    Ok(temperature as f64 / 1000.0)
+}
+
 pub fn cpu_temperature() -> Result<f32, String> {
     let sensors = Sensor::cpu_sensors();
 
@@ -85,17 +97,28 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
     Ok(frequencies)
 }
 
+pub fn cpu_governor() -> Result<String, String> {
+    let properties = Property::cpu_properties();
+
+    let governor = properties
+        .iter()
+        .find(|v| v.name == "governor")
+        .ok_or("governor property not found")?
+        .read_property()?;
+
+    Ok(governor)
+}
+
 pub fn ram_info() -> Result<RamModel, String> {
     let properties = Property::ram_properties();
 
     let mem_info = properties
         .iter()
         .find(|v| v.name == "mem_info")
-        .ok_or("mem_info property not found")?
-        .read_property()?;
+        .ok_or("mem_info property not found")?;
 
-    let total = extract_from_label(&mem_info, "MemTotal")?;
-    let available = extract_from_label(&mem_info, "MemAvailable")?;
+    let total = extract_from_label(&mem_info.path, "MemTotal")?;
+    let available = extract_from_label(&mem_info.path, "MemAvailable")?;
 
     Ok(RamModel {
         total: total / (1024.0 * 1024.0),
@@ -109,19 +132,17 @@ pub fn zram_info() -> Result<ZramModel, String> {
     let mm_stat = properties
         .iter()
         .find(|v| v.name == "mm_stat")
-        .ok_or("mm_stat property not found")?
-        .read_property()?;
+        .ok_or("mm_stat property not found")?;
 
     let disksize = properties
         .iter()
         .find(|v| v.name == "disksize")
-        .ok_or("disksize property not found")?
-        .read_property()?;
+        .ok_or("disksize property not found")?;
 
-    let origin = extract_from_index(&mm_stat, 0)?;
-    let compressed = extract_from_index(&mm_stat, 1)?;
-    let used = extract_from_index(&mm_stat, 2)?;
-    let total = extract_from_index(&disksize, 0)?;
+    let origin = extract_from_index(&mm_stat.path, 0)?;
+    let compressed = extract_from_index(&mm_stat.path, 1)?;
+    let used = extract_from_index(&mm_stat.path, 2)?;
+    let total = extract_from_index(&disksize.path, 0)?;
 
     let safe_compression = if compressed >= 1e15 || compressed <= 0.0 {
         used
