@@ -6,6 +6,7 @@
 import '../frb_generated.dart';
 import '../models/battery_model.dart';
 import '../models/ram_model.dart';
+import '../models/zram_model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 BatteryModel getBatteryInfo() =>
@@ -15,3 +16,5 @@ double getCpuTemperature() =>
     RustLib.instance.api.crateApiSimpleGetCpuTemperature();
 
 RamModel getRamInfo() => RustLib.instance.api.crateApiSimpleGetRamInfo();
+
+ZramModel getSwapInfo() => RustLib.instance.api.crateApiSimpleGetSwapInfo();

@@ -11,6 +11,7 @@ import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
 import 'models/battery_model.dart';
 import 'models/ram_model.dart';
+import 'models/zram_model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Main entrypoint of the Rust API
@@ -68,7 +69,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 655817343;
+  int get rustContentHash => 1234460608;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -85,6 +86,8 @@ abstract class RustLibApi extends BaseApi {
   double crateApiSimpleGetCpuTemperature();
 
   RamModel crateApiSimpleGetRamInfo();
+
+  ZramModel crateApiSimpleGetSwapInfo();
 
   Future<void> crateApiSimpleInitApp();
 }
@@ -164,6 +167,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_ram_info", argNames: []);
 
   @override
+  ZramModel crateApiSimpleGetSwapInfo() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_zram_model,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleGetSwapInfoConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleGetSwapInfoConstMeta =>
+      const TaskConstMeta(debugName: "get_swap_info", argNames: []);
+
+  @override
   Future<void> crateApiSimpleInitApp() {
     return handler.executeNormal(
       NormalTask(
@@ -172,7 +197,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 4,
+            funcId: 5,
             port: port_,
           );
         },
@@ -259,6 +284,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ZramModel dco_decode_zram_model(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return ZramModel(
+      origin: dco_decode_f_64(arr[0]),
+      compressed: dco_decode_f_64(arr[1]),
+      total: dco_decode_f_64(arr[2]),
+      ratio: dco_decode_f_64(arr[3]),
+    );
+  }
+
+  @protected
   String sse_decode_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_list_prim_u_8_strict(deserializer);
@@ -322,6 +361,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_decode_unit(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  ZramModel sse_decode_zram_model(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_origin = sse_decode_f_64(deserializer);
+    var var_compressed = sse_decode_f_64(deserializer);
+    var var_total = sse_decode_f_64(deserializer);
+    var var_ratio = sse_decode_f_64(deserializer);
+    return ZramModel(
+      origin: var_origin,
+      compressed: var_compressed,
+      total: var_total,
+      ratio: var_ratio,
+    );
   }
 
   @protected
@@ -389,6 +443,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  void sse_encode_zram_model(ZramModel self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self.origin, serializer);
+    sse_encode_f_64(self.compressed, serializer);
+    sse_encode_f_64(self.total, serializer);
+    sse_encode_f_64(self.ratio, serializer);
   }
 
   @protected
