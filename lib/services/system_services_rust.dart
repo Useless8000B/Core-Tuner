@@ -7,8 +7,7 @@ class SystemServicesRust {
   static Stream<BatteryModel> getBatteryStream() async* {
     while (true) {
       try {
-        final info = getBatteryInfo();
-        yield info;
+        yield getBatteryInfo();
       } catch (e) {
         throw Exception("Error reading rust battery: $e");
       }
@@ -19,8 +18,7 @@ class SystemServicesRust {
   static Stream<double> getCpuTemperatureStream() async* {
     while (true) {
       try {
-        final temp = getCpuTemperature();
-        yield temp.toDouble();
+        yield getCpuTemperature().toDouble();
       } catch (e) {
         throw Exception("Error reading cpu temperature: $e");
       }
@@ -31,8 +29,7 @@ class SystemServicesRust {
   static Stream<RamModel> getRamStream() async* {
     while(true) {
       try {
-        final info = getRamInfo();
-        yield info;
+        yield getRamInfo();
       } catch (e) {
         throw Exception("Couldn't get ram stream: $e");
       }
@@ -44,10 +41,20 @@ class SystemServicesRust {
   static Stream<ZramModel> getZramStream() async* {
     while(true) {
       try {
-        final info = getSwapInfo();
-        yield info;
+        yield getSwapInfo(); 
       } catch (e) {
         throw Exception("Couldn't get zram stream: $e");
+      }
+      await Future.delayed(const Duration(seconds: 1));
+    }
+  }
+
+  static Stream<List<double>> getCpuFrequenciesStream() async* {
+    while(true) {
+      try {
+        yield getCpuFrequencies();
+      } catch (e) {
+        throw Exception("Couldn't read cpu frequencies: $e");
       }
       await Future.delayed(const Duration(seconds: 1));
     }
