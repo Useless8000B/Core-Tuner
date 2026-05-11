@@ -1,5 +1,5 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:flutter/material.dart';
 
 class CoresWidget extends StatelessWidget {
@@ -8,9 +8,9 @@ class CoresWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<double>>(
-      stream: SystemService.getCpuFrequenciesStream(),
+      stream: SystemServicesRust.getCpuFrequenciesStream(),
       builder: (context, snapshot) {
-        List<double> freqs = snapshot.data ?? List.generate(8, (_) => 0.0);
+        List<double> frequencies = snapshot.data ?? [];
 
         return GridView.builder(
           shrinkWrap: true,
@@ -21,10 +21,10 @@ class CoresWidget extends StatelessWidget {
             mainAxisSpacing: 12,
             childAspectRatio: 1.5,
           ),
-          itemCount: 8,
+          itemCount: frequencies.length,
           itemBuilder: (context, index) {
             double maxForThisCore = (index < 4) ? 1.9 : 2.4;
-            return buildCoreCard("Core $index", freqs[index], maxForThisCore);
+            return buildCoreCard("Core $index", frequencies[index], maxForThisCore);
           },
         );
       },
