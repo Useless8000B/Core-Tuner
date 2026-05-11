@@ -12,6 +12,9 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 BatteryModel getBatteryInfo() =>
     RustLib.instance.api.crateApiSimpleGetBatteryInfo();
 
+double getBatteryTemperature() =>
+    RustLib.instance.api.crateApiSimpleGetBatteryTemperature();
+
 double getCpuTemperature() =>
     RustLib.instance.api.crateApiSimpleGetCpuTemperature();
 
