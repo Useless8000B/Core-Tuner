@@ -1,3 +1,5 @@
+use std::fs;
+
 use crate::models::battery_model::BatteryModel;
 use crate::models::ram_model::RamModel;
 use crate::models::zram_model::ZramModel;
@@ -58,14 +60,39 @@ pub fn cpu_temperature() -> Result<f32, String> {
     Ok(cpu_temperature / 1000.0)
 }
 
+pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
+    let mut frequencies: Vec<f64> = Vec::new();
+
+    for i in 0..16 {
+        let path = format!("/sys/devices/system/cpu/cpu{i}/cpufreq/scaling_cur_freq");
+
+        if !std::path::Path::new(&path).exists() {
+            break;
+        }
+
+        if let Ok(content) = fs::read_to_string(&path) {
+            let value = content.
+                trim()
+                .parse::<f64>()
+                .map_err(|e| format!("Error parsing value: {e}"))?;
+
+            frequencies.push(value / 1000000.0);
+        } else {
+            frequencies.push(0.0);
+        }
+    }
+
+    Ok(frequencies)
+}
+
 pub fn ram_info() -> Result<RamModel, String> {
     const MEM_INFO: &str = "/proc/meminfo";
     let total = extract_from_label(MEM_INFO, "MemTotal")?;
     let available = extract_from_label(MEM_INFO, "MemAvailable")?;
 
     Ok(RamModel {
-        total: total / 1024.0 / 1024.0,
-        used: (total - available) / 1024.0 / 1024.0,
+        total: total / (1024.0 * 1024.0),
+        used: (total - available) / (1024.0 * 1024.0),
     })
 }
 
