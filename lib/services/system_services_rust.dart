@@ -1,6 +1,7 @@
 import 'package:core_tuner/src/rust/api/simple.dart';
 import 'package:core_tuner/src/rust/models/battery_model.dart';
 import 'package:core_tuner/src/rust/models/ram_model.dart';
+import 'package:core_tuner/src/rust/models/zram_model.dart';
 
 class SystemServicesRust {
   static Stream<BatteryModel> getBatteryStream() async* {
@@ -36,6 +37,18 @@ class SystemServicesRust {
         throw Exception("Couldn't get ram stream: $e");
       }
 
+      await Future.delayed(const Duration(seconds: 1));
+    }
+  }
+
+  static Stream<ZramModel> getZramStream() async* {
+    while(true) {
+      try {
+        final info = getSwapInfo();
+        yield info;
+      } catch (e) {
+        throw Exception("Couldn't get zram stream: $e");
+      }
       await Future.delayed(const Duration(seconds: 1));
     }
   }
