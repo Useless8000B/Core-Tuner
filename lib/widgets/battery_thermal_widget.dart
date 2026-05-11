@@ -1,5 +1,5 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:flutter/material.dart';
 
 class BatteryThermalWidget extends StatelessWidget {
@@ -8,7 +8,7 @@ class BatteryThermalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<double>(
-      stream: SystemService.getBatteryTempStream(),
+      stream: SystemServicesRust.getBatteryTemperatureStream(),
       builder: (context, snapshot) {
         double temp = snapshot.data ?? 0.0;
 
