@@ -1,8 +1,9 @@
 use crate::models::battery_model::BatteryModel;
 use crate::models::ram_model::RamModel;
+use crate::models::zram_model::ZramModel;
 use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
-use crate::utils::extract_from_file::extract_from_file;
+use crate::utils::extract_from_file::{extract_from_index, extract_from_label};
 
 pub fn battery_info() -> Result<BatteryModel, String> {
     let sensors = Sensor::battery_sensors();
@@ -15,10 +16,10 @@ pub fn battery_info() -> Result<BatteryModel, String> {
         .read_property()?;
 
     let current = sensors
-		.iter()
-		.find(|v| v.name == "current")
-		.ok_or("Current sensor not found")?
-		.read_sensor()?;
+        .iter()
+        .find(|v| v.name == "current")
+        .ok_or("Current sensor not found")?
+        .read_sensor()?;
 
     let voltage = sensors
         .iter()
@@ -47,7 +48,7 @@ pub fn battery_info() -> Result<BatteryModel, String> {
 pub fn cpu_temperature() -> Result<f32, String> {
     let sensors = Sensor::cpu_sensors();
 
-    let cpu_temperature  = sensors
+    let cpu_temperature = sensors
         .iter()
         .find(|v| v.name == "performance_core")
         .ok_or("Performance core sensor not found")?
@@ -59,13 +60,39 @@ pub fn cpu_temperature() -> Result<f32, String> {
 
 pub fn ram_info() -> Result<RamModel, String> {
     const MEM_INFO: &str = "/proc/meminfo";
-    let total = extract_from_file(MEM_INFO, "MemTotal")?;
-    let available = extract_from_file(MEM_INFO, "MemAvailable")?;
+    let total = extract_from_label(MEM_INFO, "MemTotal")?;
+    let available = extract_from_label(MEM_INFO, "MemAvailable")?;
 
-    Ok(
-        RamModel {
-            total: total / 1024.0 / 1024.0,
-            used: (total - available) / 1024.0 / 1024.0
-        }
-    )
+    Ok(RamModel {
+        total: total / 1024.0 / 1024.0,
+        used: (total - available) / 1024.0 / 1024.0,
+    })
+}
+
+pub fn zram_info() -> Result<ZramModel, String> {
+    const MM_STAT: &str = "/sys/block/zram0/mm_stat";
+    const DISKSIZE: &str = "/sys/block/zram0/disksize";
+    let origin = extract_from_index(MM_STAT, 0)?;
+    let compressed = extract_from_index(MM_STAT, 1)?;
+    let used = extract_from_index(MM_STAT, 2)?;
+    let total = extract_from_index(DISKSIZE, 0)?;
+
+    let safe_compression = if compressed >= 1e15 || compressed <= 0.0 {
+        used
+    } else {
+        compressed
+    };
+
+    let ratio = if safe_compression > 0.0 {
+        origin / safe_compression
+    } else {
+        1.0
+    };
+
+    Ok(ZramModel {
+        origin: origin / (1024.0 * 1024.0),
+        compressed: used / (1024.0 * 1024.0),
+        total: total / (1024.0 * 1024.0 * 1024.0),
+        ratio: ratio,
+    })
 }
