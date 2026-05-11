@@ -119,14 +119,6 @@ class SystemService {
     ************************************************
   */
 
-  static Future<double> getMaxCpuFreq() async {
-    String raw = await runCommand(
-      "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-    );
-    double freq = (double.tryParse(raw) ?? 2000000) / 1000000;
-    return freq;
-  }
-
   static Stream<List<double>> getCpuFrequenciesStream() async* {
     while (true) {
       await Future.delayed(const Duration(seconds: 1));
@@ -204,72 +196,6 @@ class SystemService {
     } catch (e) {
       throw Exception("Error applying dirty_background_ratio: $e");
     }
-  }
-
-  static Stream<Map<String, dynamic>> getZramDetailedStream() async* {
-    while (true) {
-      try {
-        final result = await Process.run('su', [
-          '-c',
-          'if [ -d /sys/block/zram0 ]; then cat /sys/block/zram0/mm_stat; cat /sys/block/zram0/disksize; else echo "nodir"; fi',
-        ]);
-
-        if (result.exitCode == 0 &&
-            result.stdout.toString().trim() != "nodir") {
-          final output = result.stdout.toString().trim().split('\n');
-
-          if (output.length >= 2) {
-            final stats = output[0].trim().split(RegExp(r'\s+'));
-            final double totalBytes = double.tryParse(output[1]) ?? 0.0;
-            final double totalGb = totalBytes / (1024 * 1024 * 1024);
-
-            if (stats.length >= 3) {
-              double origBytes = double.tryParse(stats[0]) ?? 0.0;
-              double secondCol = double.tryParse(stats[1]) ?? 0.0;
-              double thirdCol = double.tryParse(stats[2]) ?? 0.0;
-
-              double comprBytes;
-
-              if (secondCol > 1099511627776 || secondCol < 0) {
-                comprBytes = thirdCol;
-              } else {
-                comprBytes = secondCol;
-              }
-
-              if (origBytes < 1024 * 1024) {
-                origBytes = 0.0;
-                comprBytes = 0.0;
-              }
-
-              double ratioValue = 0.0;
-              if (comprBytes > 0 && origBytes > 0) {
-                ratioValue = origBytes / comprBytes;
-
-                if (ratioValue < 0.1 || ratioValue > 20.0) ratioValue = 1.0;
-              }
-
-              yield {
-                'orig_mb': origBytes / (1024 * 1024),
-                'compr_mb': comprBytes / (1024 * 1024),
-                'total_gb': totalGb,
-                'ratio': ratioValue == 0.0
-                    ? "0.0"
-                    : ratioValue.toStringAsFixed(1),
-              };
-            }
-          }
-        } else {
-          yield _emptyZram();
-        }
-      } catch (e) {
-        yield _emptyZram();
-      }
-      await Future.delayed(const Duration(seconds: 4));
-    }
-  }
-
-  static Map<String, dynamic> _emptyZram() {
-    return {'orig_mb': 0.0, 'compr_mb': 0.0, 'total_gb': 0.0, 'ratio': "0.0"};
   }
 
   static Future<void> applyZramTweak(bool enable) async {
