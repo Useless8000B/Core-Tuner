@@ -1,4 +1,5 @@
 use crate::models::ram_model::RamModel;
+use crate::models::zram_model::ZramModel;
 use crate::system::reader;
 use crate::models::battery_model::BatteryModel;
 
@@ -26,4 +27,11 @@ pub fn get_ram_info() -> Result<RamModel, String> {
     let memory_info = reader::ram_info()?;
 
     Ok(memory_info)
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn get_swap_info() -> Result <ZramModel, String> {
+    let zram_info = reader::zram_info()?;
+
+    Ok(zram_info)
 }
