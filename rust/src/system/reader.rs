@@ -14,25 +14,25 @@ pub fn battery_info() -> Result<BatteryModel, String> {
     let raw_level = properties
         .iter()
         .find(|v| v.name == "level")
-        .ok_or("Level property not found")?
+        .ok_or("level property not found")?
         .read_property()?;
 
     let current = sensors
         .iter()
         .find(|v| v.name == "current")
-        .ok_or("Current sensor not found")?
+        .ok_or("current sensor not found")?
         .read_sensor()?;
 
     let voltage = sensors
         .iter()
         .find(|v| v.name == "voltage")
-        .ok_or("Voltage sensor not found")?
+        .ok_or("voltage sensor not found")?
         .read_sensor()?;
 
     let is_charging = properties
         .iter()
         .find(|v| v.name == "is_charging")
-        .ok_or("Is_charging property not found")?
+        .ok_or("is_charging property not found")?
         .read_property()?;
 
     let is_charging = is_charging == "Charging";
@@ -53,7 +53,7 @@ pub fn cpu_temperature() -> Result<f32, String> {
     let cpu_temperature = sensors
         .iter()
         .find(|v| v.name == "performance_core")
-        .ok_or("Performance core sensor not found")?
+        .ok_or("performance_core sensor not found")?
         .read_sensor()
         .map_err(|e| format!("Critical error reading sensor: {e}"))?;
 
@@ -86,9 +86,16 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
 }
 
 pub fn ram_info() -> Result<RamModel, String> {
-    const MEM_INFO: &str = "/proc/meminfo";
-    let total = extract_from_label(MEM_INFO, "MemTotal")?;
-    let available = extract_from_label(MEM_INFO, "MemAvailable")?;
+    let properties = Property::ram_properties();
+
+    let mem_info = properties
+        .iter()
+        .find(|v| v.name == "mem_info")
+        .ok_or("mem_info property not found")?
+        .read_property()?;
+
+    let total = extract_from_label(&mem_info, "MemTotal")?;
+    let available = extract_from_label(&mem_info, "MemAvailable")?;
 
     Ok(RamModel {
         total: total / (1024.0 * 1024.0),
@@ -97,12 +104,24 @@ pub fn ram_info() -> Result<RamModel, String> {
 }
 
 pub fn zram_info() -> Result<ZramModel, String> {
-    const MM_STAT: &str = "/sys/block/zram0/mm_stat";
-    const DISKSIZE: &str = "/sys/block/zram0/disksize";
-    let origin = extract_from_index(MM_STAT, 0)?;
-    let compressed = extract_from_index(MM_STAT, 1)?;
-    let used = extract_from_index(MM_STAT, 2)?;
-    let total = extract_from_index(DISKSIZE, 0)?;
+    let properties = Property::zram_properties();
+
+    let mm_stat = properties
+        .iter()
+        .find(|v| v.name == "mm_stat")
+        .ok_or("mm_stat property not found")?
+        .read_property()?;
+
+    let disksize = properties
+        .iter()
+        .find(|v| v.name == "disksize")
+        .ok_or("disksize property not found")?
+        .read_property()?;
+
+    let origin = extract_from_index(&mm_stat, 0)?;
+    let compressed = extract_from_index(&mm_stat, 1)?;
+    let used = extract_from_index(&mm_stat, 2)?;
+    let total = extract_from_index(&disksize, 0)?;
 
     let safe_compression = if compressed >= 1e15 || compressed <= 0.0 {
         used
