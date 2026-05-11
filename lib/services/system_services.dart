@@ -119,22 +119,6 @@ class SystemService {
     ************************************************
   */
 
-  static Stream<List<double>> getCpuFrequenciesStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 1));
-      List<double> freqs = [];
-
-      for (int i = 0; i < 8; i++) {
-        String raw = await runCommand(
-          "cat /sys/devices/system/cpu/cpu$i/cpufreq/scaling_cur_freq",
-        );
-        double ghz = (double.tryParse(raw) ?? 0.0) / 1000000;
-        freqs.add(ghz);
-      }
-      yield freqs;
-    }
-  }
-
   static Future<void> setGlobalGovernor(String governor) async {
     final result = await Process.run('su', [
       '-c',
