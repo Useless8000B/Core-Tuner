@@ -2,7 +2,7 @@ use std::fs;
 
 pub struct Property {
     pub name: String,
-    path: String,
+    pub path: String,
 }
 
 impl Property {
