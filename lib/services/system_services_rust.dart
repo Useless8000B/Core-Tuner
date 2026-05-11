@@ -11,7 +11,20 @@ class SystemServicesRust {
       } catch (e) {
         throw Exception("Error reading rust battery: $e");
       }
+
       await Future.delayed(const Duration(seconds: 2));
+    }
+  }
+
+  static Stream<double> getBatteryTemperatureStream() async* {
+    while(true) {
+      try {
+        yield getBatteryTemperature();
+      } catch (e) {
+        throw Exception("Error reading battery temperature: $e");
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
@@ -22,6 +35,7 @@ class SystemServicesRust {
       } catch (e) {
         throw Exception("Error reading cpu temperature: $e");
       }
+
       await Future.delayed(const Duration(seconds: 1));
     }
   }
