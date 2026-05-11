@@ -1,5 +1,6 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/src/rust/models/zram_model.dart';
 import 'package:flutter/material.dart';
 
 class ZramWidget extends StatelessWidget {
@@ -7,19 +8,17 @@ class ZramWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Map<String, dynamic>>(
-      stream: SystemService.getZramDetailedStream(),
+    return StreamBuilder<ZramModel>(
+      stream: SystemServicesRust.getZramStream(),
       builder: (context, snapshot) {
-        final data =
-            snapshot.data ??
-            {'orig_mb': 0.0, 'compr_mb': 0.0, 'total_gb': 2.0, 'ratio': "0.0"};
+        final data = snapshot.data;
 
-        double origMb = data['orig_mb'];
-        double totalGb = data['total_gb'];
-        String ratio = data['ratio'];
+        double origin = data?.origin ?? 0.0;
+        double total = data?.total ?? 0.0;
+        String ratio = data?.ratio.toStringAsFixed(2) ?? "0.0";
 
-        double progress = (totalGb > 0)
-            ? ((origMb / 1024) / totalGb).clamp(0.0, 1.0)
+        double progress = (total > 0)
+            ? ((origin / 1024) / total).clamp(0.0, 1.0)
             : 0.0;
 
         const Color zramColor = Colors.deepPurpleAccent;
@@ -65,9 +64,9 @@ class ZramWidget extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        origMb > 1024
-                            ? (origMb / 1024).toStringAsFixed(1)
-                            : origMb.toStringAsFixed(0),
+                        origin > 1024
+                            ? (origin / 1024).toStringAsFixed(1)
+                            : origin.toStringAsFixed(0),
                         style: TextStyle(
                           color: zramColor,
                           fontSize: 68,
@@ -75,7 +74,7 @@ class ZramWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        origMb > 1024 ? " GB" : " MB",
+                        origin > 1024 ? " GB" : " MB",
                         style: TextStyle(
                           color: AppColors.gray.withValues(alpha: 0.5),
                           fontSize: 20,
@@ -136,7 +135,7 @@ class ZramWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        "LIMIT: ${totalGb.toStringAsFixed(0)}GB",
+                        "LIMIT: ${total.toStringAsFixed(0)}GB",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
