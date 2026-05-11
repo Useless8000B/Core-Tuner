@@ -18,8 +18,15 @@ pub fn get_battery_info() -> Result<BatteryModel, String> {
 #[flutter_rust_bridge::frb(sync)]
 pub fn get_cpu_temperature() -> Result<f32, String> {
     let cpu_temperature = reader::cpu_temperature()?;
-
+    
     Ok(cpu_temperature)
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn get_cpu_frequencies() -> Result<Vec<f64>, String> {
+    let cpu_frequencies = reader::cpu_frequencies()?;
+
+    Ok(cpu_frequencies)
 }
 
 #[flutter_rust_bridge::frb(sync)]
@@ -35,3 +42,4 @@ pub fn get_swap_info() -> Result <ZramModel, String> {
 
     Ok(zram_info)
 }
+
