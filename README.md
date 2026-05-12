@@ -62,7 +62,7 @@ To ensure maximum efficiency and performance, Core Tuner uses a **hybrid archite
 ### 🇧🇷 Português
 Para que as funcionalidades de **ZRAM/Swap** funcionem corretamente:
 
-1.  **BusyBox:** É altamente recomendado ter o BusyBox instalado (via módulo Magisk ou app) para garantir a compatibilidade dos comandos de Shell (`mkswap`, `swapon`, `grep`).
+1.  **BusyBox:** Ainda recomendado para funções legadas de Shell, mas está sendo descontinuado em favor do motor em Rust.
 2.  **Módulo de Persistência:** Certifique-se de que o módulo Magisk incluído nas releases está ativo para que o Swappiness e o Governor persistam após o reboot.
 3.  **Magisk Mount Namespace:** Em algumas versões do Magisk, é necessário garantir que o app tenha visibilidade global:
     * Abra o **Magisk** > **Configurações**.
@@ -74,12 +74,24 @@ Para que as funcionalidades de **ZRAM/Swap** funcionem corretamente:
 ### 🇺🇸 English
 For **ZRAM/Swap** features to work properly:
 
-1.  **BusyBox:** It is highly recommended to have BusyBox installed (via Magisk module or app) to ensure compatibility with Shell commands (`mkswap`, `swapon`, `grep`).
+1.  **BusyBox:** Still recommended for legacy Shell functions, but being phased out in favor of the Rust engine.
 2.  **Persistence Module:** Ensure the included Magisk module is active so that Swappiness and Governor settings persist after reboot.
 3.  **Magisk Mount Namespace:** On some Magisk versions, you must ensure that the app has system-wide visibility:
     * Open **Magisk** > **Settings**.
     * Select **"Global Mount Namespace"**.
     * Reboot your device.
+
+## 🦀 Nova Arquitetura: Migração para Rust / Rust Migration
+
+### 🇧🇷 Português
+Estamos em processo de migração do core do aplicativo de Shell Scripts para Rust (via Flutter Rust Bridge).
+
+---
+
+### 🇺🇸 English
+We are currently migrating the application core from Shell Scripts to Rust (via Flutter Rust Bridge).
+
+---
 
 ## 🧩 Fragmentação de Kernels & Compatibilidade / Kernel Fragmentation
 
