@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:math';
+import 'package:core_tuner/src/rust/api/simple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemService {
@@ -83,7 +84,7 @@ class SystemService {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.containsKey('cpu_governor')) {
-      await setGlobalGovernor(prefs.getString('cpu_governor') ?? "schedutil");
+      await setGovernor(governor: prefs.getString('cpu_governor') ?? "schedutil");
     }
 
     if (prefs.containsKey('battery_idle_mode')) {
@@ -118,19 +119,6 @@ class SystemService {
     ******* 3. CPU & THERMAL MONITORING ************
     ************************************************
   */
-
-  static Future<void> setGlobalGovernor(String governor) async {
-    final result = await Process.run('su', [
-      '-c',
-      'echo $governor | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor',
-    ]);
-
-    if (result.exitCode != 0) {
-      throw Exception("Couldn't apply governor ${result.stderr}");
-    } else {
-      await saveForMagisk('governor', governor);
-    }
-  }
 
   static Future<String> getCurrentGovernor() async {
     try {
