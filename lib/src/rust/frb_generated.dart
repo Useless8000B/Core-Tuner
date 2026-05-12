@@ -69,7 +69,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 816406486;
+  int get rustContentHash => -1064293509;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -81,19 +81,21 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  BatteryModel crateApiSimpleGetBatteryInfo();
+  Future<BatteryModel> crateApiSimpleGetBatteryInfo();
 
-  double crateApiSimpleGetBatteryTemperature();
+  Future<double> crateApiSimpleGetBatteryTemperature();
 
-  Float64List crateApiSimpleGetCpuFrequencies();
+  Future<Float64List> crateApiSimpleGetCpuFrequencies();
 
-  double crateApiSimpleGetCpuTemperature();
+  Future<double> crateApiSimpleGetCpuTemperature();
 
-  RamModel crateApiSimpleGetRamInfo();
+  Future<RamModel> crateApiSimpleGetRamInfo();
 
-  ZramModel crateApiSimpleGetSwapInfo();
+  Future<ZramModel> crateApiSimpleGetSwapInfo();
 
   Future<void> crateApiSimpleInitApp();
+
+  Future<void> crateApiSimpleSetGovernor({required String governor});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -105,12 +107,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  BatteryModel crateApiSimpleGetBatteryInfo() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
+  Future<BatteryModel> crateApiSimpleGetBatteryInfo() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 1,
+            port: port_,
+          );
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_battery_model,
@@ -127,12 +134,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_battery_info", argNames: []);
 
   @override
-  double crateApiSimpleGetBatteryTemperature() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
+  Future<double> crateApiSimpleGetBatteryTemperature() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 2,
+            port: port_,
+          );
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_64,
@@ -149,12 +161,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_battery_temperature", argNames: []);
 
   @override
-  Float64List crateApiSimpleGetCpuFrequencies() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
+  Future<Float64List> crateApiSimpleGetCpuFrequencies() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_prim_f_64_strict,
@@ -171,12 +188,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_cpu_frequencies", argNames: []);
 
   @override
-  double crateApiSimpleGetCpuTemperature() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
+  Future<double> crateApiSimpleGetCpuTemperature() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 4,
+            port: port_,
+          );
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_32,
@@ -193,12 +215,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_cpu_temperature", argNames: []);
 
   @override
-  RamModel crateApiSimpleGetRamInfo() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
+  Future<RamModel> crateApiSimpleGetRamInfo() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 5,
+            port: port_,
+          );
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_ram_model,
@@ -215,12 +242,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_ram_info", argNames: []);
 
   @override
-  ZramModel crateApiSimpleGetSwapInfo() {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
+  Future<ZramModel> crateApiSimpleGetSwapInfo() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 6,
+            port: port_,
+          );
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_zram_model,
@@ -262,6 +294,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiSimpleInitAppConstMeta =>
       const TaskConstMeta(debugName: "init_app", argNames: []);
+
+  @override
+  Future<void> crateApiSimpleSetGovernor({required String governor}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(governor, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 8,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleSetGovernorConstMeta,
+        argValues: [governor],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleSetGovernorConstMeta =>
+      const TaskConstMeta(debugName: "set_governor", argNames: ["governor"]);
 
   @protected
   String dco_decode_String(dynamic raw) {

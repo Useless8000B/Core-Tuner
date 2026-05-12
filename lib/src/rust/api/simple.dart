@@ -9,18 +9,23 @@ import '../models/ram_model.dart';
 import '../models/zram_model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-BatteryModel getBatteryInfo() =>
+Future<BatteryModel> getBatteryInfo() =>
     RustLib.instance.api.crateApiSimpleGetBatteryInfo();
 
-double getBatteryTemperature() =>
+Future<double> getBatteryTemperature() =>
     RustLib.instance.api.crateApiSimpleGetBatteryTemperature();
 
-double getCpuTemperature() =>
+Future<double> getCpuTemperature() =>
     RustLib.instance.api.crateApiSimpleGetCpuTemperature();
 
-Float64List getCpuFrequencies() =>
+Future<Float64List> getCpuFrequencies() =>
     RustLib.instance.api.crateApiSimpleGetCpuFrequencies();
 
-RamModel getRamInfo() => RustLib.instance.api.crateApiSimpleGetRamInfo();
+Future<void> setGovernor({required String governor}) =>
+    RustLib.instance.api.crateApiSimpleSetGovernor(governor: governor);
 
-ZramModel getSwapInfo() => RustLib.instance.api.crateApiSimpleGetSwapInfo();
+Future<RamModel> getRamInfo() =>
+    RustLib.instance.api.crateApiSimpleGetRamInfo();
+
+Future<ZramModel> getSwapInfo() =>
+    RustLib.instance.api.crateApiSimpleGetSwapInfo();
