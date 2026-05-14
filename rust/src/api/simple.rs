@@ -1,6 +1,7 @@
 use crate::models::ram_model::RamModel;
 use crate::models::zram_model::ZramModel;
 use crate::system::reader;
+use crate::system::writer;
 use crate::models::battery_model::BatteryModel;
 
 #[flutter_rust_bridge::frb(init)]
@@ -30,6 +31,16 @@ pub fn get_cpu_frequencies() -> Result<Vec<f64>, String> {
     let cpu_frequencies = reader::cpu_frequencies()?;
 
     Ok(cpu_frequencies)
+}
+
+pub fn get_cpu_governor() -> Result<String, String> {
+    let cpu_governor = reader::cpu_governor()?;
+
+    Ok(cpu_governor)
+}
+
+pub fn set_governor(governor: &str) -> Result<(), String> {
+    writer::set_cpu_governor(governor)
 }
 
 pub fn get_ram_info() -> Result<RamModel, String> {
