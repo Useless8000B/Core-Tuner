@@ -7,9 +7,9 @@ class SystemServicesRust {
   static Stream<BatteryModel> getBatteryStream() async* {
     while (true) {
       try {
-        yield getBatteryInfo();
+        yield await getBatteryInfo();
       } catch (e) {
-        throw Exception("Error reading rust battery: $e");
+        throw Exception("Error reading battery: $e");
       }
 
       await Future.delayed(const Duration(seconds: 2));
@@ -19,7 +19,7 @@ class SystemServicesRust {
   static Stream<double> getBatteryTemperatureStream() async* {
     while(true) {
       try {
-        yield getBatteryTemperature();
+        yield await getBatteryTemperature();
       } catch (e) {
         throw Exception("Error reading battery temperature: $e");
       }
@@ -31,7 +31,7 @@ class SystemServicesRust {
   static Stream<double> getCpuTemperatureStream() async* {
     while (true) {
       try {
-        yield getCpuTemperature().toDouble();
+        yield await getCpuTemperature();
       } catch (e) {
         throw Exception("Error reading cpu temperature: $e");
       }
@@ -39,11 +39,39 @@ class SystemServicesRust {
       await Future.delayed(const Duration(seconds: 1));
     }
   }
+ 
+  static Future<void> setGlobalCpuGovernor(String governor) async {
+    try {
+      await setGovernor(governor: governor);
+    } catch (e) {
+      throw Exception("Error applying governor $e");
+    }
+  }
+
+  static Stream<List<double>> getCpuFrequenciesStream() async* {
+    while(true) {
+      try {
+        yield await getCpuFrequencies();
+      } catch (e) {
+        throw Exception("Couldn't read cpu frequencies: $e");
+      }
+      await Future.delayed(const Duration(seconds: 1));
+    }
+  }
+
+  static Future<String> getCurrentGovernor() async {
+    try {
+      final String governor = await getCpuGovernor();
+      return governor;
+    } catch (e) {
+      throw Exception("Couldn't get cpu governor: $e");
+    }
+  }
 
   static Stream<RamModel> getRamStream() async* {
     while(true) {
       try {
-        yield getRamInfo();
+        yield await getRamInfo();
       } catch (e) {
         throw Exception("Couldn't get ram stream: $e");
       }
@@ -55,20 +83,9 @@ class SystemServicesRust {
   static Stream<ZramModel> getZramStream() async* {
     while(true) {
       try {
-        yield getSwapInfo(); 
+        yield await getSwapInfo(); 
       } catch (e) {
         throw Exception("Couldn't get zram stream: $e");
-      }
-      await Future.delayed(const Duration(seconds: 1));
-    }
-  }
-
-  static Stream<List<double>> getCpuFrequenciesStream() async* {
-    while(true) {
-      try {
-        yield getCpuFrequencies();
-      } catch (e) {
-        throw Exception("Couldn't read cpu frequencies: $e");
       }
       await Future.delayed(const Duration(seconds: 1));
     }
