@@ -28,11 +28,9 @@ impl Property {
     }
 
     pub fn ram_properties() -> Vec<Property> {
-        vec![
-            Property::new("mem_info", "/proc/meminfo"),
-        ]
+        vec![Property::new("mem_info", "/proc/meminfo")]
     }
-        
+
     pub fn zram_properties() -> Vec<Property> {
         vec![
             Property::new("mm_stat", "/sys/block/zram0/mm_stat"),
@@ -40,9 +38,16 @@ impl Property {
         ]
     }
 
-    pub fn cpu_properties() -> Vec<Property> {
+    pub fn cpu_cores_properties() -> Vec<Property> {
         vec![
-            Property::new("governor", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor")
+            Property::new("cpu_core", "/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"),
+        ]
+    }
+
+    pub fn cpu_path_properties() -> Vec<Property> {
+        vec![
+            Property::new("governor", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"),
+            Property::new("cpu_path", "/sys/devices/system/cpu"),
         ]
     }
 }
