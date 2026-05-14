@@ -19,7 +19,7 @@ class CoreSnack {
             : AppColors.lightBlack,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 1),
+        duration: const Duration(seconds: 2),
         margin: const EdgeInsets.all(20),
       ),
     );
