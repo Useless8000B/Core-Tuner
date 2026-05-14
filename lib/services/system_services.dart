@@ -120,18 +120,6 @@ class SystemService {
     ************************************************
   */
 
-  static Future<String> getCurrentGovernor() async {
-    try {
-      final result = await runCommand(
-        "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
-      );
-      final trimmed = result.trim();
-      return trimmed.isNotEmpty ? trimmed : "schedutil";
-    } catch (e) {
-      return "schedutil";
-    }
-  }
-
   /*
     ************************************************
     ******* 4. RAM, ZRAM & VIRTUAL MEMORY **********
