@@ -98,7 +98,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
 }
 
 pub fn cpu_governor() -> Result<String, String> {
-    let properties = Property::cpu_properties();
+    let properties = Property::cpu_path_properties();
 
     let governor = properties
         .iter()
