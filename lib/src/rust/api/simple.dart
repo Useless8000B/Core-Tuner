@@ -21,6 +21,9 @@ Future<double> getCpuTemperature() =>
 Future<Float64List> getCpuFrequencies() =>
     RustLib.instance.api.crateApiSimpleGetCpuFrequencies();
 
+Future<String> getCpuGovernor() =>
+    RustLib.instance.api.crateApiSimpleGetCpuGovernor();
+
 Future<void> setGovernor({required String governor}) =>
     RustLib.instance.api.crateApiSimpleSetGovernor(governor: governor);
 
