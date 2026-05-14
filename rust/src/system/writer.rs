@@ -1,24 +1,32 @@
-use crate::system::{governor::Governor, properties::Property};
+use std::process::Command;
 
-pub fn set_cpu_governor(governor: &str) -> Result<(), String> {
-    let properties: Vec<Property> = Property::cpu_properties();
+use crate::system::governor::Governor;
+use crate::system::properties::Property;
 
-    let policy_0 = properties
+pub fn set_cpu_governor(choice: &str) -> Result<(), String> {
+    let properties = Property::cpu_cores_properties();
+    let gov = Governor::from_input(choice).ok_or("Error reading from input")?;
+
+    let entry = properties
         .iter()
-        .find(|v| v.name == "policy0")
-        .ok_or("policy0 property not found")?
-        .read_property()?;
+        .find(|v| v.name == "cpu_core")
+        .ok_or("cpu_core property not found")?;
 
-    let policy_4 = properties
-        .iter()
-        .find(|v| v.name == "policy4")
-        .ok_or("policy4 property not found")?
-        .read_property()?;
+    let cmd = format!(
+        "printf %s \"{}\" | tee {}",
+        gov.as_string(),
+        entry.path
+    );
 
-	let gov = Governor::from_input(governor).ok_or("Invalid governor")?;
+    let status = Command::new("su")
+        .arg("-c")
+        .arg(&cmd)
+        .status()
+        .map_err(|e| format!("Failed to execute su: {e}"))?;
 
-	gov.apply(&policy_0)?;
-	gov.apply(&policy_4)?;
-
-    Ok(())
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!("Command failed due to an error: {status}"))
+    }
 }
