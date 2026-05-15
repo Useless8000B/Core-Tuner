@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:math';
-import 'package:core_tuner/src/rust/api/simple.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemService {
@@ -84,7 +84,7 @@ class SystemService {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.containsKey('cpu_governor')) {
-      await setGovernor(governor: prefs.getString('cpu_governor') ?? "schedutil");
+      await SystemServicesRust.setGlobalCpuGovernor(prefs.getString('cpu_governor') ?? "schedutil");
     }
 
     if (prefs.containsKey('battery_idle_mode')) {
@@ -92,7 +92,7 @@ class SystemService {
     }
 
     if (prefs.containsKey('swappiness')) {
-      await applySwappiness(prefs.getInt('swappiness') ?? 100);
+      await SystemServicesRust.applySwappiness(prefs.getInt('swappiness') ?? 100);
     }
 
     if (prefs.containsKey('vm_dirty_ratio')) {
@@ -100,40 +100,19 @@ class SystemService {
     }
 
     if (prefs.containsKey('vm_dirty_background_ratio')) {
-      await applyDirtyBackgroundRatio(
-        prefs.getInt('vm_dirty_background_ratio') ?? 10,
-      );
+      await applyDirtyBackgroundRatio(prefs.getInt('vm_dirty_background_ratio') ?? 10,);
     }
 
     if (prefs.containsKey('low_memory_killer')) {
       await applyLmkProfile(prefs.getInt('low_memory_killer') ?? 0);
     }
-
-    if (prefs.containsKey('charge_limit')) {
-      await applyChargeLimit(prefs.getInt('charge_limit') ?? 80);
-    }
   }
-
-  /*
-    ************************************************
-    ******* 3. CPU & THERMAL MONITORING ************
-    ************************************************
-  */
 
   /*
     ************************************************
     ******* 4. RAM, ZRAM & VIRTUAL MEMORY **********
     ************************************************
   */
-
-  static Future<void> applySwappiness(int value) async {
-    try {
-      await Process.run('su', ['-c', 'echo $value > /proc/sys/vm/swappiness']);
-      await saveForMagisk('swappiness', value.toString());
-    } catch (e) {
-      throw Exception("Error applying swappiness: $e");
-    }
-  }
 
   static Future<void> applyDirtyRatio(int value) async {
     try {
@@ -155,57 +134,6 @@ class SystemService {
       await saveForMagisk('vm_dirty_background_ratio', safeValue.toString());
     } catch (e) {
       throw Exception("Error applying dirty_background_ratio: $e");
-    }
-  }
-
-  static Future<void> applyZramTweak(bool enable) async {
-    await saveForMagisk('zram_enabled', enable ? '1' : '0');
-    if (enable) {
-      final script = '''
-        magiskpolicy --live "allow init self capability sys_admin" 2>/dev/null
-        magiskpolicy --live "allow priv_app sysfs_zram dir search" 2>/dev/null
-        magiskpolicy --live "allow priv_app sysfs_zram file { getattr open write }" 2>/dev/null
-        /system/bin/toybox swapoff /dev/block/zram0 > /dev/null 2>&1
-        echo 1 > /sys/block/zram0/reset 2>/dev/null
-        echo lz4 > /sys/block/zram0/comp_algorithm 2>/dev/null
-        echo 8 > /sys/block/zram0/max_comp_streams 2>/dev/null
-        echo 2147483648 > /sys/block/zram0/disksize || echo 1G > /sys/block/zram0/disksize
-        /system/bin/toybox mkswap /dev/block/zram0
-        /system/bin/toybox swapon /dev/block/zram0 -p 100
-        sysctl -w vm.vfs_cache_pressure=100
-      ''';
-
-      await runCommand(script);
-    } else {
-      final disableScript = '''
-        echo 3 > /proc/sys/vm/drop_caches
-        timeout 3 /system/bin/toybox swapoff /dev/block/zram0 || true
-        echo 1 > /sys/block/zram0/reset || true
-      ''';
-
-      await runCommand(disableScript);
-    }
-  }
-
-  static Future<bool> isZramActive() async {
-    try {
-      final result = await Process.run('cat', ['/proc/swaps']);
-      return result.stdout.toString().contains('zram0');
-    } catch (_) {
-      return false;
-    }
-  }
-
-  static Future<void> syncZramState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool shouldBeEnabled = prefs.getBool('zram_swap') ?? false;
-
-    if (!shouldBeEnabled) return;
-
-    final bool isCurrentlyActive = await isZramActive();
-
-    if (!isCurrentlyActive) {
-      await applyZramTweak(true);
     }
   }
 
