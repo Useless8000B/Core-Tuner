@@ -69,7 +69,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -104534635;
+  int get rustContentHash => 1430380366;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -98,6 +98,8 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiSimpleInitApp();
 
   Future<void> crateApiSimpleSetGovernor({required String governor});
+
+  Future<void> crateApiSimpleSetSwappiness({required int choice});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -351,6 +353,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiSimpleSetGovernorConstMeta =>
       const TaskConstMeta(debugName: "set_governor", argNames: ["governor"]);
+
+  @override
+  Future<void> crateApiSimpleSetSwappiness({required int choice}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_u_8(choice, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 10,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleSetSwappinessConstMeta,
+        argValues: [choice],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleSetSwappinessConstMeta =>
+      const TaskConstMeta(debugName: "set_swappiness", argNames: ["choice"]);
 
   @protected
   String dco_decode_String(dynamic raw) {

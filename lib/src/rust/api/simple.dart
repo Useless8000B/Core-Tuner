@@ -32,3 +32,6 @@ Future<RamModel> getRamInfo() =>
 
 Future<ZramModel> getSwapInfo() =>
     RustLib.instance.api.crateApiSimpleGetSwapInfo();
+
+Future<void> setSwappiness({required int choice}) =>
+    RustLib.instance.api.crateApiSimpleSetSwappiness(choice: choice);
