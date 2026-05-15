@@ -55,3 +55,6 @@ pub fn get_swap_info() -> Result <ZramModel, String> {
     Ok(zram_info)
 }
 
+pub fn set_swappiness(choice: u8) -> Result<(), String> {
+    writer::set_swappiness(choice)
+}
