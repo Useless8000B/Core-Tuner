@@ -24,6 +24,7 @@ impl Property {
         vec![
             Property::new("is_charging", "/sys/class/power_supply/battery/status"),
             Property::new("level", "/sys/class/power_supply/battery/capacity"),
+            Property::new("input_suspend", "/sys/class/power_supply/battery/input_suspend"),
         ]
     }
 
