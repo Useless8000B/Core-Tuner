@@ -90,4 +90,12 @@ class SystemServicesRust {
       await Future.delayed(const Duration(seconds: 1));
     }
   }
+
+  static Future<void> applySwappiness(int choice) async {
+    try {
+      await setSwappiness(choice: choice);
+    } catch (e) {
+      throw Exception("Coudln't apply swappiness: $e");
+    }
+  }
 }
