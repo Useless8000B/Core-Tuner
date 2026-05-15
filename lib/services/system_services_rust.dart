@@ -61,8 +61,7 @@ class SystemServicesRust {
 
   static Future<String> getCurrentGovernor() async {
     try {
-      final String governor = await getCpuGovernor();
-      return governor;
+      return await getCpuGovernor();
     } catch (e) {
       throw Exception("Couldn't get cpu governor: $e");
     }
@@ -96,6 +95,14 @@ class SystemServicesRust {
       await setSwappiness(choice: choice);
     } catch (e) {
       throw Exception("Coudln't apply swappiness: $e");
+    }
+  }
+
+  static Future<String> getCurrentSwappiness() async {
+    try {
+      return await getSwappiness();
+    } catch (e) {
+      throw Exception("Error reading swappiness: $e");
     }
   }
 }

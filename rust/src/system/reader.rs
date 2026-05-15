@@ -163,3 +163,15 @@ pub fn zram_info() -> Result<ZramModel, String> {
         ratio: ratio,
     })
 }
+
+pub fn swappiness() -> Result<String, String> {
+    let properties = Property::kernel_properties();
+
+    let swappiness = properties
+        .iter()
+        .find(|v| v.name == "swappiness")
+        .ok_or("swappiness property not found")?
+        .read_property()?;
+
+    Ok(swappiness)
+}
