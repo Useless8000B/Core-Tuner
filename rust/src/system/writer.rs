@@ -59,3 +59,24 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
         Err(format!("Command failed due to an error: {status}"))
     }
 }
+
+pub fn set_dirty_ratio(choice: u8) -> Result<(), String> {
+    let safe_value = choice.clamp(0, 100);
+
+    let cmd = format!(
+        "sysctl -w vm.dirty_ratio={}",
+        safe_value
+    );
+
+    let status = Command::new("su")
+        .arg("-c")
+        .arg(&cmd)
+        .status()
+        .map_err(|e| format!("Error applying dirty_ratio: {e}"))?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!("Command failed due to an error: {status}"))
+    }
+}
