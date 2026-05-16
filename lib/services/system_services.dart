@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:math';
 import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,24 +59,13 @@ class SystemService {
       await prefs.setInt('vm_dirty_ratio', int.tryParse(dr) ?? 20);
     }
 
-    String sw = await runCommand('cat /proc/sys/vm/swappiness', root: true);
+    String sw = await SystemServicesRust.getCurrentSwappiness();
     if (sw.isNotEmpty) {
       await prefs.setInt('swappiness', int.tryParse(sw) ?? 100);
     }
 
-    String gov = await runCommand(
-      'cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor',
-      root: true,
-    );
+    String gov = await SystemServicesRust.getCurrentGovernor();
     if (gov.isNotEmpty) await prefs.setString('cpu_governor', gov.trim());
-
-    String cl = await runCommand(
-      'cat /data/core_tuner/charge_limit',
-      root: true,
-    );
-    if (cl.isNotEmpty) {
-      await prefs.setInt('charge_limit', int.tryParse(cl) ?? 80);
-    }
   }
 
   static Future<void> applySavedTweaks() async {
@@ -87,25 +75,17 @@ class SystemService {
       await SystemServicesRust.setGlobalCpuGovernor(prefs.getString('cpu_governor') ?? "schedutil");
     }
 
-    if (prefs.containsKey('battery_idle_mode')) {
-      await setBatteryIdleMode(prefs.getBool('battery_idle_mode') ?? false);
-    }
+    if (prefs.containsKey('battery_idle_mode')) {}
 
     if (prefs.containsKey('swappiness')) {
       await SystemServicesRust.applySwappiness(prefs.getInt('swappiness') ?? 100);
     }
 
-    if (prefs.containsKey('vm_dirty_ratio')) {
-      await applyDirtyRatio(prefs.getInt('vm_dirty_ratio') ?? 20);
-    }
+    if (prefs.containsKey('vm_dirty_ratio')) {}
 
-    if (prefs.containsKey('vm_dirty_background_ratio')) {
-      await applyDirtyBackgroundRatio(prefs.getInt('vm_dirty_background_ratio') ?? 10,);
-    }
+    if (prefs.containsKey('vm_dirty_background_ratio')) {}
 
-    if (prefs.containsKey('low_memory_killer')) {
-      await applyLmkProfile(prefs.getInt('low_memory_killer') ?? 0);
-    }
+    if (prefs.containsKey('low_memory_killer')) {}
   }
 
   /*
@@ -161,103 +141,9 @@ class SystemService {
 
   /*
     ************************************************
-    ******* 5. BATTERY & CHARGING ******************
-    ************************************************
-  */
-
-
-  static Future<void> setBatterySuspension(bool suspend) async {
-    final List<String> chargeControlPaths = [
-      '/sys/class/power_supply/battery/input_suspend', // Redmi note 11 - My device
-      '/sys/class/power_supply/battery/charging_enabled', // Qualcomm Universal
-      '/sys/class/power_supply/battery/battery_charging_enabled', // Sony/Pixel
-      '/sys/class/power_supply/battery/charge_control_limit_max', // Modern Kernels
-    ];
-
-    final value = suspend ? '1' : '0';
-    String cmd = "";
-    for (String path in chargeControlPaths) {
-      cmd += "if [ -f $path ]; then echo $value > $path; fi; ";
-    }
-
-    await runCommand(cmd, root: true);
-  }
-
-  static Future<void> applyChargeLimit(int limit) async {
-    try {
-      await saveForMagisk('charge_limit', limit.toString());
-
-      final String rawLevel = await runCommand(
-        'cat /sys/class/power_supply/battery/capacity',
-        root: true,
-      );
-      final int currentLevel = int.tryParse(rawLevel) ?? 0;
-
-      if (currentLevel >= limit) {
-        await setBatterySuspension(true);
-      } else {
-        await setBatterySuspension(false);
-      }
-    } catch (e) {
-      throw Exception("Error applying charge limit: $e");
-    }
-  }
-
-  static Future<void> setBatteryIdleMode(bool enabled) async {
-    await setBatterySuspension(enabled);
-    await saveForMagisk('battery_idle_mode', enabled ? '1' : '0');
-  }
-
-  /*
-    ************************************************
     ******* 6. STORAGE & SYSTEM UTILS **************
     ************************************************
   */
-
-  static Stream<Map<String, String>> getStorageStream() async* {
-    while (true) {
-      try {
-        final result = await Process.run('su', ['-c', 'busybox df -m /data']);
-
-        if (result.exitCode == 0) {
-          final lines = result.stdout.toString().trim().split('\n');
-          final parts = lines[1].split(RegExp(r'\s+'));
-
-          if (parts.length >= 4) {
-            double totalPartM = double.parse(parts[1]);
-            double freeM = double.parse(parts[3]);
-            double nominalTotalGb = _getNominalSize(totalPartM / 1024);
-
-            double usedGb = nominalTotalGb - (freeM / 1024);
-            double hardwareMargin = nominalTotalGb * 0.045;
-            double displayUsedGb = usedGb - hardwareMargin;
-
-            int percent = ((displayUsedGb / nominalTotalGb) * 100).round();
-
-            yield {
-              'total': "${nominalTotalGb.toStringAsFixed(0)} GB",
-              'used': displayUsedGb.toStringAsFixed(1),
-              'percent': "$percent%",
-            };
-          }
-        }
-      } catch (e) {
-        throw Exception("Storage Error: $e");
-      }
-      await Future.delayed(const Duration(seconds: 15));
-    }
-  }
-
-  static double _getNominalSize(double partitionSizeGb) {
-    double power = log(partitionSizeGb) / log(2);
-    double nextPower = pow(2, power.ceil()).toDouble();
-
-    if ((nextPower - partitionSizeGb) > (nextPower * 0.4)) {
-      return nextPower / 2;
-    }
-
-    return nextPower;
-  }
 
   static Future<void> clearDalvik() async {
     final command =
