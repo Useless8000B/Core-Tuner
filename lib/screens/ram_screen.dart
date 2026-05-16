@@ -39,7 +39,7 @@ class _RamScreenState extends State<RamScreen> {
                 labelLeft: 'Integrity',
                 labelRight: 'Performance',
                 onAction: (value) async {
-                  // TODO Implement logic
+                  await SystemServicesRust.applyVmDirtyRatio(value);
                 },
               ),
               TweakSlider(
