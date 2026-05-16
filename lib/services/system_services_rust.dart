@@ -1,6 +1,7 @@
 import 'package:core_tuner/src/rust/api/simple.dart';
 import 'package:core_tuner/src/rust/models/battery_model.dart';
 import 'package:core_tuner/src/rust/models/ram_model.dart';
+import 'package:core_tuner/src/rust/models/storage_model.dart';
 import 'package:core_tuner/src/rust/models/zram_model.dart';
 
 class SystemServicesRust {
@@ -55,6 +56,7 @@ class SystemServicesRust {
       } catch (e) {
         throw Exception("Couldn't read cpu frequencies: $e");
       }
+
       await Future.delayed(const Duration(seconds: 1));
     }
   }
@@ -86,6 +88,7 @@ class SystemServicesRust {
       } catch (e) {
         throw Exception("Couldn't get zram stream: $e");
       }
+
       await Future.delayed(const Duration(seconds: 1));
     }
   }
@@ -103,6 +106,18 @@ class SystemServicesRust {
       return await getSwappiness();
     } catch (e) {
       throw Exception("Error reading swappiness: $e");
+    }
+  }
+
+  static Stream<StorageModel> getStorageStream() async* {
+    while(true) {
+      try {
+        yield await getStorage();
+      } catch (e) {
+        throw Exception("Error reading storage: $e");
+      }
+
+      await Future.delayed(const Duration(seconds: 20));
     }
   }
 }
