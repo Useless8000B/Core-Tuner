@@ -10,6 +10,7 @@ import 'dart:ffi' as ffi;
 import 'frb_generated.dart';
 import 'models/battery_model.dart';
 import 'models/ram_model.dart';
+import 'models/storage_model.dart';
 import 'models/zram_model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
@@ -46,6 +47,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RamModel dco_decode_ram_model(dynamic raw);
 
   @protected
+  StorageModel dco_decode_storage_model(dynamic raw);
+
+  @protected
+  BigInt dco_decode_u_64(dynamic raw);
+
+  @protected
   int dco_decode_u_8(dynamic raw);
 
   @protected
@@ -77,6 +84,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RamModel sse_decode_ram_model(SseDeserializer deserializer);
+
+  @protected
+  StorageModel sse_decode_storage_model(SseDeserializer deserializer);
+
+  @protected
+  BigInt sse_decode_u_64(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer);
@@ -119,6 +132,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_ram_model(RamModel self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_storage_model(StorageModel self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_64(BigInt self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_8(int self, SseSerializer serializer);
