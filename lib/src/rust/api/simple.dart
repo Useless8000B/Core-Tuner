@@ -6,6 +6,7 @@
 import '../frb_generated.dart';
 import '../models/battery_model.dart';
 import '../models/ram_model.dart';
+import '../models/storage_model.dart';
 import '../models/zram_model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
@@ -38,3 +39,6 @@ Future<String> getSwappiness() =>
 
 Future<void> setSwappiness({required int choice}) =>
     RustLib.instance.api.crateApiSimpleSetSwappiness(choice: choice);
+
+Future<StorageModel> getStorage() =>
+    RustLib.instance.api.crateApiSimpleGetStorage();
