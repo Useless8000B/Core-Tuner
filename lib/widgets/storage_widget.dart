@@ -1,29 +1,35 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/src/rust/models/storage_model.dart';
 import 'package:flutter/material.dart';
 
 class StorageWidget extends StatelessWidget {
   const StorageWidget({super.key});
 
-  double parseValue(String? value) {
-    if (value == null || value == "--") return 0.0;
-    String cleanValue = value
-        .replaceAll(RegExp(r'[^0-9.,]'), '')
-        .replaceFirst(',', '.');
-    return double.tryParse(cleanValue) ?? 0.0;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Map<String, String>>(
-      stream: SystemService.getStorageStream(),
+    return StreamBuilder<StorageModel>(
+      stream: SystemServicesRust.getStorageStream(),
       builder: (context, snapshot) {
-        final storage = snapshot.data;
+        if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-        final String usedStr = storage?['used'] ?? "--";
-        final String percentStr = storage?['percent'] ?? "0%";
+        final storage = snapshot.data!;
 
-        final double progress = (parseValue(percentStr) / 100).clamp(0.0, 1.0);
+        final double usedGb = storage.used.toDouble() / (1024 * 1024 * 1024);
+        final double totalGb = storage.total.toDouble() / (1024 * 1024 * 1024);
+        final String usedStr = usedGb.toStringAsFixed(1);
+        final String totalStr = "${totalGb.toStringAsFixed(0)} GB";
+
+        double progressFactor = totalGb > 0 ? (usedGb / totalGb) : 0.0;
+        if (progressFactor > 1.0) progressFactor = 1.0;
+        if (progressFactor < 0.0) progressFactor = 0.0;
+
+        final String percentStr = "${(progressFactor * 100).toStringAsFixed(0)}%";
 
         return Container(
           padding: const EdgeInsets.all(24),
@@ -66,7 +72,7 @@ class StorageWidget extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        usedStr.replaceAll(RegExp(r'[a-zA-Z]'), ''),
+                        usedStr,
                         style: TextStyle(
                           color: AppColors.royalBlue,
                           fontSize: 68,
@@ -74,7 +80,7 @@ class StorageWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        " / ${storage?['total'] ?? "--"}",
+                        " / $totalStr",
                         style: TextStyle(
                           color: AppColors.gray.withValues(alpha: 0.5),
                           fontSize: 20,
@@ -95,24 +101,20 @@ class StorageWidget extends StatelessWidget {
                           ),
                           child: FractionallySizedBox(
                             alignment: Alignment.centerLeft,
-                            widthFactor: progress,
+                            widthFactor: progressFactor,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: storage != null
-                                    ? AppColors.royalBlue
-                                    : AppColors.gray.withValues(alpha: 0.2),
+                                color: AppColors.royalBlue,
                                 borderRadius: BorderRadius.circular(3),
-                                boxShadow: storage != null
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.royalBlue.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ]
-                                    : [],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.royalBlue.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
