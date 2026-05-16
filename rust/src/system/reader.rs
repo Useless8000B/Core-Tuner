@@ -195,9 +195,12 @@ pub fn storage() -> Result<StorageModel, String> {
             let available_bytes = disks.available_space();
             let used_bytes = total_bytes - available_bytes;
 
-            Ok(StorageModel { total: total_bytes, used: used_bytes })
-        },
+            Ok(StorageModel {
+                total: total_bytes,
+                used: used_bytes,
+            })
+        }
 
-        None => Err("Couldn't isolate the /data partition".to_string())
+        None => Err("Couldn't isolate the /data partition".to_string()),
     }
 }
