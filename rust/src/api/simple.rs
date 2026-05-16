@@ -1,4 +1,5 @@
 use crate::models::ram_model::RamModel;
+use crate::models::storage_model::StorageModel;
 use crate::models::zram_model::ZramModel;
 use crate::system::reader;
 use crate::system::writer;
@@ -47,4 +48,8 @@ pub fn get_swappiness() -> Result<String, String> {
 
 pub fn set_swappiness(choice: u8) -> Result<(), String> {
     writer::set_swappiness(choice)
+}
+
+pub fn get_storage() -> Result<StorageModel, String> {
+    reader::storage()
 }

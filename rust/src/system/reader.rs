@@ -1,7 +1,9 @@
 use std::fs;
+use sysinfo::Disks;
 
 use crate::models::battery_model::BatteryModel;
 use crate::models::ram_model::RamModel;
+use crate::models::storage_model::StorageModel;
 use crate::models::zram_model::ZramModel;
 use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
@@ -83,8 +85,8 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
         }
 
         if let Ok(content) = fs::read_to_string(&path) {
-            let value = content.
-                trim()
+            let value = content
+                .trim()
                 .parse::<f64>()
                 .map_err(|e| format!("Error parsing value: {e}"))?;
 
@@ -174,4 +176,28 @@ pub fn swappiness() -> Result<String, String> {
         .read_property()?;
 
     Ok(swappiness)
+}
+
+pub fn storage() -> Result<StorageModel, String> {
+    let disks = Disks::new_with_refreshed_list();
+
+    if disks.is_empty() {
+        return Err("No partitons found".to_string());
+    }
+
+    let data_partition = disks
+        .iter()
+        .find(|disk| disk.mount_point().to_str() == Some("/data"));
+
+    match data_partition {
+        Some(disks) => {
+            let total_bytes = disks.total_space();
+            let available_bytes = disks.available_space();
+            let used_bytes = total_bytes - available_bytes;
+
+            Ok(StorageModel { total: total_bytes, used: used_bytes })
+        },
+
+        None => Err("Couldn't isolate the /data partition".to_string())
+    }
 }
