@@ -40,5 +40,8 @@ Future<String> getSwappiness() =>
 Future<void> setSwappiness({required int choice}) =>
     RustLib.instance.api.crateApiSimpleSetSwappiness(choice: choice);
 
+Future<void> setVmDirtyRatio({required int choice}) =>
+    RustLib.instance.api.crateApiSimpleSetVmDirtyRatio(choice: choice);
+
 Future<StorageModel> getStorage() =>
     RustLib.instance.api.crateApiSimpleGetStorage();
