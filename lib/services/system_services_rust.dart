@@ -109,6 +109,14 @@ class SystemServicesRust {
     }
   }
 
+  static Future<void> applyVmDirtyRatio(int choice) async {
+    try {
+      return await setVmDirtyRatio(choice: choice);
+    } catch (e) {
+      throw Exception("Couldn't apply dirty ratio: $e");
+    }
+  }
+
   static Stream<StorageModel> getStorageStream() async* {
     while(true) {
       try {
