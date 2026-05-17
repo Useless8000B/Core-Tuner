@@ -94,16 +94,6 @@ class SystemService {
     ************************************************
   */
 
-  static Future<void> applyDirtyRatio(int value) async {
-    try {
-      int safeValue = value.clamp(0, 100);
-      await runCommand('sysctl -w vm.dirty_ratio=$safeValue', root: true);
-      await saveForMagisk('vm_dirty_ratio', safeValue.toString());
-    } catch (e) {
-      throw Exception("Error applying dirty_ratio: $e");
-    }
-  }
-
   static Future<void> applyDirtyBackgroundRatio(int value) async {
     try {
       int safeValue = value.clamp(0, 100);
