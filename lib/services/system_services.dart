@@ -81,7 +81,9 @@ class SystemService {
       await SystemServicesRust.applySwappiness(prefs.getInt('swappiness') ?? 100);
     }
 
-    if (prefs.containsKey('vm_dirty_ratio')) {}
+    if (prefs.containsKey('vm_dirty_ratio')) {
+      await SystemServicesRust.applySwappiness(prefs.getInt("vm_dirty_ratio") ?? 100);
+    }
 
     if (prefs.containsKey('vm_dirty_background_ratio')) {}
 
