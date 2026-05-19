@@ -198,11 +198,4 @@ class SystemService {
       throw Exception("Couldn't set Wi-Fi throttling: ${result.stderr}");
     }
   }
-
-  static Future<bool> isWifiThrottleEnabled() async {
-    final val = await runCommand(
-      "settings get global wifi_scan_throttle_enabled",
-    );
-    return val == "1";
-  }
 }
