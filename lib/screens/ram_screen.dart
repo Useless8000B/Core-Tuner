@@ -43,12 +43,12 @@ class _RamScreenState extends State<RamScreen> {
                 },
               ),
               TweakSlider(
-                title: 'Aggressive LMK',
-                storageKey: 'low_memory_killer',
-                min: 0,
-                max: 3,
+                title: 'Vm Dirty Background Ratio',
+                storageKey: 'vm_dirty_background_ratio',
+                labelLeft: 'Responsiveness',
+                labelRight: 'Throughput',
                 onAction: (value) async {
-                  // TODO Implement logic
+                  await SystemServicesRust.applyVmDirtyBackgroundRatio(value);
                 },
               ),
             ],
