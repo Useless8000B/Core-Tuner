@@ -70,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1527017699;
+  int get rustContentHash => -1337195268;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -105,6 +105,8 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiSimpleSetGovernor({required String governor});
 
   Future<void> crateApiSimpleSetSwappiness({required int choice});
+
+  Future<void> crateApiSimpleSetVmBackgroundDirtyRatio({required int choice});
 
   Future<void> crateApiSimpleSetVmDirtyRatio({required int choice});
 }
@@ -444,7 +446,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "set_swappiness", argNames: ["choice"]);
 
   @override
-  Future<void> crateApiSimpleSetVmDirtyRatio({required int choice}) {
+  Future<void> crateApiSimpleSetVmBackgroundDirtyRatio({required int choice}) {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -454,6 +456,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             generalizedFrbRustBinding,
             serializer,
             funcId: 13,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleSetVmBackgroundDirtyRatioConstMeta,
+        argValues: [choice],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleSetVmBackgroundDirtyRatioConstMeta =>
+      const TaskConstMeta(
+        debugName: "set_vm_background_dirty_ratio",
+        argNames: ["choice"],
+      );
+
+  @override
+  Future<void> crateApiSimpleSetVmDirtyRatio({required int choice}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_u_8(choice, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 14,
             port: port_,
           );
         },
