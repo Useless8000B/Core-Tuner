@@ -85,7 +85,9 @@ class SystemService {
       await SystemServicesRust.applySwappiness(prefs.getInt("vm_dirty_ratio") ?? 100);
     }
 
-    if (prefs.containsKey('vm_dirty_background_ratio')) {}
+    if (prefs.containsKey('vm_dirty_background_ratio')) {
+      await SystemServicesRust.applyVmDirtyBackgroundRatio(prefs.getInt("vm_dirty_background_ratio") ?? 0);
+    }
 
     if (prefs.containsKey('low_memory_killer')) {}
   }
@@ -95,19 +97,6 @@ class SystemService {
     ******* 4. RAM, ZRAM & VIRTUAL MEMORY **********
     ************************************************
   */
-
-  static Future<void> applyDirtyBackgroundRatio(int value) async {
-    try {
-      int safeValue = value.clamp(0, 100);
-      await runCommand(
-        'sysctl -w vm.dirty_background_ratio=$safeValue',
-        root: true,
-      );
-      await saveForMagisk('vm_dirty_background_ratio', safeValue.toString());
-    } catch (e) {
-      throw Exception("Error applying dirty_background_ratio: $e");
-    }
-  }
 
   static Future<void> applyLmkProfile(int level) async {
     final List<String> profiles = [
