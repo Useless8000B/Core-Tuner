@@ -5,19 +5,14 @@ use crate::system::properties::Property;
 
 pub fn set_cpu_governor(choice: &str) -> Result<(), String> {
     let properties = Property::cpu_cores_properties();
-    let gov = Governor::from_input(choice)
-        .ok_or("Error reading from input")?;
+    let gov = Governor::from_input(choice).ok_or("Error reading from input")?;
 
     let entry = properties
         .iter()
         .find(|v| v.name == "cpu_core")
         .ok_or("cpu_core property not found")?;
 
-    let cmd = format!(
-        "printf %s \"{}\" | tee {}",
-        gov.as_string(),
-        entry.path
-    );
+    let cmd = format!("printf %s \"{}\" | tee {}", gov.as_string(), entry.path);
 
     let status = Command::new("su")
         .arg("-c")
@@ -41,17 +36,13 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
 
     let safe_value = choice.clamp(0, 100);
 
-    let cmd = format!(
-        "echo {} > {}",
-        safe_value.to_string(),
-        entry.path
-    );
+    let cmd = format!("echo {} > {}", safe_value.to_string(), entry.path);
 
     let status = Command::new("su")
         .arg("-c")
         .arg(&cmd)
         .status()
-        .map_err(|e| format!("Error appling swappiness: {e}"))?;
+        .map_err(|e| format!("Error applying swappiness: {e}"))?;
 
     if status.success() {
         Ok(())
@@ -62,17 +53,28 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
 
 pub fn set_dirty_ratio(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 100);
-
-    let cmd = format!(
-        "sysctl -w vm.dirty_ratio={}",
-        safe_value
-    );
-
+    let cmd = format!("sysctl -w vm.dirty_ratio={}", safe_value);
     let status = Command::new("su")
         .arg("-c")
         .arg(&cmd)
         .status()
         .map_err(|e| format!("Error applying dirty_ratio: {e}"))?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!("Command failed due to an error: {status}"))
+    }
+}
+
+pub fn set_background_ratio(choice: u8) -> Result<(), String> {
+    let safe_value = choice.clamp(0, 100);
+    let cmd = format!("sysctl -w vm.dirty_background_ratio={safe_value}");
+    let status = Command::new("su")
+    .arg("-c")
+    .arg(&cmd)
+    .status()
+    .map_err(|e| format!("Error applying dirty_background_ratio: {e}"))?;
 
     if status.success() {
         Ok(())

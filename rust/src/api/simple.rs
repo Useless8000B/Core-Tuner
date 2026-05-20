@@ -54,6 +54,10 @@ pub fn set_vm_dirty_ratio(choice: u8) -> Result<(), String> {
     writer::set_swappiness(choice)
 }
 
+pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), String> {
+    writer::set_background_ratio(choice)
+}
+
 pub fn get_storage() -> Result<StorageModel, String> {
     reader::storage()
 }
