@@ -16,6 +16,9 @@ Future<BatteryModel> getBatteryInfo() =>
 Future<double> getBatteryTemperature() =>
     RustLib.instance.api.crateApiSimpleGetBatteryTemperature();
 
+Future<void> setWifiThrottle({required bool enable}) =>
+    RustLib.instance.api.crateApiSimpleSetWifiThrottle(enable: enable);
+
 Future<double> getCpuTemperature() =>
     RustLib.instance.api.crateApiSimpleGetCpuTemperature();
 

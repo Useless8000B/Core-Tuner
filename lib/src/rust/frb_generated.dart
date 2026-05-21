@@ -70,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1117735423;
+  int get rustContentHash => 1879622388;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -111,6 +111,8 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiSimpleSetVmBackgroundDirtyRatio({required int choice});
 
   Future<void> crateApiSimpleSetVmDirtyRatio({required int choice});
+
+  Future<void> crateApiSimpleSetWifiThrottle({required bool enable});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -538,6 +540,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "set_vm_dirty_ratio",
         argNames: ["choice"],
       );
+
+  @override
+  Future<void> crateApiSimpleSetWifiThrottle({required bool enable}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_bool(enable, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 16,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleSetWifiThrottleConstMeta,
+        argValues: [enable],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleSetWifiThrottleConstMeta =>
+      const TaskConstMeta(debugName: "set_wifi_throttle", argNames: ["enable"]);
 
   @protected
   String dco_decode_String(dynamic raw) {
