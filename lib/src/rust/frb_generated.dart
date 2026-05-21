@@ -70,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1337195268;
+  int get rustContentHash => -1117735423;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -98,7 +98,9 @@ abstract class RustLibApi extends BaseApi {
 
   Future<ZramModel> crateApiSimpleGetSwapInfo();
 
-  Future<String> crateApiSimpleGetSwappiness();
+  Future<int> crateApiSimpleGetSwappiness();
+
+  Future<int> crateApiSimpleGetVmDirtyBackgroundRatio();
 
   Future<void> crateApiSimpleInitApp();
 
@@ -336,7 +338,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_swap_info", argNames: []);
 
   @override
-  Future<String> crateApiSimpleGetSwappiness() {
+  Future<int> crateApiSimpleGetSwappiness() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -349,7 +351,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
+          decodeSuccessData: sse_decode_u_8,
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateApiSimpleGetSwappinessConstMeta,
@@ -363,7 +365,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_swappiness", argNames: []);
 
   @override
-  Future<void> crateApiSimpleInitApp() {
+  Future<int> crateApiSimpleGetVmDirtyBackgroundRatio() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -372,6 +374,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             generalizedFrbRustBinding,
             serializer,
             funcId: 10,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_u_8,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleGetVmDirtyBackgroundRatioConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleGetVmDirtyBackgroundRatioConstMeta =>
+      const TaskConstMeta(
+        debugName: "get_vm_dirty_background_ratio",
+        argNames: [],
+      );
+
+  @override
+  Future<void> crateApiSimpleInitApp() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 11,
             port: port_,
           );
         },
@@ -399,7 +431,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 11,
+            funcId: 12,
             port: port_,
           );
         },
@@ -427,7 +459,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 12,
+            funcId: 13,
             port: port_,
           );
         },
@@ -455,7 +487,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 13,
+            funcId: 14,
             port: port_,
           );
         },
@@ -486,7 +518,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 14,
+            funcId: 15,
             port: port_,
           );
         },

@@ -34,7 +34,7 @@ Future<RamModel> getRamInfo() =>
 Future<ZramModel> getSwapInfo() =>
     RustLib.instance.api.crateApiSimpleGetSwapInfo();
 
-Future<String> getSwappiness() =>
+Future<int> getSwappiness() =>
     RustLib.instance.api.crateApiSimpleGetSwappiness();
 
 Future<void> setSwappiness({required int choice}) =>
@@ -42,6 +42,9 @@ Future<void> setSwappiness({required int choice}) =>
 
 Future<void> setVmDirtyRatio({required int choice}) =>
     RustLib.instance.api.crateApiSimpleSetVmDirtyRatio(choice: choice);
+
+Future<int> getVmDirtyBackgroundRatio() =>
+    RustLib.instance.api.crateApiSimpleGetVmDirtyBackgroundRatio();
 
 Future<void> setVmBackgroundDirtyRatio({required int choice}) => RustLib
     .instance
