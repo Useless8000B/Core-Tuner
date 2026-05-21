@@ -58,6 +58,7 @@ impl Property {
     pub fn kernel_properties() -> Vec<Property> {
         vec![
             Property::new("swappiness", "/proc/sys/vm/swappiness"),
+            Property::new("dirty_background_ratio", "/proc/sys/vm/dirty_ratio")
         ]
     }
 }
