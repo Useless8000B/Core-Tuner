@@ -54,14 +54,14 @@ class SystemService {
   static Future<void> syncAppWithSystem() async {
     final prefs = await SharedPreferences.getInstance();
 
-    String dr = await runCommand('cat /proc/sys/vm/dirty_ratio', root: true);
-    if (dr.isNotEmpty) {
-      await prefs.setInt('vm_dirty_ratio', int.tryParse(dr) ?? 20);
+    int dr = await SystemServicesRust.getDirtyBackgroundRatio();
+    if (dr >= 0) {
+      await prefs.setInt('vm_dirty_ratio', dr);
     }
 
-    String sw = await SystemServicesRust.getCurrentSwappiness();
-    if (sw.isNotEmpty) {
-      await prefs.setInt('swappiness', int.tryParse(sw) ?? 100);
+    int sw = await SystemServicesRust.getCurrentSwappiness();
+    if (sw >= 0) {
+      await prefs.setInt('swappiness', sw);
     }
 
     String gov = await SystemServicesRust.getCurrentGovernor();
@@ -82,7 +82,7 @@ class SystemService {
     }
 
     if (prefs.containsKey('vm_dirty_ratio')) {
-      await SystemServicesRust.applySwappiness(prefs.getInt("vm_dirty_ratio") ?? 100);
+      await SystemServicesRust.applyVmDirtyRatio(prefs.getInt("vm_dirty_ratio") ?? 0);
     }
 
     if (prefs.containsKey('vm_dirty_background_ratio')) {
@@ -112,8 +112,6 @@ class SystemService {
         '''
       setprop persist.sys.lmk.minfree_levels "$selected"
       setprop sys.lmk.minfree_levels "$selected"
-      chown system:system /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
-      echo "$selected" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null || true
     ''';
 
     await runCommand(command, root: true);
