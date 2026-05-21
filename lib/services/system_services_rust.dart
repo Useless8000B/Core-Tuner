@@ -29,6 +29,14 @@ class SystemServicesRust {
     }
   }
 
+  static Future<void> setWifiThrottling(bool enable) async {
+    try {
+      return await setWifiThrottle(enable: enable);
+    } catch (e) {
+      throw Exception("Coudln't apply wifi throttle: $e");
+    }
+  }
+
   static Stream<double> getCpuTemperatureStream() async* {
     while (true) {
       try {

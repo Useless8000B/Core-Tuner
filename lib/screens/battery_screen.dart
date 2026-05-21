@@ -1,3 +1,4 @@
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:core_tuner/widgets/battery_thermal_widget.dart';
 import 'package:core_tuner/widgets/battery_widget.dart';
 import 'package:core_tuner/widgets/tweak_switch.dart';
@@ -22,7 +23,7 @@ class BatteryScreen extends StatelessWidget {
                 title: 'Wi-Fi Scan Throttling',
                 storageKey: 'wifi_scan_throttling',
                 onAction: (value) async {
-                  // TODO implement logic
+                  await SystemServicesRust.setWifiThrottling(value);
                 },
               ),
               TweakSwitch(
