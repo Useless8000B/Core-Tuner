@@ -18,6 +18,10 @@ pub fn get_battery_temperature() -> Result<f64, String> {
     reader::battery_temperature()
 }
 
+pub fn set_wifi_throttle(enable: bool) -> Result<(), String> {
+    writer::wifi_throttle(enable)
+}
+
 pub fn get_cpu_temperature() -> Result<f32, String> {
     reader::cpu_temperature()
 }

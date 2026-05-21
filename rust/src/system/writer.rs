@@ -38,6 +38,12 @@ pub fn set_dirty_ratio(choice: u8) -> Result<(), String> {
 pub fn set_background_ratio(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 100);
     let cmd = format!("sysctl -w vm.dirty_background_ratio={safe_value}");
-    
+
     run_command::write_shell_command("su", &["-c", &cmd])
+}
+
+pub fn wifi_throttle(enable: bool) -> Result<(), String> {
+    let value: &str = if enable { "1" } else { "0" };
+
+    run_command::write_shell_command("su", &["-c", "settings put global wifi_scan_throttle_enabled ", value])
 }
