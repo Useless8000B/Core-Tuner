@@ -42,7 +42,7 @@ pub fn get_swap_info() -> Result <ZramModel, String> {
     reader::zram_info()
 }
 
-pub fn get_swappiness() -> Result<String, String> {
+pub fn get_swappiness() -> Result<u8, String> {
     reader::swappiness()
 }
 
@@ -52,6 +52,10 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
 
 pub fn set_vm_dirty_ratio(choice: u8) -> Result<(), String> {
     writer::set_swappiness(choice)
+}
+
+pub fn get_vm_dirty_background_ratio() -> Result<u8, String> {
+    reader::dirty_background_ratio()
 }
 
 pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), String> {

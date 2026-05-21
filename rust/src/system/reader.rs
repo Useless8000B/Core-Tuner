@@ -166,7 +166,7 @@ pub fn zram_info() -> Result<ZramModel, String> {
     })
 }
 
-pub fn swappiness() -> Result<String, String> {
+pub fn swappiness() -> Result<u8, String> {
     let properties = Property::kernel_properties();
 
     let swappiness = properties
@@ -175,7 +175,25 @@ pub fn swappiness() -> Result<String, String> {
         .ok_or("swappiness property not found")?
         .read_property()?;
 
-    Ok(swappiness)
+    let parsed_value: u8 = swappiness.parse()
+        .map_err(|e| format!("Error parsing value? {e}"))?;
+
+    Ok(parsed_value)
+}
+
+pub fn dirty_background_ratio() -> Result<u8, String> {
+    let properties = Property::kernel_properties();
+    let dirty_background_ratio = properties
+        .iter()
+        .find(|v| v.name == "dirty_background_ratio")
+        .ok_or("dirty_background_ratio property not found")?
+        .read_property()?;
+
+    let parsed_value = dirty_background_ratio
+        .parse::<u8>()
+        .map_err(|e| format!("Couldn't parse value: {e}"))?;
+
+    Ok(parsed_value)
 }
 
 pub fn storage() -> Result<StorageModel, String> {
