@@ -173,16 +173,4 @@ class SystemService {
       throw Exception("Error clearing tmp files: $e");
     }
   }
-
-  static Future<void> setWifiThrottling(bool enabled) async {
-    final value = enabled ? '1' : '0';
-    final result = await Process.run('su', [
-      '-c',
-      'settings put global wifi_scan_throttle_enabled $value',
-    ]);
-
-    if (result.exitCode != 0) {
-      throw Exception("Couldn't set Wi-Fi throttling: ${result.stderr}");
-    }
-  }
 }
