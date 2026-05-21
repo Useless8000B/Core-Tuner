@@ -101,7 +101,7 @@ class SystemServicesRust {
     }
   }
 
-  static Future<String> getCurrentSwappiness() async {
+  static Future<int> getCurrentSwappiness() async {
     try {
       return await getSwappiness();
     } catch (e) {
@@ -114,6 +114,14 @@ class SystemServicesRust {
       return await setVmDirtyRatio(choice: choice);
     } catch (e) {
       throw Exception("Couldn't apply dirty ratio: $e");
+    }
+  }
+
+  static Future<int> getDirtyBackgroundRatio() async {
+    try {
+      return await getVmDirtyBackgroundRatio();
+    } catch (e) {
+      throw Exception("Couldn't get dirty background ratio: $e");
     }
   }
 
