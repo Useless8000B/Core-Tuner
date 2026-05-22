@@ -61,4 +61,12 @@ impl Property {
             Property::new("dirty_background_ratio", "/proc/sys/vm/dirty_ratio")
         ]
     }
+
+    pub fn storage_properties() -> Vec<Property> {
+        vec![
+            Property::new("tombstones", "/data/tombstones/*"),
+            Property::new("temp_files", "/data/local/tmp/*"),
+            Property::new("anr", "/data/anr/*"),
+        ]
+    }
 }
