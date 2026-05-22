@@ -1,6 +1,6 @@
 use std::process::Command;
 
-pub fn run_command(cmd: &str, args: &[&str]) -> Result<(), String> {
+pub fn write_shell_command(cmd: &str, args: &[&str]) -> Result<(), String> {
 	let status = Command::new(cmd)
 		.args(args)
 		.status()
