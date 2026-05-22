@@ -152,4 +152,28 @@ class SystemServicesRust {
       await Future.delayed(const Duration(seconds: 20));
     }
   }
+
+  static Future<void> runFstrim() async {
+    try {
+      return await writeFstrim();
+    } catch (e) {
+      throw Exception("Error running fstrim: $e");
+    }
+  }
+
+  static Future<void> runClearLogs() async {
+    try {
+      return await writeClearLogs();
+    } catch (e) {
+      throw Exception("Error clearing logs: $e");
+    }
+  }
+
+  static Future<void> runClearTempFiles() async {
+    try {
+      return await writeClearTempFiles();
+    } catch (e) {
+      throw Exception("Error clearing temp files: $e");
+    }
+  }
 }

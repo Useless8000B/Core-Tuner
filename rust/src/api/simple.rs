@@ -69,3 +69,15 @@ pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), String> {
 pub fn get_storage() -> Result<StorageModel, String> {
     reader::storage()
 }
+
+pub fn write_fstrim() -> Result<(), String> {
+    writer::fstrim()
+}
+
+pub fn write_clear_logs() -> Result<(), String>  {
+    writer::clear_logs()
+}
+
+pub fn write_clear_temp_files() -> Result<(), String> {
+    writer::clear_temp_files()
+}
