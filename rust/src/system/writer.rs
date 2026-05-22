@@ -49,7 +49,7 @@ pub fn wifi_throttle(enable: bool) -> Result<(), String> {
         "su",
         &[
             "-c",
-            "settings put global wifi_scan_throttle_enabled ",
+            "settings put global wifi_scan_throttle_enabled",
             value,
         ],
     )
@@ -57,4 +57,41 @@ pub fn wifi_throttle(enable: bool) -> Result<(), String> {
 
 pub fn fstrim() -> Result<(), String> {
     run_command::write_shell_command("su", &["-c", "fstrim -v /data && fstrim -v /cache"])
+}
+
+pub fn clear_logs() -> Result<(), String> {
+    let properties = Property::storage_properties();
+
+    let tombstones = properties
+        .iter()
+        .find(|v| v.name == "tombstones")
+        .ok_or("tombstones property not found")?;
+
+    let anr = properties
+        .iter()
+        .find(|v| v.name == "anr")
+        .ok_or("anr property not found")?;
+
+    run_command::write_shell_command(
+        "su",
+        &[
+            "-c",
+            "rm -rf",
+            &tombstones.path,
+            "&&",
+            "rm -rf",
+            &anr.path,
+        ],
+    )
+}
+
+pub fn clear_temp_files() -> Result<(), String> {
+    let properties = Property::storage_properties();
+
+    let temp_files = properties
+        .iter()
+        .find(|v| v.name == "temp_files")
+        .ok_or("temp_files property not found")?;
+
+    run_command::write_shell_command("su", &["-c", "rm -rf", &temp_files.path])
 }
