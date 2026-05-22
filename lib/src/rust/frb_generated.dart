@@ -70,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 1879622388;
+  int get rustContentHash => -1031670115;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -113,6 +113,12 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiSimpleSetVmDirtyRatio({required int choice});
 
   Future<void> crateApiSimpleSetWifiThrottle({required bool enable});
+
+  Future<void> crateApiSimpleWriteClearLogs();
+
+  Future<void> crateApiSimpleWriteClearTempFiles();
+
+  Future<void> crateApiSimpleWriteFstrim();
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -568,6 +574,87 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiSimpleSetWifiThrottleConstMeta =>
       const TaskConstMeta(debugName: "set_wifi_throttle", argNames: ["enable"]);
+
+  @override
+  Future<void> crateApiSimpleWriteClearLogs() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 17,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleWriteClearLogsConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleWriteClearLogsConstMeta =>
+      const TaskConstMeta(debugName: "write_clear_logs", argNames: []);
+
+  @override
+  Future<void> crateApiSimpleWriteClearTempFiles() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 18,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleWriteClearTempFilesConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleWriteClearTempFilesConstMeta =>
+      const TaskConstMeta(debugName: "write_clear_temp_files", argNames: []);
+
+  @override
+  Future<void> crateApiSimpleWriteFstrim() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 19,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiSimpleWriteFstrimConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSimpleWriteFstrimConstMeta =>
+      const TaskConstMeta(debugName: "write_fstrim", argNames: []);
 
   @protected
   String dco_decode_String(dynamic raw) {

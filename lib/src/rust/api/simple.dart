@@ -56,3 +56,11 @@ Future<void> setVmBackgroundDirtyRatio({required int choice}) => RustLib
 
 Future<StorageModel> getStorage() =>
     RustLib.instance.api.crateApiSimpleGetStorage();
+
+Future<void> writeFstrim() => RustLib.instance.api.crateApiSimpleWriteFstrim();
+
+Future<void> writeClearLogs() =>
+    RustLib.instance.api.crateApiSimpleWriteClearLogs();
+
+Future<void> writeClearTempFiles() =>
+    RustLib.instance.api.crateApiSimpleWriteClearTempFiles();
