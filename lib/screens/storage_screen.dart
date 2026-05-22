@@ -1,4 +1,4 @@
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:core_tuner/widgets/storage_widget.dart';
 import 'package:core_tuner/widgets/tweak_button.dart';
 import 'package:flutter/material.dart';
@@ -17,16 +17,12 @@ class StorageScreen extends StatelessWidget {
               StorageWidget(),
               const SizedBox(height: 20),
               TweakButton(
-                title: 'Wipe Dalvik Cache',
-                onAction: SystemService.clearDalvik,
-              ),
-              TweakButton(
                 title: 'Run FSTRIM',
-                onAction: () => SystemService.runStorageTrim(),
+                onAction: () => SystemServicesRust.runFstrim(),
               ),
               TweakButton(
                 title: 'Clear logs',
-                onAction: () => SystemService.clearSystemLogs(),
+                onAction: () => SystemServicesRust.runClearLogs(),
               ),
             ],
           ),
