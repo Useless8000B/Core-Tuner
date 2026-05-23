@@ -1,5 +1,3 @@
-use std::fs;
-
 pub enum Governor {
     Performance,
     Schedutil,
@@ -22,14 +20,5 @@ impl Governor {
             "powersave" => Some(Governor::Powersave),
             _ => None,
         }
-    }
-
-    pub fn apply(&self, path: &str) -> Result<(), String> {
-        let value = self.as_string();
-
-        fs::write(path, value)
-            .map_err(|e| format!("Error writing governor: {e}"))?;
-
-        Ok(())
     }
 }
