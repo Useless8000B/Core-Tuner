@@ -75,8 +75,6 @@ class SystemService {
       await SystemServicesRust.setGlobalCpuGovernor(prefs.getString('cpu_governor') ?? "schedutil");
     }
 
-    if (prefs.containsKey('battery_idle_mode')) {}
-
     if (prefs.containsKey('swappiness')) {
       await SystemServicesRust.applySwappiness(prefs.getInt('swappiness') ?? 100);
     }
@@ -88,15 +86,7 @@ class SystemService {
     if (prefs.containsKey('vm_dirty_background_ratio')) {
       await SystemServicesRust.applyVmDirtyBackgroundRatio(prefs.getInt("vm_dirty_background_ratio") ?? 0);
     }
-
-    if (prefs.containsKey('low_memory_killer')) {}
   }
-
-  /*
-    ************************************************
-    ******* 4. RAM, ZRAM & VIRTUAL MEMORY **********
-    ************************************************
-  */
 
   static Future<void> applyLmkProfile(int level) async {
     final List<String> profiles = [
@@ -108,13 +98,9 @@ class SystemService {
 
     final String selected = profiles[level.clamp(0, 3)];
 
-    final command =
-        '''
+    final command = '''
       setprop persist.sys.lmk.minfree_levels "$selected"
       setprop sys.lmk.minfree_levels "$selected"
     ''';
-
-    await runCommand(command, root: true);
-    await saveForMagisk('lmk_minfree', selected);
   }
 }
