@@ -54,8 +54,12 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
     writer::set_swappiness(choice)
 }
 
+pub fn get_vm_dirty_ratio() -> Result<u8, String> {
+    reader::dirty_ratio()
+}
+
 pub fn set_vm_dirty_ratio(choice: u8) -> Result<(), String> {
-    writer::set_swappiness(choice)
+    writer::set_dirty_ratio(choice)
 }
 
 pub fn get_vm_dirty_background_ratio() -> Result<u8, String> {
@@ -80,4 +84,8 @@ pub fn write_clear_logs() -> Result<(), String>  {
 
 pub fn write_clear_temp_files() -> Result<(), String> {
     writer::clear_temp_files()
+}
+
+pub fn write_lmk_profile(choice: u8) -> Result<(), String> {
+    writer::lmk_profile(choice)
 }
