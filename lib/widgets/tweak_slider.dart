@@ -1,5 +1,5 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services.dart';
+import 'package:core_tuner/services/system_services_rust.dart';
 import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,18 +49,19 @@ class _TweakSliderState extends State<TweakSlider> {
     int? savedValue = prefs.getInt(widget.storageKey);
 
     if (savedValue == null || (savedValue == 0 && widget.defaultValue != 0)) {
-      String raw = "";
+      int raw = 0;
+
       if (widget.storageKey == 'vm_dirty_ratio') {
-        raw = await SystemService.runCommand('cat /proc/sys/vm/dirty_ratio');
+        raw = await SystemServicesRust.getCurrentDirtyRatio();
       } else if (widget.storageKey == 'swappiness_value') {
-        raw = await SystemService.runCommand('cat /proc/sys/vm/swappiness');
+        raw = await SystemServicesRust.getCurrentSwappiness();
+      } else if (widget.storageKey == 'vm_dirty_background_ratio') {
+        raw = await SystemServicesRust.getDirtyBackgroundRatio();
       }
 
-      if (raw.isNotEmpty && raw != "0") {
-        savedValue = int.tryParse(raw);
-        if (savedValue != null) {
-          await prefs.setInt(widget.storageKey, savedValue);
-        }
+      if (raw != 0) {
+        savedValue = raw;
+        await prefs.setInt(widget.storageKey, savedValue);
       }
     }
 
