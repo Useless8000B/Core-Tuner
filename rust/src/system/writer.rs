@@ -1,4 +1,5 @@
 use crate::system::governor::Governor;
+use crate::system::lmk::Lmk;
 use crate::system::properties::Property;
 use crate::utils::run_command;
 
@@ -32,6 +33,7 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
 pub fn set_dirty_ratio(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 100);
     let cmd = format!("sysctl -w vm.dirty_ratio={}", safe_value);
+
     run_command::write_shell_command("su", &["-c", &cmd])
 }
 
@@ -74,14 +76,7 @@ pub fn clear_logs() -> Result<(), String> {
 
     run_command::write_shell_command(
         "su",
-        &[
-            "-c",
-            "rm -rf",
-            &tombstones.path,
-            "&&",
-            "rm -rf",
-            &anr.path,
-        ],
+        &["-c", "rm -rf", &tombstones.path, "&&", "rm -rf", &anr.path],
     )
 }
 
@@ -94,4 +89,22 @@ pub fn clear_temp_files() -> Result<(), String> {
         .ok_or("temp_files property not found")?;
 
     run_command::write_shell_command("su", &["-c", "rm -rf", &temp_files.path])
+}
+
+pub fn lmk_profile(choice: u8) -> Result<(), String> {
+    let safe_value = choice.clamp(0, 3);
+    let profile = Lmk::from_input(safe_value)
+        .ok_or("Couldn't get from input")?;
+
+    run_command::write_shell_command(
+        "su",
+        &[
+            "-c",
+            "setprop persist.sys.lmk.minfree_levels",
+            profile.as_string(),
+            "&&",
+            "setprop sys.lmk.minfree_levels",
+            profile.as_string(),
+        ],
+    )
 }
