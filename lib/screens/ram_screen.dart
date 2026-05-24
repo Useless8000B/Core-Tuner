@@ -25,6 +25,17 @@ class _RamScreenState extends State<RamScreen> {
               const ZramWidget(),
               const SizedBox(height: 20),
               TweakSlider(
+                title: 'Low Memory Killer',
+                labelLeft: 'Multitasking',
+                labelRight: 'Performance',
+                min: 0,
+                max: 3,
+                storageKey: 'low_memory_killer',
+                onAction: (value) async {
+                  await SystemServicesRust.applyLmkProfile(value);
+                }
+              ),
+              TweakSlider(
                 title: 'Swappiness',
                 storageKey: 'swappiness',
                 labelLeft: 'Performance',
