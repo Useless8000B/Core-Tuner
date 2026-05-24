@@ -4,3 +4,4 @@ pub mod writer;
 pub mod properties;
 pub mod governor;
 pub mod cpu;
+pub mod lmk;
