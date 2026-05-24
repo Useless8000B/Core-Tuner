@@ -175,8 +175,23 @@ pub fn swappiness() -> Result<u8, String> {
         .ok_or("swappiness property not found")?
         .read_property()?;
 
-    let parsed_value: u8 = swappiness.parse()
-        .map_err(|e| format!("Error parsing value? {e}"))?;
+    let parsed_value: u8 = swappiness
+        .parse()
+        .map_err(|e| format!("Error parsing value: {e}"))?;
+
+    Ok(parsed_value)
+}
+
+pub fn dirty_ratio() -> Result<u8, String> {
+    let properties = Property::kernel_properties();
+    let dirty_ratio = properties
+        .iter()
+        .find(|v| v.name == "dirty_ratio")
+        .ok_or("dirty_ratio property not found")?
+        .read_property()?;
+
+    let parsed_value = dirty_ratio.parse::<u8>()
+        .map_err(|e| format!("Error parsing value: {e}"))?;
 
     Ok(parsed_value)
 }
