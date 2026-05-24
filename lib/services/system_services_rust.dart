@@ -117,6 +117,14 @@ class SystemServicesRust {
     }
   }
 
+  static Future<int> getCurrentDirtyRatio() async {
+    try {
+      return getVmDirtyRatio();
+    } catch (e) {
+      throw Exception("Couldn't get current dirty ratio: $e");
+    }
+  }
+
   static Future<void> applyVmDirtyRatio(int choice) async {
     try {
       return await setVmDirtyRatio(choice: choice);
@@ -174,6 +182,14 @@ class SystemServicesRust {
       return await writeClearTempFiles();
     } catch (e) {
       throw Exception("Error clearing temp files: $e");
+    }
+  }
+
+  static Future<void> applyLmkProfile(int choice) async {
+    try {
+      return await writeLmkProfile(choice: choice);
+    } catch (e) {
+      throw Exception("Couldn't apply lmk profile: $e");
     }
   }
 }
