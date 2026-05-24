@@ -43,6 +43,9 @@ Future<int> getSwappiness() =>
 Future<void> setSwappiness({required int choice}) =>
     RustLib.instance.api.crateApiSimpleSetSwappiness(choice: choice);
 
+Future<int> getVmDirtyRatio() =>
+    RustLib.instance.api.crateApiSimpleGetVmDirtyRatio();
+
 Future<void> setVmDirtyRatio({required int choice}) =>
     RustLib.instance.api.crateApiSimpleSetVmDirtyRatio(choice: choice);
 
@@ -64,3 +67,6 @@ Future<void> writeClearLogs() =>
 
 Future<void> writeClearTempFiles() =>
     RustLib.instance.api.crateApiSimpleWriteClearTempFiles();
+
+Future<void> writeLmkProfile({required int choice}) =>
+    RustLib.instance.api.crateApiSimpleWriteLmkProfile(choice: choice);
