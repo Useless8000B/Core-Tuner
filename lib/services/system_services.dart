@@ -39,30 +39,42 @@ class SystemService {
     }
 
     String gov = await SystemServicesRust.getCurrentGovernor();
-    if (gov.isNotEmpty) await prefs.setString('cpu_governor', gov.trim());
+    if (gov.isNotEmpty) {
+      await prefs.setString('cpu_governor', gov.trim());
+    }
   }
 
   static Future<void> applySavedTweaks() async {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.containsKey('cpu_governor')) {
-      await SystemServicesRust.setGlobalCpuGovernor(prefs.getString('cpu_governor') ?? "schedutil");
+      await SystemServicesRust.setGlobalCpuGovernor(
+        prefs.getString('cpu_governor') ?? "schedutil",
+      );
     }
 
     if (prefs.containsKey('swappiness')) {
-      await SystemServicesRust.applySwappiness(prefs.getInt('swappiness') ?? 100);
+      await SystemServicesRust.applySwappiness(
+        prefs.getInt('swappiness') ?? 100,
+      );
     }
 
     if (prefs.containsKey('vm_dirty_ratio')) {
-      await SystemServicesRust.applyVmDirtyRatio(prefs.getInt("vm_dirty_ratio") ?? 0);
+      await SystemServicesRust.applyVmDirtyRatio(
+        prefs.getInt("vm_dirty_ratio") ?? 0,
+      );
     }
 
     if (prefs.containsKey('vm_dirty_background_ratio')) {
-      await SystemServicesRust.applyVmDirtyBackgroundRatio(prefs.getInt("vm_dirty_background_ratio") ?? 0);
+      await SystemServicesRust.applyVmDirtyBackgroundRatio(
+        prefs.getInt("vm_dirty_background_ratio") ?? 0,
+      );
     }
 
     if (prefs.containsKey('low_memory_killer')) {
-      await SystemServicesRust.applyLmkProfile(prefs.getInt("low_memory_killer") ?? 0);
+      await SystemServicesRust.applyLmkProfile(
+        prefs.getInt("low_memory_killer") ?? 0,
+      );
     }
   }
 }
