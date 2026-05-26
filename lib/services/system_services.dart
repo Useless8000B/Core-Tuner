@@ -19,17 +19,6 @@ class SystemService {
     }
   }
 
-  static Future<void> saveForMagisk(String key, String value) async {
-    try {
-      await Process.run('su', [
-        '-c',
-        'mkdir -p /data/core_tuner && echo "$value" > /data/core_tuner/$key',
-      ]);
-    } catch (e) {
-      throw Exception('Error saving for magisk: $e');
-    }
-  }
-
   /*
     ************************************************
     ******* 2. APP STATE & SYNC (SharedPrefs) ******
