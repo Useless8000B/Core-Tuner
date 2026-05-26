@@ -28,7 +28,7 @@ class SystemService {
   static Future<void> syncAppWithSystem() async {
     final prefs = await SharedPreferences.getInstance();
 
-    int dr = await SystemServicesRust.getDirtyBackgroundRatio();
+    int dr = await SystemServicesRust.getCurrentDirtyRatio();
     if (dr >= 0) {
       await prefs.setInt('vm_dirty_ratio', dr);
     }
