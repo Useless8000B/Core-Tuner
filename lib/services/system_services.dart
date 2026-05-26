@@ -28,19 +28,24 @@ class SystemService {
   static Future<void> syncAppWithSystem() async {
     final prefs = await SharedPreferences.getInstance();
 
-    int dr = await SystemServicesRust.getCurrentDirtyRatio();
-    if (dr >= 0) {
-      await prefs.setInt('vm_dirty_ratio', dr);
+    int dirtyRatio = await SystemServicesRust.getCurrentDirtyRatio();
+    if (dirtyRatio >= 0) {
+      await prefs.setInt('vm_dirty_ratio', dirtyRatio);
     }
 
-    int sw = await SystemServicesRust.getCurrentSwappiness();
-    if (sw >= 0) {
-      await prefs.setInt('swappiness', sw);
+    int backgroundRatio = await SystemServicesRust.getDirtyBackgroundRatio();
+    if (backgroundRatio >= 0) {
+      await prefs.setInt('vm_dirty_background_ratio', backgroundRatio);
     }
 
-    String gov = await SystemServicesRust.getCurrentGovernor();
-    if (gov.isNotEmpty) {
-      await prefs.setString('cpu_governor', gov.trim());
+    int swappiness = await SystemServicesRust.getCurrentSwappiness();
+    if (swappiness >= 0) {
+      await prefs.setInt('swappiness', swappiness);
+    }
+
+    String governor = await SystemServicesRust.getCurrentGovernor();
+    if (governor.isNotEmpty) {
+      await prefs.setString('cpu_governor', governor.trim());
     }
   }
 
