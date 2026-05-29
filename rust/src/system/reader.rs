@@ -190,7 +190,8 @@ pub fn dirty_ratio() -> Result<u8, String> {
         .ok_or("dirty_ratio property not found")?
         .read_property()?;
 
-    let parsed_value = dirty_ratio.parse::<u8>()
+    let parsed_value = dirty_ratio
+        .parse::<u8>()
         .map_err(|e| format!("Error parsing value: {e}"))?;
 
     Ok(parsed_value)
