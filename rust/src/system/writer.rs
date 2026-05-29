@@ -93,8 +93,7 @@ pub fn clear_temp_files() -> Result<(), String> {
 
 pub fn lmk_profile(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 3);
-    let profile = Lmk::from_input(safe_value)
-        .ok_or("Couldn't get from input")?;
+    let profile = Lmk::from_input(safe_value).ok_or("Couldn't get from input")?;
 
     run_command::write_shell_command(
         "su",
