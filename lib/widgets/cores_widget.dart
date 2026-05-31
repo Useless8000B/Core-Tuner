@@ -10,32 +10,47 @@ class CoresWidget extends StatelessWidget {
     return StreamBuilder<List<double>>(
       stream: SystemServicesRust.getCpuFrequenciesStream(),
       builder: (context, snapshot) {
-        List<double> frequencies = snapshot.data ?? [];
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final frequencies = snapshot.data!;
 
         return GridView.builder(
-          shrinkWrap: true,
+          shrinkWrap: true, 
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 1.5,
+            childAspectRatio: 2.0,
           ),
           itemCount: frequencies.length,
           itemBuilder: (context, index) {
-            double maxForThisCore = (index < 4) ? 1.9 : 2.4;
-            return buildCoreCard("Core $index", frequencies[index], maxForThisCore);
+            return CoreCard(
+              key: ValueKey(index),
+              index: index,
+              freq: frequencies[index],
+            );
           },
         );
       },
     );
   }
+}
 
-  Widget buildCoreCard(String label, double freq, double maxFreq) {
-    double progress = (freq / maxFreq).clamp(0.0, 1.0);
-    double percentage = progress * 100;
-    bool isHighLoad = progress > 0.9;
+class CoreCard extends StatelessWidget {
+  final int index;
+  final double freq;
 
+  const CoreCard({
+    super.key,
+    required this.index,
+    required this.freq,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -43,55 +58,31 @@ class CoresWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border(
           left: BorderSide(
-            color: isHighLoad
-                ? AppColors.red
-                : AppColors.royalBlue.withValues(alpha: 0.3),
+            color: AppColors.royalBlue.withValues(alpha: 0.4),
             width: 3,
           ),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            label.toUpperCase(),
+            "CORE $index",
             style: const TextStyle(
               color: Colors.white38,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                "${freq.toStringAsFixed(1)} GHz",
-                style: TextStyle(
-                  color: isHighLoad ? AppColors.red : Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "${percentage.toInt()}%",
-                style: TextStyle(
-                  color: isHighLoad
-                      ? AppColors.red.withValues(alpha: 0.7)
-                      : Colors.white38,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          LinearProgressIndicator(
-            value: progress,
-            backgroundColor: Colors.white10,
-            color: isHighLoad ? AppColors.red : AppColors.royalBlue,
-            minHeight: 2,
+          const SizedBox(height: 4),
+          Text(
+            "${freq.toStringAsFixed(1)} GHz",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
