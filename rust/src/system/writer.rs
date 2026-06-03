@@ -32,7 +32,7 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
 
 pub fn set_dirty_ratio(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 100);
-    let cmd = format!("sysctl -w vm.dirty_ratio={}", safe_value);
+    let cmd = format!("sysctl -w vm.dirty_ratio={safe_value}");
 
     run_command::write_shell_command("su", &["-c", &cmd])
 }
