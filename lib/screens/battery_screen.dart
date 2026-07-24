@@ -26,13 +26,6 @@ class BatteryScreen extends StatelessWidget {
                   await SystemServicesRust.setWifiThrottling(value);
                 },
               ),
-              TweakSwitch(
-                title: 'Battery Idle Mode',
-                storageKey: 'battery_idle_mode',
-                onAction: (value) async {
-                  // TODO implement logic
-                },
-              ),
             ],
           ),
         ),
