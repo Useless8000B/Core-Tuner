@@ -118,3 +118,11 @@ The Android ecosystem is highly fragmented. Each manufacturer (Xiaomi, Motorola,
        `for i in /sys/devices/virtual/thermal/thermal_zone*; do echo "$i | $(cat $i/type)"; done`
     3. Identify which zone corresponds to the `battery` or `bms` type.
     4. Open a GitHub **Issue** reporting your device model and the discovered path.
+
+---
+
+### 🇧🇷 Português
+Para testar o app, mude seu SELinux para: ```setenforce 0```, após o uso, mude para ```setenforce 1```
+
+### 🇺🇸 English
+To test it, set your SELinux to: ```setenforce 0```, after using it, set it back to ```setenforce 1```
