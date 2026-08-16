@@ -1,4 +1,4 @@
-use std::fs;
+use std::{borrow::Cow, fs};
 
 pub struct Sensor {
     pub name: String,
@@ -27,15 +27,15 @@ impl Sensor {
         ]
     }
 
-    pub fn read_sensor(&self) -> Result<f32, String> {
+    pub fn read_sensor(&self) -> Result<f32, Cow<'static, str>> {
         let raw_content = match fs::read_to_string(&self.path) {
             Ok(c) => c,
-            Err(e) => return Err(format!("Error reading {}: {}", self.name, e)),
+            Err(e) => return Err(Cow::Owned(format!("Error reading {}: {}", self.name, e))),
         };
 
         match raw_content.trim().parse::<f32>() {
             Ok(c) => Ok(c),
-            Err(_) => Err(format!("Invalid value from {}", self.name)),
+            Err(_) => Err(Cow::Owned(format!("Invalid value from {}", self.name))),
         }
     }
 }

@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::fs;
 use sysinfo::Disks;
 
@@ -9,7 +10,7 @@ use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
 use crate::utils::extract_from_file::{extract_from_index, extract_from_label};
 
-pub fn battery_info() -> Result<BatteryModel, String> {
+pub fn battery_info() -> Result<BatteryModel, Cow<'static, str>> {
     let sensors = Sensor::battery_sensors();
     let properties = Property::battery_properties();
 
@@ -42,14 +43,14 @@ pub fn battery_info() -> Result<BatteryModel, String> {
     Ok(BatteryModel {
         level: raw_level
             .parse::<u8>()
-            .map_err(|e| format!("Couldn't parse battery level: {e}"))?,
+            .map_err(|e| Cow::Owned(format!("Couldn't parse battery level: {e}")))?,
         current: current / 1000.0,
         is_charging: is_charging,
         voltage: voltage / 1000000.0,
     })
 }
 
-pub fn battery_temperature() -> Result<f64, String> {
+pub fn battery_temperature() -> Result<f64, Cow<'static, str>> {
     let sensors = Sensor::battery_sensors();
 
     let temperature = sensors
@@ -61,7 +62,7 @@ pub fn battery_temperature() -> Result<f64, String> {
     Ok(temperature as f64 / 1000.0)
 }
 
-pub fn cpu_temperature() -> Result<f32, String> {
+pub fn cpu_temperature() -> Result<f32, Cow<'static, str>> {
     let sensors = Sensor::cpu_sensors();
 
     let cpu_temperature = sensors
@@ -69,12 +70,12 @@ pub fn cpu_temperature() -> Result<f32, String> {
         .find(|v| v.name == "performance_core")
         .ok_or("performance_core sensor not found")?
         .read_sensor()
-        .map_err(|e| format!("Critical error reading sensor: {e}"))?;
+        .map_err(|e| Cow::Owned(format!("Critical error reading sensor: {e}")))?;
 
     Ok(cpu_temperature / 1000.0)
 }
 
-pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
+pub fn cpu_frequencies() -> Result<Vec<f64>, Cow<'static, str>> {
     let mut frequencies: Vec<f64> = Vec::new();
 
     for i in 0..16 {
@@ -88,7 +89,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
             let value = content
                 .trim()
                 .parse::<f64>()
-                .map_err(|e| format!("Error parsing value: {e}"))?;
+                .map_err(|e| Cow::Owned(format!("Error parsing value: {e}")))?;
 
             frequencies.push(value / 1000000.0);
         } else {
@@ -99,7 +100,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, String> {
     Ok(frequencies)
 }
 
-pub fn cpu_governor() -> Result<String, String> {
+pub fn cpu_governor() -> Result<String, Cow<'static, str>> {
     let properties = Property::cpu_path_properties();
 
     let governor = properties
@@ -111,7 +112,7 @@ pub fn cpu_governor() -> Result<String, String> {
     Ok(governor)
 }
 
-pub fn ram_info() -> Result<RamModel, String> {
+pub fn ram_info() -> Result<RamModel, Cow<'static, str>> {
     let properties = Property::ram_properties();
 
     let mem_info = properties
@@ -128,7 +129,7 @@ pub fn ram_info() -> Result<RamModel, String> {
     })
 }
 
-pub fn zram_info() -> Result<ZramModel, String> {
+pub fn zram_info() -> Result<ZramModel, Cow<'static, str>> {
     let properties = Property::zram_properties();
 
     let mm_stat = properties
@@ -166,7 +167,7 @@ pub fn zram_info() -> Result<ZramModel, String> {
     })
 }
 
-pub fn swappiness() -> Result<u8, String> {
+pub fn swappiness() -> Result<u8, Cow<'static, str>> {
     let properties = Property::kernel_properties();
 
     let swappiness = properties
@@ -177,12 +178,12 @@ pub fn swappiness() -> Result<u8, String> {
 
     let parsed_value: u8 = swappiness
         .parse()
-        .map_err(|e| format!("Error parsing value: {e}"))?;
+        .map_err(|e| Cow::Owned(format!("Error parsing value: {e}")))?;
 
     Ok(parsed_value)
 }
 
-pub fn dirty_ratio() -> Result<u8, String> {
+pub fn dirty_ratio() -> Result<u8, Cow<'static, str>> {
     let properties = Property::kernel_properties();
     let dirty_ratio = properties
         .iter()
@@ -192,12 +193,12 @@ pub fn dirty_ratio() -> Result<u8, String> {
 
     let parsed_value = dirty_ratio
         .parse::<u8>()
-        .map_err(|e| format!("Error parsing value: {e}"))?;
+        .map_err(|e| Cow::Owned(format!("Error parsing value: {e}")))?;
 
     Ok(parsed_value)
 }
 
-pub fn dirty_background_ratio() -> Result<u8, String> {
+pub fn dirty_background_ratio() -> Result<u8, Cow<'static, str>> {
     let properties = Property::kernel_properties();
     let dirty_background_ratio = properties
         .iter()
@@ -207,16 +208,16 @@ pub fn dirty_background_ratio() -> Result<u8, String> {
 
     let parsed_value = dirty_background_ratio
         .parse::<u8>()
-        .map_err(|e| format!("Couldn't parse value: {e}"))?;
+        .map_err(|e| Cow::Owned(format!("Couldn't parse value: {e}")))?;
 
     Ok(parsed_value)
 }
 
-pub fn storage() -> Result<StorageModel, String> {
+pub fn storage() -> Result<StorageModel, Cow<'static, str>> {
     let disks = Disks::new_with_refreshed_list();
 
     if disks.is_empty() {
-        return Err("No partitons found".to_string());
+        return Err(Cow::Borrowed("No partitons found"));
     }
 
     let data_partition = disks
@@ -235,6 +236,6 @@ pub fn storage() -> Result<StorageModel, String> {
             })
         }
 
-        None => Err("Couldn't isolate the /data partition".to_string()),
+        None => Err(Cow::Borrowed("Couldn't isolate the /data partition")),
     }
 }
