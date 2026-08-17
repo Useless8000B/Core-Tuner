@@ -15,7 +15,7 @@ impl Property {
 
     pub fn read_property(&self) -> Result<String, String> {
         let content = fs::read_to_string(&self.path)
-            .map_err(|e| format!("Error reading {}: {}", &self.name, e))?;
+            .map_err(|e| format!("Error reading {}: {}", self.name, e))?;
 
         Ok(content.trim().to_string())
     }
