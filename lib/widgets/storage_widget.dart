@@ -1,17 +1,19 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/services/storage_services.dart';
 import 'package:core_tuner/src/rust/models/storage_model.dart';
 import 'package:flutter/material.dart';
 
 class StorageWidget extends StatelessWidget {
-  const StorageWidget({super.key});
+  const StorageWidget({super.key, required this.storageServices});
+  final StorageServices storageServices;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<StorageModel>(
-      stream: SystemServicesRust.getStorageStream(),
+      stream: storageServices.getStorageStream(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            !snapshot.hasData) {
           return const SizedBox(
             height: 200,
             child: Center(child: CircularProgressIndicator()),
@@ -29,7 +31,8 @@ class StorageWidget extends StatelessWidget {
         if (progressFactor > 1.0) progressFactor = 1.0;
         if (progressFactor < 0.0) progressFactor = 0.0;
 
-        final String percentStr = "${(progressFactor * 100).toStringAsFixed(0)}%";
+        final String percentStr =
+            "${(progressFactor * 100).toStringAsFixed(0)}%";
 
         return Container(
           padding: const EdgeInsets.all(24),

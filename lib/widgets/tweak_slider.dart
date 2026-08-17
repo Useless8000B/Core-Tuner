@@ -1,5 +1,5 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/services/kernel_services.dart';
 import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +26,10 @@ class TweakSlider extends StatefulWidget {
     this.labelLeft = "Min",
     this.labelRight = "Max",
     this.defaultValue = 0,
+    required this.kernelServices,
   });
+
+  final KernelServices kernelServices;
 
   @override
   State<TweakSlider> createState() => _TweakSliderState();
@@ -52,11 +55,11 @@ class _TweakSliderState extends State<TweakSlider> {
       int raw = 0;
 
       if (widget.storageKey == 'vm_dirty_ratio') {
-        raw = await SystemServicesRust.getCurrentDirtyRatio();
+        raw = await widget.kernelServices.getCurrentDirtyRatio();
       } else if (widget.storageKey == 'swappiness_value') {
-        raw = await SystemServicesRust.getCurrentSwappiness();
+        raw = await widget.kernelServices.getCurrentSwappiness();
       } else if (widget.storageKey == 'vm_dirty_background_ratio') {
-        raw = await SystemServicesRust.getDirtyBackgroundRatio();
+        raw = await widget.kernelServices.getDirtyBackgroundRatio();
       }
 
       if (raw != 0) {

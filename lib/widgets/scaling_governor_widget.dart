@@ -1,10 +1,11 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/services/cpu_services.dart';
 import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 
 class ScalingGovernorWidget extends StatefulWidget {
-  const ScalingGovernorWidget({super.key});
+  const ScalingGovernorWidget({super.key, required this.cpuServices});
+  final CpuServices cpuServices;
 
   @override
   State<ScalingGovernorWidget> createState() => _ScalingGovernorWidgetState();
@@ -21,7 +22,7 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
   }
 
   Future<void> _loadCurrentGovernor() async {
-    final governor = await SystemServicesRust.getCurrentGovernor();
+    final governor = await widget.cpuServices.getCurrentGovernor();
     if (mounted) {
       setState(() {
         _selectedGovernor = governor;
@@ -74,7 +75,7 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
             onSelected: (String? value) async {
               if (value != null) {
                 try {
-                  await SystemServicesRust.setGlobalCpuGovernor(value);
+                  await widget.cpuServices.setGlobalCpuGovernor(value);
 
                   setState(() => _selectedGovernor = value);
 

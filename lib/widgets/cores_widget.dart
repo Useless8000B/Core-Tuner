@@ -1,14 +1,15 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/services/cpu_services.dart';
 import 'package:flutter/material.dart';
 
 class CoresWidget extends StatelessWidget {
-  const CoresWidget({super.key});
+  const CoresWidget({super.key, required this.cpuServices});
+  final CpuServices cpuServices;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<double>>(
-      stream: SystemServicesRust.getCpuFrequenciesStream(),
+      stream: cpuServices.getCpuFrequenciesStream(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -17,7 +18,7 @@ class CoresWidget extends StatelessWidget {
         final frequencies = snapshot.data!;
 
         return GridView.builder(
-          shrinkWrap: true, 
+          shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -43,11 +44,7 @@ class CoreCard extends StatelessWidget {
   final int index;
   final double freq;
 
-  const CoreCard({
-    super.key,
-    required this.index,
-    required this.freq,
-  });
+  const CoreCard({super.key, required this.index, required this.freq});
 
   @override
   Widget build(BuildContext context) {
