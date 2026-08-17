@@ -26,6 +26,7 @@
 
 // Section: imports
 
+use crate::api::simple::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
@@ -70,7 +71,7 @@ fn wire__crate__api__simple__get_battery_info_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_battery_info()?;
                     Ok(output_ok)
                 })())
@@ -102,7 +103,7 @@ fn wire__crate__api__simple__get_battery_temperature_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_battery_temperature()?;
                     Ok(output_ok)
                 })())
@@ -134,7 +135,7 @@ fn wire__crate__api__simple__get_cpu_frequencies_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_cpu_frequencies()?;
                     Ok(output_ok)
                 })())
@@ -166,7 +167,7 @@ fn wire__crate__api__simple__get_cpu_governor_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_cpu_governor()?;
                     Ok(output_ok)
                 })())
@@ -198,7 +199,7 @@ fn wire__crate__api__simple__get_cpu_temperature_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_cpu_temperature()?;
                     Ok(output_ok)
                 })())
@@ -230,7 +231,7 @@ fn wire__crate__api__simple__get_ram_info_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_ram_info()?;
                     Ok(output_ok)
                 })())
@@ -262,7 +263,7 @@ fn wire__crate__api__simple__get_storage_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_storage()?;
                     Ok(output_ok)
                 })())
@@ -294,7 +295,7 @@ fn wire__crate__api__simple__get_swap_info_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_swap_info()?;
                     Ok(output_ok)
                 })())
@@ -326,7 +327,7 @@ fn wire__crate__api__simple__get_swappiness_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_swappiness()?;
                     Ok(output_ok)
                 })())
@@ -358,7 +359,7 @@ fn wire__crate__api__simple__get_vm_dirty_background_ratio_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_vm_dirty_background_ratio()?;
                     Ok(output_ok)
                 })())
@@ -390,7 +391,7 @@ fn wire__crate__api__simple__get_vm_dirty_ratio_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, Cow<'static, str>>((move || {
                     let output_ok = crate::api::simple::get_vm_dirty_ratio()?;
                     Ok(output_ok)
                 })())
@@ -727,7 +728,33 @@ fn wire__crate__api__simple__write_lmk_profile_impl(
     )
 }
 
+// Section: related_funcs
+
+flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>
+);
+
 // Section: dart2rust
+
+impl SseDecode for Cow<'static, str> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueMoi<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return decode_rust_opaque_moi(inner);
+    }
+}
 
 impl SseDecode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -737,14 +764,14 @@ impl SseDecode for String {
     }
 }
 
-impl SseDecode for crate::models::battery_model::BatteryModel {
+impl SseDecode for crate::models::battery::Battery {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_level = <u8>::sse_decode(deserializer);
         let mut var_voltage = <f32>::sse_decode(deserializer);
         let mut var_current = <f32>::sse_decode(deserializer);
         let mut var_isCharging = <bool>::sse_decode(deserializer);
-        return crate::models::battery_model::BatteryModel {
+        return crate::models::battery::Battery {
             level: var_level,
             voltage: var_voltage,
             current: var_current,
@@ -798,24 +825,24 @@ impl SseDecode for Vec<u8> {
     }
 }
 
-impl SseDecode for crate::models::ram_model::RamModel {
+impl SseDecode for crate::models::ram::Ram {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_total = <f64>::sse_decode(deserializer);
         let mut var_used = <f64>::sse_decode(deserializer);
-        return crate::models::ram_model::RamModel {
+        return crate::models::ram::Ram {
             total: var_total,
             used: var_used,
         };
     }
 }
 
-impl SseDecode for crate::models::storage_model::StorageModel {
+impl SseDecode for crate::models::storage::Storage {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_total = <u64>::sse_decode(deserializer);
         let mut var_used = <u64>::sse_decode(deserializer);
-        return crate::models::storage_model::StorageModel {
+        return crate::models::storage::Storage {
             total: var_total,
             used: var_used,
         };
@@ -841,14 +868,21 @@ impl SseDecode for () {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {}
 }
 
-impl SseDecode for crate::models::zram_model::ZramModel {
+impl SseDecode for usize {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u64::<NativeEndian>().unwrap() as _
+    }
+}
+
+impl SseDecode for crate::models::zram::Zram {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_origin = <f64>::sse_decode(deserializer);
         let mut var_compressed = <f64>::sse_decode(deserializer);
         let mut var_total = <f64>::sse_decode(deserializer);
         let mut var_ratio = <f64>::sse_decode(deserializer);
-        return crate::models::zram_model::ZramModel {
+        return crate::models::zram::Zram {
             origin: var_origin,
             compressed: var_compressed,
             total: var_total,
@@ -930,7 +964,22 @@ fn pde_ffi_dispatcher_sync_impl(
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::battery_model::BatteryModel {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Cow<'static, str>> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Cow<'static, str>> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Cow<'static, str>>> for Cow<'static, str> {
+    fn into_into_dart(self) -> FrbWrapper<Cow<'static, str>> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::models::battery::Battery {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.level.into_into_dart().into_dart(),
@@ -942,18 +991,34 @@ impl flutter_rust_bridge::IntoDart for crate::models::battery_model::BatteryMode
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::battery_model::BatteryModel
+    for crate::models::battery::Battery
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::models::battery_model::BatteryModel>
-    for crate::models::battery_model::BatteryModel
+impl flutter_rust_bridge::IntoIntoDart<crate::models::battery::Battery>
+    for crate::models::battery::Battery
 {
-    fn into_into_dart(self) -> crate::models::battery_model::BatteryModel {
+    fn into_into_dart(self) -> crate::models::battery::Battery {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::ram_model::RamModel {
+impl flutter_rust_bridge::IntoDart for crate::models::ram::Ram {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.total.into_into_dart().into_dart(),
+            self.used.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::ram::Ram {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::ram::Ram> for crate::models::ram::Ram {
+    fn into_into_dart(self) -> crate::models::ram::Ram {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::models::storage::Storage {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.total.into_into_dart().into_dart(),
@@ -963,39 +1028,18 @@ impl flutter_rust_bridge::IntoDart for crate::models::ram_model::RamModel {
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::ram_model::RamModel
+    for crate::models::storage::Storage
 {
 }
-impl flutter_rust_bridge::IntoIntoDart<crate::models::ram_model::RamModel>
-    for crate::models::ram_model::RamModel
+impl flutter_rust_bridge::IntoIntoDart<crate::models::storage::Storage>
+    for crate::models::storage::Storage
 {
-    fn into_into_dart(self) -> crate::models::ram_model::RamModel {
+    fn into_into_dart(self) -> crate::models::storage::Storage {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::storage_model::StorageModel {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [
-            self.total.into_into_dart().into_dart(),
-            self.used.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::storage_model::StorageModel
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::storage_model::StorageModel>
-    for crate::models::storage_model::StorageModel
-{
-    fn into_into_dart(self) -> crate::models::storage_model::StorageModel {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::models::zram_model::ZramModel {
+impl flutter_rust_bridge::IntoDart for crate::models::zram::Zram {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.origin.into_into_dart().into_dart(),
@@ -1006,15 +1050,28 @@ impl flutter_rust_bridge::IntoDart for crate::models::zram_model::ZramModel {
         .into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::models::zram_model::ZramModel
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::models::zram_model::ZramModel>
-    for crate::models::zram_model::ZramModel
-{
-    fn into_into_dart(self) -> crate::models::zram_model::ZramModel {
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::models::zram::Zram {}
+impl flutter_rust_bridge::IntoIntoDart<crate::models::zram::Zram> for crate::models::zram::Zram {
+    fn into_into_dart(self) -> crate::models::zram::Zram {
         self
+    }
+}
+
+impl SseEncode for Cow<'static, str> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
+    }
+}
+
+impl SseEncode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
     }
 }
 
@@ -1025,7 +1082,7 @@ impl SseEncode for String {
     }
 }
 
-impl SseEncode for crate::models::battery_model::BatteryModel {
+impl SseEncode for crate::models::battery::Battery {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u8>::sse_encode(self.level, serializer);
@@ -1076,7 +1133,7 @@ impl SseEncode for Vec<u8> {
     }
 }
 
-impl SseEncode for crate::models::ram_model::RamModel {
+impl SseEncode for crate::models::ram::Ram {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.total, serializer);
@@ -1084,7 +1141,7 @@ impl SseEncode for crate::models::ram_model::RamModel {
     }
 }
 
-impl SseEncode for crate::models::storage_model::StorageModel {
+impl SseEncode for crate::models::storage::Storage {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.total, serializer);
@@ -1111,7 +1168,17 @@ impl SseEncode for () {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {}
 }
 
-impl SseEncode for crate::models::zram_model::ZramModel {
+impl SseEncode for usize {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer
+            .cursor
+            .write_u64::<NativeEndian>(self as _)
+            .unwrap();
+    }
+}
+
+impl SseEncode for crate::models::zram::Zram {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <f64>::sse_encode(self.origin, serializer);
@@ -1136,6 +1203,7 @@ mod io {
     // Section: imports
 
     use super::*;
+    use crate::api::simple::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
@@ -1145,6 +1213,20 @@ mod io {
     // Section: boilerplate
 
     flutter_rust_bridge::frb_generated_boilerplate_io!();
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_core_tuner_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::increment_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_core_tuner_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::decrement_strong_count(ptr as _);
+    }
 }
 #[cfg(not(target_family = "wasm"))]
 pub use io::*;
@@ -1158,6 +1240,7 @@ mod web {
     // Section: imports
 
     use super::*;
+    use crate::api::simple::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
@@ -1169,6 +1252,20 @@ mod web {
     // Section: boilerplate
 
     flutter_rust_bridge::frb_generated_boilerplate_web!();
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::increment_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::decrement_strong_count(ptr as _);
+    }
 }
 #[cfg(target_family = "wasm")]
 pub use web::*;
