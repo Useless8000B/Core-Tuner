@@ -38,7 +38,6 @@ impl Property {
         vec![
             Property::new("mm_stat", "/sys/block/zram0/mm_stat"),
             Property::new("disksize", "/sys/block/zram0/disksize"),
-            Property::new("zram_block", "/sys/"),
         ]
     }
 
