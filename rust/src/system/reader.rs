@@ -2,15 +2,15 @@ use std::borrow::Cow;
 use std::fs;
 use sysinfo::Disks;
 
-use crate::models::battery_model::BatteryModel;
-use crate::models::ram_model::RamModel;
-use crate::models::storage_model::StorageModel;
-use crate::models::zram_model::ZramModel;
+use crate::models::battery::Battery;
+use crate::models::ram::Ram;
+use crate::models::storage::Storage;
+use crate::models::zram::Zram;
 use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
 use crate::utils::extract_from_file::{extract_from_index, extract_from_label};
 
-pub fn battery_info() -> Result<BatteryModel, Cow<'static, str>> {
+pub fn battery_info() -> Result<Battery, Cow<'static, str>> {
     let sensors = Sensor::battery_sensors();
     let properties = Property::battery_properties();
 
@@ -35,13 +35,9 @@ pub fn battery_info() -> Result<BatteryModel, Cow<'static, str>> {
         }
     }
 
-    let level = level
-        .ok_or("LEVEL property not found!")?
-        .read_property()?;
+    let level = level.ok_or("LEVEL property not found!")?.read_property()?;
 
-    let current = current
-        .ok_or("CURRENT sensor not found!")?
-        .read_sensor()?;
+    let current = current.ok_or("CURRENT sensor not found!")?.read_sensor()?;
 
     let is_charging = is_charging
         .ok_or("IS_CHARGING property not found!")?
@@ -49,11 +45,9 @@ pub fn battery_info() -> Result<BatteryModel, Cow<'static, str>> {
 
     let is_charging = is_charging == "Charging";
 
-    let voltage = voltage
-        .ok_or("VOLTAGE sensor not found!")?
-        .read_sensor()?;
+    let voltage = voltage.ok_or("VOLTAGE sensor not found!")?.read_sensor()?;
 
-    Ok(BatteryModel {
+    Ok(Battery {
         level: level
             .parse::<u8>()
             .map_err(|e| Cow::Owned(format!("Couldn't parse battery level: {e}")))?,
@@ -125,7 +119,7 @@ pub fn cpu_governor() -> Result<String, Cow<'static, str>> {
     Ok(governor)
 }
 
-pub fn ram_info() -> Result<RamModel, Cow<'static, str>> {
+pub fn ram_info() -> Result<Ram, Cow<'static, str>> {
     let properties = Property::ram_properties();
 
     let mem_info = properties
@@ -136,13 +130,13 @@ pub fn ram_info() -> Result<RamModel, Cow<'static, str>> {
     let total = extract_from_label(&mem_info.path, "MemTotal")?;
     let available = extract_from_label(&mem_info.path, "MemAvailable")?;
 
-    Ok(RamModel {
+    Ok(Ram {
         total: total / (1024.0 * 1024.0),
         used: (total - available) / (1024.0 * 1024.0),
     })
 }
 
-pub fn zram_info() -> Result<ZramModel, Cow<'static, str>> {
+pub fn zram_info() -> Result<Zram, Cow<'static, str>> {
     let properties = Property::zram_properties();
     let mut mm_stat = None;
     let mut disksize = None;
@@ -158,7 +152,6 @@ pub fn zram_info() -> Result<ZramModel, Cow<'static, str>> {
     let mm_stat = mm_stat.ok_or("MM_STAT property not found!")?;
 
     let disksize = disksize.ok_or("DISKSIZE property not found!")?;
-
 
     let origin = extract_from_index(&mm_stat.path, 0)?;
     let compressed = extract_from_index(&mm_stat.path, 1)?;
@@ -177,7 +170,7 @@ pub fn zram_info() -> Result<ZramModel, Cow<'static, str>> {
         1.0
     };
 
-    Ok(ZramModel {
+    Ok(Zram {
         origin: origin / (1024.0 * 1024.0),
         compressed: used / (1024.0 * 1024.0),
         total: total / (1024.0 * 1024.0 * 1024.0),
@@ -232,7 +225,7 @@ pub fn dirty_background_ratio() -> Result<u8, Cow<'static, str>> {
     Ok(parsed_value)
 }
 
-pub fn storage() -> Result<StorageModel, Cow<'static, str>> {
+pub fn storage() -> Result<Storage, Cow<'static, str>> {
     let disks = Disks::new_with_refreshed_list();
 
     if disks.is_empty() {
@@ -249,7 +242,7 @@ pub fn storage() -> Result<StorageModel, Cow<'static, str>> {
             let available_bytes = disks.available_space();
             let used_bytes = total_bytes - available_bytes;
 
-            Ok(StorageModel {
+            Ok(Storage {
                 total: total_bytes,
                 used: used_bytes,
             })

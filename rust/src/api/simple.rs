@@ -1,18 +1,18 @@
 use std::borrow::Cow;
 
-use crate::models::ram_model::RamModel;
-use crate::models::storage_model::StorageModel;
-use crate::models::zram_model::ZramModel;
+use crate::models::ram::Ram;
+use crate::models::storage::Storage;
+use crate::models::zram::Zram;
 use crate::system::reader;
 use crate::system::writer;
-use crate::models::battery_model::BatteryModel;
+use crate::models::battery::Battery;
 
 #[flutter_rust_bridge::frb(init)]
 pub fn init_app() {
     flutter_rust_bridge::setup_default_user_utils();
 }
 
-pub fn get_battery_info() -> Result<BatteryModel, Cow<'static, str>> {
+pub fn get_battery_info() -> Result<Battery, Cow<'static, str>> {
     reader::battery_info()
 }
 
@@ -40,11 +40,11 @@ pub fn set_governor(governor: &str) -> Result<(), String> {
     writer::set_cpu_governor(governor)
 }
 
-pub fn get_ram_info() -> Result<RamModel, Cow<'static, str>> {
+pub fn get_ram_info() -> Result<Ram, Cow<'static, str>> {
     reader::ram_info()
 }
 
-pub fn get_swap_info() -> Result <ZramModel, Cow<'static, str>> {
+pub fn get_swap_info() -> Result <Zram, Cow<'static, str>> {
     reader::zram_info()
 }
 
@@ -72,7 +72,7 @@ pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), String> {
     writer::set_background_ratio(choice)
 }
 
-pub fn get_storage() -> Result<StorageModel, Cow<'static, str>> {
+pub fn get_storage() -> Result<Storage, Cow<'static, str>> {
     reader::storage()
 }
 
