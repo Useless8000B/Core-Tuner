@@ -40,3 +40,9 @@ impl Cpu {
         Ok(count.min(255) as u8)
     }
 }
+
+impl Default for Cpu {
+    fn default() -> Self {
+        Cpu::new()
+    }
+}
