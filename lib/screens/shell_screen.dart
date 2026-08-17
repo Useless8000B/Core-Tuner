@@ -1,4 +1,10 @@
 import 'package:core_tuner/screens/storage_screen.dart';
+import 'package:core_tuner/services/battery_services.dart';
+import 'package:core_tuner/services/cpu_services.dart';
+import 'package:core_tuner/services/kernel_services.dart';
+import 'package:core_tuner/services/memory_services.dart';
+import 'package:core_tuner/services/storage_services.dart';
+import 'package:core_tuner/services/wifi_services.dart';
 import 'package:core_tuner/widgets/appbar_widget.dart';
 import 'package:core_tuner/navigation/drawer_navigator.dart';
 import 'package:core_tuner/screens/battery_screen.dart';
@@ -16,11 +22,33 @@ class ShellScreen extends StatefulWidget {
 class _ShellScreenState extends State<ShellScreen> {
   int _currentIndex = 0;
 
-  final List<Map<String, dynamic>> _pages = [
-    {'title': 'Dashboard', 'screen': const StorageScreen()},
-    {'title': 'CPU', 'screen': const CpuScreen()},
-    {'title': 'RAM', 'screen': const RamScreen()},
-    {'title': 'Battery', 'screen': const BatteryScreen()},
+  final BatteryServices batteryServices = BatteryServices();
+  final WifiServices wifiServices = WifiServices();
+  final KernelServices kernelServices = KernelServices();
+  final StorageServices storageServices = StorageServices();
+  final CpuServices cpuServices = CpuServices();
+  final MemoryServices memoryServices = MemoryServices();
+
+  late final List<Map<String, dynamic>> _pages = [
+    {
+      'title': 'Dashboard',
+      'screen': StorageScreen(storageServices: storageServices),
+    },
+    {'title': 'CPU', 'screen': CpuScreen(cpuServices: cpuServices)},
+    {
+      'title': 'RAM',
+      'screen': RamScreen(
+        kernelServices: kernelServices,
+        memoryServices: memoryServices,
+      ),
+    },
+    {
+      'title': 'Battery',
+      'screen': BatteryScreen(
+        batteryServices: batteryServices,
+        wifiServices: wifiServices,
+      ),
+    },
   ];
 
   void _navigate(int index) {

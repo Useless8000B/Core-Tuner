@@ -1,15 +1,16 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/system_services_rust.dart';
+import 'package:core_tuner/services/memory_services.dart';
 import 'package:core_tuner/src/rust/models/zram_model.dart';
 import 'package:flutter/material.dart';
 
 class ZramWidget extends StatelessWidget {
-  const ZramWidget({super.key});
+  const ZramWidget({super.key, required this.memoryServices});
+  final MemoryServices memoryServices;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ZramModel>(
-      stream: SystemServicesRust.getZramStream(),
+      stream: memoryServices.getZramStream(),
       builder: (context, snapshot) {
         final data = snapshot.data;
 
