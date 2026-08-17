@@ -1,21 +1,29 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/screens/shell_screen.dart';
+import 'package:core_tuner/services/cpu_services.dart';
+import 'package:core_tuner/services/kernel_services.dart';
 import 'package:core_tuner/services/system_services.dart';
 import 'package:flutter/material.dart';
 import 'package:core_tuner/src/rust/frb_generated.dart';
 
 void main() async {
+  final KernelServices kernelServices = KernelServices();
+  final CpuServices cpuServices = CpuServices();
+  final SystemServices systemServices = SystemServices(
+    kernelServices: kernelServices,
+    cpuServices: cpuServices,
+  );
+
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
-  final hasRoot = await SystemService.checkRootAccess();
+  final hasRoot = await systemServices.checkRootAccess();
 
   if (hasRoot) {
     try {
-      await SystemService.syncAppWithSystem();
-      await SystemService.applySavedTweaks();
+      await systemServices.syncAppWithSystem();
+      await systemServices.applySavedTweaks();
     } catch (_) {}
   }
-
 
   runApp(CoreTuner(hasRoot: hasRoot));
 }
@@ -61,4 +69,3 @@ class CoreTuner extends StatelessWidget {
     );
   }
 }
-
