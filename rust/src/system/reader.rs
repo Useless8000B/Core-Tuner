@@ -14,38 +14,51 @@ pub fn battery_info() -> Result<BatteryModel, Cow<'static, str>> {
     let sensors = Sensor::battery_sensors();
     let properties = Property::battery_properties();
 
-    let raw_level = properties
-        .iter()
-        .find(|v| v.name == "level")
-        .ok_or("level property not found")?
+    let mut level = None;
+    let mut current = None;
+    let mut voltage = None;
+    let mut is_charging = None;
+
+    for property in properties {
+        match property.name.as_str() {
+            "level" => level = Some(property),
+            "is_charging" => is_charging = Some(property),
+            _ => {}
+        }
+    }
+
+    for sensor in sensors {
+        match sensor.name.as_str() {
+            "current" => current = Some(sensor),
+            "voltage" => voltage = Some(sensor),
+            _ => {}
+        }
+    }
+
+    let level = level
+        .ok_or("LEVEL property not found!")?
         .read_property()?;
 
-    let current = sensors
-        .iter()
-        .find(|v| v.name == "current")
-        .ok_or("current sensor not found")?
+    let current = current
+        .ok_or("CURRENT sensor not found!")?
         .read_sensor()?;
 
-    let voltage = sensors
-        .iter()
-        .find(|v| v.name == "voltage")
-        .ok_or("voltage sensor not found")?
-        .read_sensor()?;
-
-    let is_charging = properties
-        .iter()
-        .find(|v| v.name == "is_charging")
-        .ok_or("is_charging property not found")?
+    let is_charging = is_charging
+        .ok_or("IS_CHARGING property not found!")?
         .read_property()?;
 
     let is_charging = is_charging == "Charging";
 
+    let voltage = voltage
+        .ok_or("VOLTAGE sensor not found!")?
+        .read_sensor()?;
+
     Ok(BatteryModel {
-        level: raw_level
+        level: level
             .parse::<u8>()
             .map_err(|e| Cow::Owned(format!("Couldn't parse battery level: {e}")))?,
         current: current / 1000.0,
-        is_charging: is_charging,
+        is_charging,
         voltage: voltage / 1000000.0,
     })
 }
@@ -56,7 +69,7 @@ pub fn battery_temperature() -> Result<f64, Cow<'static, str>> {
     let temperature = sensors
         .iter()
         .find(|v| v.name == "temperature")
-        .ok_or("temperature sensor not found")?
+        .ok_or("TEMPERATURE sensor not found")?
         .read_sensor()?;
 
     Ok(temperature as f64 / 1000.0)
@@ -68,7 +81,7 @@ pub fn cpu_temperature() -> Result<f32, Cow<'static, str>> {
     let cpu_temperature = sensors
         .iter()
         .find(|v| v.name == "performance_core")
-        .ok_or("performance_core sensor not found")?
+        .ok_or("PERFORMANCE_CORE sensor not found")?
         .read_sensor()
         .map_err(|e| Cow::Owned(format!("Critical error reading sensor: {e}")))?;
 
@@ -106,7 +119,7 @@ pub fn cpu_governor() -> Result<String, Cow<'static, str>> {
     let governor = properties
         .iter()
         .find(|v| v.name == "governor")
-        .ok_or("governor property not found")?
+        .ok_or("GOVERNOR property not found")?
         .read_property()?;
 
     Ok(governor)
@@ -118,7 +131,7 @@ pub fn ram_info() -> Result<RamModel, Cow<'static, str>> {
     let mem_info = properties
         .iter()
         .find(|v| v.name == "mem_info")
-        .ok_or("mem_info property not found")?;
+        .ok_or("MEM_INFO property not found")?;
 
     let total = extract_from_label(&mem_info.path, "MemTotal")?;
     let available = extract_from_label(&mem_info.path, "MemAvailable")?;
@@ -131,16 +144,21 @@ pub fn ram_info() -> Result<RamModel, Cow<'static, str>> {
 
 pub fn zram_info() -> Result<ZramModel, Cow<'static, str>> {
     let properties = Property::zram_properties();
+    let mut mm_stat = None;
+    let mut disksize = None;
 
-    let mm_stat = properties
-        .iter()
-        .find(|v| v.name == "mm_stat")
-        .ok_or("mm_stat property not found")?;
+    for property in properties {
+        match property.name.as_str() {
+            "mm_state" => mm_stat = Some(property),
+            "disksize" => disksize = Some(property),
+            _ => {}
+        }
+    }
 
-    let disksize = properties
-        .iter()
-        .find(|v| v.name == "disksize")
-        .ok_or("disksize property not found")?;
+    let mm_stat = mm_stat.ok_or("MM_STAT property not found!")?;
+
+    let disksize = disksize.ok_or("DISKSIZE property not found!")?;
+
 
     let origin = extract_from_index(&mm_stat.path, 0)?;
     let compressed = extract_from_index(&mm_stat.path, 1)?;
@@ -163,7 +181,7 @@ pub fn zram_info() -> Result<ZramModel, Cow<'static, str>> {
         origin: origin / (1024.0 * 1024.0),
         compressed: used / (1024.0 * 1024.0),
         total: total / (1024.0 * 1024.0 * 1024.0),
-        ratio: ratio,
+        ratio,
     })
 }
 
@@ -173,7 +191,7 @@ pub fn swappiness() -> Result<u8, Cow<'static, str>> {
     let swappiness = properties
         .iter()
         .find(|v| v.name == "swappiness")
-        .ok_or("swappiness property not found")?
+        .ok_or("SWAPPINESS property not found!")?
         .read_property()?;
 
     let parsed_value: u8 = swappiness
@@ -185,15 +203,16 @@ pub fn swappiness() -> Result<u8, Cow<'static, str>> {
 
 pub fn dirty_ratio() -> Result<u8, Cow<'static, str>> {
     let properties = Property::kernel_properties();
+
     let dirty_ratio = properties
         .iter()
         .find(|v| v.name == "dirty_ratio")
-        .ok_or("dirty_ratio property not found")?
+        .ok_or("DIRTY_RATIO property not found!")?
         .read_property()?;
 
     let parsed_value = dirty_ratio
         .parse::<u8>()
-        .map_err(|e| Cow::Owned(format!("Error parsing value: {e}")))?;
+        .map_err(|e| Cow::Owned(format!("Error parsing value: {e}!")))?;
 
     Ok(parsed_value)
 }
@@ -203,12 +222,12 @@ pub fn dirty_background_ratio() -> Result<u8, Cow<'static, str>> {
     let dirty_background_ratio = properties
         .iter()
         .find(|v| v.name == "dirty_background_ratio")
-        .ok_or("dirty_background_ratio property not found")?
+        .ok_or("DIRTY_BACKGROUND_RATIO property not found")?
         .read_property()?;
 
     let parsed_value = dirty_background_ratio
         .parse::<u8>()
-        .map_err(|e| Cow::Owned(format!("Couldn't parse value: {e}")))?;
+        .map_err(|e| Cow::Owned(format!("Couldn't parse value: {e}!")))?;
 
     Ok(parsed_value)
 }
@@ -217,7 +236,7 @@ pub fn storage() -> Result<StorageModel, Cow<'static, str>> {
     let disks = Disks::new_with_refreshed_list();
 
     if disks.is_empty() {
-        return Err(Cow::Borrowed("No partitons found"));
+        return Err(Cow::Borrowed("No partitons found!"));
     }
 
     let data_partition = disks
@@ -236,6 +255,6 @@ pub fn storage() -> Result<StorageModel, Cow<'static, str>> {
             })
         }
 
-        None => Err(Cow::Borrowed("Couldn't isolate the /data partition")),
+        None => Err(Cow::Borrowed("Couldn't isolate the /data partition!")),
     }
 }
