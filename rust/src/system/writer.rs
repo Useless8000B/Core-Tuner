@@ -25,7 +25,7 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
         .ok_or("swappiness property not found")?;
 
     let safe_value = choice.clamp(0, 100);
-    let cmd = format!("echo {} > {}", safe_value.to_string(), entry.path);
+    let cmd = format!("echo {} > {}", safe_value, entry.path);
 
     run_command::write_shell_command("su", &["-c", &cmd])
 }
