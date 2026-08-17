@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:core_tuner/src/rust/api/simple.dart';
-import 'package:core_tuner/src/rust/models/ram_model.dart';
-import 'package:core_tuner/src/rust/models/zram_model.dart';
+import 'package:core_tuner/src/rust/models/ram.dart';
+import 'package:core_tuner/src/rust/models/zram.dart';
 import 'package:flutter/cupertino.dart';
 
 class MemoryServices {
-  Stream<RamModel> getRamStream() async* {
+  Stream<Ram> getRamStream() async* {
     while (true) {
       try {
         yield await getRamInfo();
@@ -18,7 +18,7 @@ class MemoryServices {
     }
   }
 
-  Stream<ZramModel> getZramStream() async* {
+  Stream<Zram> getZramStream() async* {
     while (true) {
       try {
         yield await getSwapInfo();

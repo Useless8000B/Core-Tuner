@@ -1,6 +1,6 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/memory_services.dart';
-import 'package:core_tuner/src/rust/models/ram_model.dart';
+import 'package:core_tuner/src/rust/models/ram.dart';
 import 'package:flutter/material.dart';
 
 class RamWidget extends StatelessWidget {
@@ -9,7 +9,7 @@ class RamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<RamModel>(
+    return StreamBuilder<Ram>(
       stream: memoryServices.getRamStream(),
       builder: (context, snapshot) {
         final data = snapshot.data;

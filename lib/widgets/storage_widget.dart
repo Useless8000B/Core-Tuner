@@ -1,6 +1,6 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/storage_services.dart';
-import 'package:core_tuner/src/rust/models/storage_model.dart';
+import 'package:core_tuner/src/rust/models/storage.dart';
 import 'package:flutter/material.dart';
 
 class StorageWidget extends StatelessWidget {
@@ -9,7 +9,7 @@ class StorageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<StorageModel>(
+    return StreamBuilder<Storage>(
       stream: storageServices.getStorageStream(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||

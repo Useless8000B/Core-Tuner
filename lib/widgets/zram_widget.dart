@@ -1,6 +1,6 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/memory_services.dart';
-import 'package:core_tuner/src/rust/models/zram_model.dart';
+import 'package:core_tuner/src/rust/models/zram.dart';
 import 'package:flutter/material.dart';
 
 class ZramWidget extends StatelessWidget {
@@ -9,7 +9,7 @@ class ZramWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<ZramModel>(
+    return StreamBuilder<Zram>(
       stream: memoryServices.getZramStream(),
       builder: (context, snapshot) {
         final data = snapshot.data;

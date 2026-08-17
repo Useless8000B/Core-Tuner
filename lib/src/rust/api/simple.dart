@@ -4,13 +4,13 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
-import '../models/battery_model.dart';
-import '../models/ram_model.dart';
-import '../models/storage_model.dart';
-import '../models/zram_model.dart';
+import '../models/battery.dart';
+import '../models/ram.dart';
+import '../models/storage.dart';
+import '../models/zram.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-Future<BatteryModel> getBatteryInfo() =>
+Future<Battery> getBatteryInfo() =>
     RustLib.instance.api.crateApiSimpleGetBatteryInfo();
 
 Future<double> getBatteryTemperature() =>
@@ -31,11 +31,9 @@ Future<String> getCpuGovernor() =>
 Future<void> setGovernor({required String governor}) =>
     RustLib.instance.api.crateApiSimpleSetGovernor(governor: governor);
 
-Future<RamModel> getRamInfo() =>
-    RustLib.instance.api.crateApiSimpleGetRamInfo();
+Future<Ram> getRamInfo() => RustLib.instance.api.crateApiSimpleGetRamInfo();
 
-Future<ZramModel> getSwapInfo() =>
-    RustLib.instance.api.crateApiSimpleGetSwapInfo();
+Future<Zram> getSwapInfo() => RustLib.instance.api.crateApiSimpleGetSwapInfo();
 
 Future<int> getSwappiness() =>
     RustLib.instance.api.crateApiSimpleGetSwappiness();
@@ -57,8 +55,7 @@ Future<void> setVmBackgroundDirtyRatio({required int choice}) => RustLib
     .api
     .crateApiSimpleSetVmBackgroundDirtyRatio(choice: choice);
 
-Future<StorageModel> getStorage() =>
-    RustLib.instance.api.crateApiSimpleGetStorage();
+Future<Storage> getStorage() => RustLib.instance.api.crateApiSimpleGetStorage();
 
 Future<void> writeFstrim() => RustLib.instance.api.crateApiSimpleWriteFstrim();
 
@@ -70,3 +67,6 @@ Future<void> writeClearTempFiles() =>
 
 Future<void> writeLmkProfile({required int choice}) =>
     RustLib.instance.api.crateApiSimpleWriteLmkProfile(choice: choice);
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>
+abstract class CowStr implements RustOpaqueInterface {}

@@ -9,10 +9,10 @@ import 'dart:convert';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
-import 'models/battery_model.dart';
-import 'models/ram_model.dart';
-import 'models/storage_model.dart';
-import 'models/zram_model.dart';
+import 'models/battery.dart';
+import 'models/ram.dart';
+import 'models/storage.dart';
+import 'models/zram.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Main entrypoint of the Rust API
@@ -82,7 +82,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Future<BatteryModel> crateApiSimpleGetBatteryInfo();
+  Future<Battery> crateApiSimpleGetBatteryInfo();
 
   Future<double> crateApiSimpleGetBatteryTemperature();
 
@@ -92,11 +92,11 @@ abstract class RustLibApi extends BaseApi {
 
   Future<double> crateApiSimpleGetCpuTemperature();
 
-  Future<RamModel> crateApiSimpleGetRamInfo();
+  Future<Ram> crateApiSimpleGetRamInfo();
 
-  Future<StorageModel> crateApiSimpleGetStorage();
+  Future<Storage> crateApiSimpleGetStorage();
 
-  Future<ZramModel> crateApiSimpleGetSwapInfo();
+  Future<Zram> crateApiSimpleGetSwapInfo();
 
   Future<int> crateApiSimpleGetSwappiness();
 
@@ -123,6 +123,12 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiSimpleWriteFstrim();
 
   Future<void> crateApiSimpleWriteLmkProfile({required int choice});
+
+  RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_CowStr;
+
+  RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_CowStr;
+
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_CowStrPtr;
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -134,7 +140,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Future<BatteryModel> crateApiSimpleGetBatteryInfo() {
+  Future<Battery> crateApiSimpleGetBatteryInfo() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -147,8 +153,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_battery_model,
-          decodeErrorData: sse_decode_String,
+          decodeSuccessData: sse_decode_battery,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetBatteryInfoConstMeta,
         argValues: [],
@@ -175,7 +182,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_64,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetBatteryTemperatureConstMeta,
         argValues: [],
@@ -202,7 +210,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_prim_f_64_strict,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetCpuFrequenciesConstMeta,
         argValues: [],
@@ -229,7 +238,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetCpuGovernorConstMeta,
         argValues: [],
@@ -256,7 +266,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_32,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetCpuTemperatureConstMeta,
         argValues: [],
@@ -269,7 +280,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_cpu_temperature", argNames: []);
 
   @override
-  Future<RamModel> crateApiSimpleGetRamInfo() {
+  Future<Ram> crateApiSimpleGetRamInfo() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -282,8 +293,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_ram_model,
-          decodeErrorData: sse_decode_String,
+          decodeSuccessData: sse_decode_ram,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetRamInfoConstMeta,
         argValues: [],
@@ -296,7 +308,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_ram_info", argNames: []);
 
   @override
-  Future<StorageModel> crateApiSimpleGetStorage() {
+  Future<Storage> crateApiSimpleGetStorage() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -309,8 +321,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_storage_model,
-          decodeErrorData: sse_decode_String,
+          decodeSuccessData: sse_decode_storage,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetStorageConstMeta,
         argValues: [],
@@ -323,7 +336,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_storage", argNames: []);
 
   @override
-  Future<ZramModel> crateApiSimpleGetSwapInfo() {
+  Future<Zram> crateApiSimpleGetSwapInfo() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -336,8 +349,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_zram_model,
-          decodeErrorData: sse_decode_String,
+          decodeSuccessData: sse_decode_zram,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetSwapInfoConstMeta,
         argValues: [],
@@ -364,7 +378,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_8,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetSwappinessConstMeta,
         argValues: [],
@@ -391,7 +406,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_8,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetVmDirtyBackgroundRatioConstMeta,
         argValues: [],
@@ -421,7 +437,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_8,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
         ),
         constMeta: kCrateApiSimpleGetVmDirtyRatioConstMeta,
         argValues: [],
@@ -715,6 +732,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiSimpleWriteLmkProfileConstMeta =>
       const TaskConstMeta(debugName: "write_lmk_profile", argNames: ["choice"]);
 
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_CowStr => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_CowStr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr;
+
+  @protected
+  CowStr
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return CowStrImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  CowStr
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return CowStrImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
   @protected
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -722,12 +765,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BatteryModel dco_decode_battery_model(dynamic raw) {
+  Battery dco_decode_battery(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 4)
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return BatteryModel(
+    return Battery(
       level: dco_decode_u_8(arr[0]),
       voltage: dco_decode_f_32(arr[1]),
       current: dco_decode_f_32(arr[2]),
@@ -766,24 +809,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  RamModel dco_decode_ram_model(dynamic raw) {
+  Ram dco_decode_ram(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 2)
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return RamModel(
-      total: dco_decode_f_64(arr[0]),
-      used: dco_decode_f_64(arr[1]),
-    );
+    return Ram(total: dco_decode_f_64(arr[0]), used: dco_decode_f_64(arr[1]));
   }
 
   @protected
-  StorageModel dco_decode_storage_model(dynamic raw) {
+  Storage dco_decode_storage(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 2)
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return StorageModel(
+    return Storage(
       total: dco_decode_u_64(arr[0]),
       used: dco_decode_u_64(arr[1]),
     );
@@ -808,16 +848,46 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  ZramModel dco_decode_zram_model(dynamic raw) {
+  BigInt dco_decode_usize(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeU64(raw);
+  }
+
+  @protected
+  Zram dco_decode_zram(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 4)
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return ZramModel(
+    return Zram(
       origin: dco_decode_f_64(arr[0]),
       compressed: dco_decode_f_64(arr[1]),
       total: dco_decode_f_64(arr[2]),
       ratio: dco_decode_f_64(arr[3]),
+    );
+  }
+
+  @protected
+  CowStr
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return CowStrImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  CowStr
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return CowStrImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
     );
   }
 
@@ -829,13 +899,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BatteryModel sse_decode_battery_model(SseDeserializer deserializer) {
+  Battery sse_decode_battery(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_level = sse_decode_u_8(deserializer);
     var var_voltage = sse_decode_f_32(deserializer);
     var var_current = sse_decode_f_32(deserializer);
     var var_isCharging = sse_decode_bool(deserializer);
-    return BatteryModel(
+    return Battery(
       level: var_level,
       voltage: var_voltage,
       current: var_current,
@@ -876,19 +946,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  RamModel sse_decode_ram_model(SseDeserializer deserializer) {
+  Ram sse_decode_ram(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_total = sse_decode_f_64(deserializer);
     var var_used = sse_decode_f_64(deserializer);
-    return RamModel(total: var_total, used: var_used);
+    return Ram(total: var_total, used: var_used);
   }
 
   @protected
-  StorageModel sse_decode_storage_model(SseDeserializer deserializer) {
+  Storage sse_decode_storage(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_total = sse_decode_u_64(deserializer);
     var var_used = sse_decode_u_64(deserializer);
-    return StorageModel(total: var_total, used: var_used);
+    return Storage(total: var_total, used: var_used);
   }
 
   @protected
@@ -909,13 +979,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  ZramModel sse_decode_zram_model(SseDeserializer deserializer) {
+  BigInt sse_decode_usize(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getBigUint64();
+  }
+
+  @protected
+  Zram sse_decode_zram(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_origin = sse_decode_f_64(deserializer);
     var var_compressed = sse_decode_f_64(deserializer);
     var var_total = sse_decode_f_64(deserializer);
     var var_ratio = sse_decode_f_64(deserializer);
-    return ZramModel(
+    return Zram(
       origin: var_origin,
       compressed: var_compressed,
       total: var_total,
@@ -930,13 +1006,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    CowStr self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as CowStrImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    CowStr self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as CowStrImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
   }
 
   @protected
-  void sse_encode_battery_model(BatteryModel self, SseSerializer serializer) {
+  void sse_encode_battery(Battery self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_8(self.level, serializer);
     sse_encode_f_32(self.voltage, serializer);
@@ -983,14 +1085,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_ram_model(RamModel self, SseSerializer serializer) {
+  void sse_encode_ram(Ram self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_f_64(self.total, serializer);
     sse_encode_f_64(self.used, serializer);
   }
 
   @protected
-  void sse_encode_storage_model(StorageModel self, SseSerializer serializer) {
+  void sse_encode_storage(Storage self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_64(self.total, serializer);
     sse_encode_u_64(self.used, serializer);
@@ -1014,7 +1116,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_zram_model(ZramModel self, SseSerializer serializer) {
+  void sse_encode_usize(BigInt self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putBigUint64(self);
+  }
+
+  @protected
+  void sse_encode_zram(Zram self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_f_64(self.origin, serializer);
     sse_encode_f_64(self.compressed, serializer);
@@ -1027,4 +1135,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putInt32(self);
   }
+}
+
+@sealed
+class CowStrImpl extends RustOpaque implements CowStr {
+  // Not to be used by end users
+  CowStrImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  CowStrImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_CowStr,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_CowStr,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_CowStrPtr,
+  );
 }

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:core_tuner/src/rust/api/simple.dart';
-import 'package:core_tuner/src/rust/models/battery_model.dart';
+import 'package:core_tuner/src/rust/models/battery.dart';
 import 'package:flutter/widgets.dart';
 
 class BatteryServices {
-  Stream<BatteryModel> getBatteryStream() async* {
+  Stream<Battery> getBatteryStream() async* {
     while (true) {
       try {
         yield await getBatteryInfo();

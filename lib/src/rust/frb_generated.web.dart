@@ -10,10 +10,10 @@ import 'api/simple.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
-import 'models/battery_model.dart';
-import 'models/ram_model.dart';
-import 'models/storage_model.dart';
-import 'models/zram_model.dart';
+import 'models/battery.dart';
+import 'models/ram.dart';
+import 'models/storage.dart';
+import 'models/zram.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_web.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
@@ -24,11 +24,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     required super.portManager,
   });
 
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_CowStrPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr;
+
+  @protected
+  CowStr
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    dynamic raw,
+  );
+
+  @protected
+  CowStr
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    dynamic raw,
+  );
+
   @protected
   String dco_decode_String(dynamic raw);
 
   @protected
-  BatteryModel dco_decode_battery_model(dynamic raw);
+  Battery dco_decode_battery(dynamic raw);
 
   @protected
   bool dco_decode_bool(dynamic raw);
@@ -46,10 +62,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  RamModel dco_decode_ram_model(dynamic raw);
+  Ram dco_decode_ram(dynamic raw);
 
   @protected
-  StorageModel dco_decode_storage_model(dynamic raw);
+  Storage dco_decode_storage(dynamic raw);
 
   @protected
   BigInt dco_decode_u_64(dynamic raw);
@@ -61,13 +77,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void dco_decode_unit(dynamic raw);
 
   @protected
-  ZramModel dco_decode_zram_model(dynamic raw);
+  BigInt dco_decode_usize(dynamic raw);
+
+  @protected
+  Zram dco_decode_zram(dynamic raw);
+
+  @protected
+  CowStr
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  CowStr
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    SseDeserializer deserializer,
+  );
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
-  BatteryModel sse_decode_battery_model(SseDeserializer deserializer);
+  Battery sse_decode_battery(SseDeserializer deserializer);
 
   @protected
   bool sse_decode_bool(SseDeserializer deserializer);
@@ -85,10 +116,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
-  RamModel sse_decode_ram_model(SseDeserializer deserializer);
+  Ram sse_decode_ram(SseDeserializer deserializer);
 
   @protected
-  StorageModel sse_decode_storage_model(SseDeserializer deserializer);
+  Storage sse_decode_storage(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_u_64(SseDeserializer deserializer);
@@ -100,16 +131,33 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_decode_unit(SseDeserializer deserializer);
 
   @protected
-  ZramModel sse_decode_zram_model(SseDeserializer deserializer);
+  BigInt sse_decode_usize(SseDeserializer deserializer);
+
+  @protected
+  Zram sse_decode_zram(SseDeserializer deserializer);
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    CowStr self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    CowStr self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
-  void sse_encode_battery_model(BatteryModel self, SseSerializer serializer);
+  void sse_encode_battery(Battery self, SseSerializer serializer);
 
   @protected
   void sse_encode_bool(bool self, SseSerializer serializer);
@@ -133,10 +181,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_ram_model(RamModel self, SseSerializer serializer);
+  void sse_encode_ram(Ram self, SseSerializer serializer);
 
   @protected
-  void sse_encode_storage_model(StorageModel self, SseSerializer serializer);
+  void sse_encode_storage(Storage self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_64(BigInt self, SseSerializer serializer);
@@ -148,7 +196,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_unit(void self, SseSerializer serializer);
 
   @protected
-  void sse_encode_zram_model(ZramModel self, SseSerializer serializer);
+  void sse_encode_usize(BigInt self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_zram(Zram self, SseSerializer serializer);
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -158,6 +209,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
 class RustLibWire implements BaseWire {
   RustLibWire.fromExternalLibrary(ExternalLibrary lib);
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+        ptr,
+      );
 }
 
 @JS('wasm_bindgen')
@@ -165,4 +232,14 @@ external RustLibWasmModule get wasmModule;
 
 @JS()
 @anonymous
-extension type RustLibWasmModule._(JSObject _) implements JSObject {}
+extension type RustLibWasmModule._(JSObject _) implements JSObject {
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    int ptr,
+  );
+}

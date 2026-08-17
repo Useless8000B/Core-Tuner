@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:core_tuner/src/rust/api/simple.dart';
-import 'package:core_tuner/src/rust/models/storage_model.dart';
+import 'package:core_tuner/src/rust/models/storage.dart';
 import 'package:flutter/widgets.dart';
 
 class StorageServices {
-  Stream<StorageModel> getStorageStream() async* {
+  Stream<Storage> getStorageStream() async* {
     while (true) {
       try {
         yield await getStorage();

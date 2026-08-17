@@ -1,6 +1,6 @@
 import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/battery_services.dart';
-import 'package:core_tuner/src/rust/models/battery_model.dart';
+import 'package:core_tuner/src/rust/models/battery.dart';
 import 'package:flutter/material.dart';
 
 class BatteryWidget extends StatelessWidget {
@@ -10,7 +10,7 @@ class BatteryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final BatteryServices batteryServices = BatteryServices();
 
-    return StreamBuilder<BatteryModel>(
+    return StreamBuilder<Battery>(
       stream: batteryServices.getBatteryStream(),
       builder: (context, snapshot) {
         final data = snapshot.data;
