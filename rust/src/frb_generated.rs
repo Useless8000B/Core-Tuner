@@ -26,7 +26,7 @@
 
 // Section: imports
 
-use crate::api::simple::*;
+use crate::errors::reader_error::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
@@ -71,7 +71,7 @@ fn wire__crate__api__simple__get_battery_info_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_battery_info()?;
                     Ok(output_ok)
                 })())
@@ -103,7 +103,7 @@ fn wire__crate__api__simple__get_battery_temperature_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_battery_temperature()?;
                     Ok(output_ok)
                 })())
@@ -135,7 +135,7 @@ fn wire__crate__api__simple__get_cpu_frequencies_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_cpu_frequencies()?;
                     Ok(output_ok)
                 })())
@@ -167,7 +167,7 @@ fn wire__crate__api__simple__get_cpu_governor_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_cpu_governor()?;
                     Ok(output_ok)
                 })())
@@ -199,7 +199,7 @@ fn wire__crate__api__simple__get_cpu_temperature_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_cpu_temperature()?;
                     Ok(output_ok)
                 })())
@@ -231,7 +231,7 @@ fn wire__crate__api__simple__get_ram_info_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_ram_info()?;
                     Ok(output_ok)
                 })())
@@ -263,7 +263,7 @@ fn wire__crate__api__simple__get_storage_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, String>((move || {
                     let output_ok = crate::api::simple::get_storage()?;
                     Ok(output_ok)
                 })())
@@ -295,7 +295,7 @@ fn wire__crate__api__simple__get_swap_info_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_swap_info()?;
                     Ok(output_ok)
                 })())
@@ -327,7 +327,7 @@ fn wire__crate__api__simple__get_swappiness_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_swappiness()?;
                     Ok(output_ok)
                 })())
@@ -359,7 +359,7 @@ fn wire__crate__api__simple__get_vm_dirty_background_ratio_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_vm_dirty_background_ratio()?;
                     Ok(output_ok)
                 })())
@@ -391,7 +391,7 @@ fn wire__crate__api__simple__get_vm_dirty_ratio_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, Cow<'static, str>>((move || {
+                transform_result_sse::<_, ReaderError>((move || {
                     let output_ok = crate::api::simple::get_vm_dirty_ratio()?;
                     Ok(output_ok)
                 })())
@@ -731,23 +731,23 @@ fn wire__crate__api__simple__write_lmk_profile_impl(
 // Section: related_funcs
 
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>
 );
 
 // Section: dart2rust
 
-impl SseDecode for Cow<'static, str> {
+impl SseDecode for ReaderError {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
 impl SseDecode
-    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>>
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -964,16 +964,16 @@ fn pde_ffi_dispatcher_sync_impl(
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Cow<'static, str>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ReaderError> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
             .into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Cow<'static, str>> {}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<ReaderError> {}
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Cow<'static, str>>> for Cow<'static, str> {
-    fn into_into_dart(self) -> FrbWrapper<Cow<'static, str>> {
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ReaderError>> for ReaderError {
+    fn into_into_dart(self) -> FrbWrapper<ReaderError> {
         self.into()
     }
 }
@@ -1057,15 +1057,15 @@ impl flutter_rust_bridge::IntoIntoDart<crate::models::zram::Zram> for crate::mod
     }
 }
 
-impl SseEncode for Cow<'static, str> {
+impl SseEncode for ReaderError {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
     }
 }
 
 impl SseEncode
-    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow<'static, str>>>
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1203,7 +1203,7 @@ mod io {
     // Section: imports
 
     use super::*;
-    use crate::api::simple::*;
+    use crate::errors::reader_error::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
@@ -1215,17 +1215,17 @@ mod io {
     flutter_rust_bridge::frb_generated_boilerplate_io!();
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_core_tuner_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    pub extern "C" fn frbgen_core_tuner_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_core_tuner_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    pub extern "C" fn frbgen_core_tuner_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>::decrement_strong_count(ptr as _);
     }
 }
 #[cfg(not(target_family = "wasm"))]
@@ -1240,7 +1240,7 @@ mod web {
     // Section: imports
 
     use super::*;
-    use crate::api::simple::*;
+    use crate::errors::reader_error::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
@@ -1254,17 +1254,17 @@ mod web {
     flutter_rust_bridge::frb_generated_boilerplate_web!();
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>::decrement_strong_count(ptr as _);
     }
 }
 #[cfg(target_family = "wasm")]

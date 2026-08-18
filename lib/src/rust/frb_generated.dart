@@ -6,6 +6,7 @@
 import 'api/simple.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'errors/reader_error.dart';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
@@ -124,11 +125,13 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiSimpleWriteLmkProfile({required int choice});
 
-  RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_CowStr;
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ReaderError;
 
-  RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_CowStr;
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ReaderError;
 
-  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_CowStrPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ReaderErrorPtr;
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -155,7 +158,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_battery,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetBatteryInfoConstMeta,
         argValues: [],
@@ -183,7 +186,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_64,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetBatteryTemperatureConstMeta,
         argValues: [],
@@ -211,7 +214,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_prim_f_64_strict,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetCpuFrequenciesConstMeta,
         argValues: [],
@@ -239,7 +242,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetCpuGovernorConstMeta,
         argValues: [],
@@ -267,7 +270,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_32,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetCpuTemperatureConstMeta,
         argValues: [],
@@ -295,7 +298,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_ram,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetRamInfoConstMeta,
         argValues: [],
@@ -322,8 +325,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_storage,
-          decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+          decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateApiSimpleGetStorageConstMeta,
         argValues: [],
@@ -351,7 +353,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_zram,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetSwapInfoConstMeta,
         argValues: [],
@@ -379,7 +381,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_8,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetSwappinessConstMeta,
         argValues: [],
@@ -407,7 +409,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_8,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetVmDirtyBackgroundRatioConstMeta,
         argValues: [],
@@ -438,7 +440,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_8,
           decodeErrorData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr,
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
         constMeta: kCrateApiSimpleGetVmDirtyRatioConstMeta,
         argValues: [],
@@ -733,29 +735,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "write_lmk_profile", argNames: ["choice"]);
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_CowStr => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr;
+  get rust_arc_increment_strong_count_ReaderError => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_CowStr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr;
+  get rust_arc_decrement_strong_count_ReaderError => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError;
 
   @protected
-  CowStr
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+  ReaderError
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return CowStrImpl.frbInternalDcoDecode(raw as List<dynamic>);
+    return ReaderErrorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  CowStr
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+  ReaderError
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return CowStrImpl.frbInternalDcoDecode(raw as List<dynamic>);
+    return ReaderErrorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -868,24 +870,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  CowStr
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+  ReaderError
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return CowStrImpl.frbInternalSseDecode(
+    return ReaderErrorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  CowStr
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
+  ReaderError
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return CowStrImpl.frbInternalSseDecode(
+    return ReaderErrorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1007,26 +1009,26 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
-    CowStr self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
+    ReaderError self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as CowStrImpl).frbInternalSseEncode(move: true),
+      (self as ReaderErrorImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerCowstaticstr(
-    CowStr self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
+    ReaderError self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as CowStrImpl).frbInternalSseEncode(move: null),
+      (self as ReaderErrorImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
@@ -1138,21 +1140,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 }
 
 @sealed
-class CowStrImpl extends RustOpaque implements CowStr {
+class ReaderErrorImpl extends RustOpaque implements ReaderError {
   // Not to be used by end users
-  CowStrImpl.frbInternalDcoDecode(List<dynamic> wire)
+  ReaderErrorImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  CowStrImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+  ReaderErrorImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
     : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
 
   static final _kStaticData = RustArcStaticData(
     rustArcIncrementStrongCount:
-        RustLib.instance.api.rust_arc_increment_strong_count_CowStr,
+        RustLib.instance.api.rust_arc_increment_strong_count_ReaderError,
     rustArcDecrementStrongCount:
-        RustLib.instance.api.rust_arc_decrement_strong_count_CowStr,
+        RustLib.instance.api.rust_arc_decrement_strong_count_ReaderError,
     rustArcDecrementStrongCountPtr:
-        RustLib.instance.api.rust_arc_decrement_strong_count_CowStrPtr,
+        RustLib.instance.api.rust_arc_decrement_strong_count_ReaderErrorPtr,
   );
 }

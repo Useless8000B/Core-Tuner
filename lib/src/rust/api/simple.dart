@@ -3,6 +3,7 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../errors/reader_error.dart';
 import '../frb_generated.dart';
 import '../models/battery.dart';
 import '../models/ram.dart';
@@ -67,6 +68,3 @@ Future<void> writeClearTempFiles() =>
 
 Future<void> writeLmkProfile({required int choice}) =>
     RustLib.instance.api.crateApiSimpleWriteLmkProfile(choice: choice);
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Cow < 'static , str >>>
-abstract class CowStr implements RustOpaqueInterface {}
