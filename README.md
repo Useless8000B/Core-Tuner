@@ -122,7 +122,7 @@ The Android ecosystem is highly fragmented. Each manufacturer (Xiaomi, Motorola,
 ---
 
 ### 🇧🇷 Português
-Para testar o app, mude seu SELinux para: ```setenforce 0```, após o uso, mude para ```setenforce 1```
+Para testar o app, mude seu SELinux para "Permissivo" com:```setenforce 0```, após o uso, mude para "Enforcing" com: ```setenforce 1```
 
 ### 🇺🇸 English
-To test it, set your SELinux to: ```setenforce 0```, after using it, set it back to ```setenforce 1```
+To test it, set your SELinux to "Permissive" with: ```setenforce 0```, after using it, set it back to "Enforcing" with: ```setenforce 1```
