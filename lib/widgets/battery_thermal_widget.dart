@@ -17,11 +17,11 @@ class BatteryThermalWidget extends StatelessWidget {
         String statusText = "OPTIMAL";
 
         if (temp >= 40) {
-          statusColor = Colors.orangeAccent;
+          statusColor = AppColors.orange;
           statusText = "WARM";
         }
         if (temp >= 45) {
-          statusColor = Colors.redAccent;
+          statusColor = AppColors.red;
           statusText = "CRITICAL";
         }
 
@@ -34,7 +34,7 @@ class BatteryThermalWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.lightBlack,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.01)),
+            border: Border.all(color: AppColors.white.withValues(alpha: 0.01)),
           ),
           child: Stack(
             children: [
@@ -123,7 +123,7 @@ class _ProgressBar extends StatelessWidget {
     return Container(
       height: 4,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: AppColors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(2),
       ),
       child: FractionallySizedBox(
