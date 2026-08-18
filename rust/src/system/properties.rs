@@ -1,5 +1,7 @@
 use std::fs;
 
+use crate::errors::reader_error::ReaderError;
+
 pub struct Property {
     pub name: String,
     pub path: String,
@@ -13,9 +15,14 @@ impl Property {
         }
     }
 
-    pub fn read_property(&self) -> Result<String, String> {
-        let content = fs::read_to_string(&self.path)
-            .map_err(|e| format!("Error reading {}: {}", self.name, e))?;
+    pub fn read_property(&self) -> Result<String, ReaderError> {
+        let content = fs::read_to_string(&self.path).map_err(|e| {
+            if e.kind() == std::io::ErrorKind::NotFound {
+                ReaderError::FileNotFound(self.path.clone())
+            } else {
+                ReaderError::Io(e)
+            }
+        })?;
 
         Ok(content.trim().to_string())
     }
@@ -24,14 +31,15 @@ impl Property {
         vec![
             Property::new("is_charging", "/sys/class/power_supply/battery/status"),
             Property::new("level", "/sys/class/power_supply/battery/capacity"),
-            Property::new("input_suspend", "/sys/class/power_supply/battery/input_suspend"),
+            Property::new(
+                "input_suspend",
+                "/sys/class/power_supply/battery/input_suspend",
+            ),
         ]
     }
 
     pub fn ram_properties() -> Vec<Property> {
-        vec![
-            Property::new("mem_info", "/proc/meminfo")
-        ]
+        vec![Property::new("mem_info", "/proc/meminfo")]
     }
 
     pub fn zram_properties() -> Vec<Property> {
@@ -42,14 +50,18 @@ impl Property {
     }
 
     pub fn cpu_cores_properties() -> Vec<Property> {
-        vec![
-            Property::new("cpu_core", "/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"),
-        ]
+        vec![Property::new(
+            "cpu_core",
+            "/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor",
+        )]
     }
 
     pub fn cpu_path_properties() -> Vec<Property> {
         vec![
-            Property::new("governor", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"),
+            Property::new(
+                "governor",
+                "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
+            ),
             Property::new("cpu_path", "/sys/devices/system/cpu"),
         ]
     }
@@ -58,7 +70,10 @@ impl Property {
         vec![
             Property::new("swappiness", "/proc/sys/vm/swappiness"),
             Property::new("dirty_ratio", "/proc/sys/vm/dirty_ratio"),
-            Property::new("dirty_background_ratio", "/proc/sys/vm/dirty_background_ratio"),
+            Property::new(
+                "dirty_background_ratio",
+                "/proc/sys/vm/dirty_background_ratio",
+            ),
         ]
     }
 

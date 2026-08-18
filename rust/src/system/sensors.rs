@@ -1,4 +1,6 @@
-use std::{borrow::Cow, fs};
+use std::fs;
+
+use crate::errors::reader_error::ReaderError;
 
 pub struct Sensor {
     pub name: String,
@@ -22,20 +24,23 @@ impl Sensor {
     }
 
     pub fn cpu_sensors() -> Vec<Sensor> {
-        vec![
-            Sensor::new("performance_core", "/sys/class/thermal/thermal_zone7/temp"),
-        ]
+        vec![Sensor::new(
+            "performance_core",
+            "/sys/class/thermal/thermal_zone7/temp",
+        )]
     }
 
-    pub fn read_sensor(&self) -> Result<f32, Cow<'static, str>> {
+    pub fn read_sensor(&self) -> Result<f32, ReaderError> {
         let raw_content = match fs::read_to_string(&self.path) {
             Ok(c) => c,
-            Err(e) => return Err(Cow::Owned(format!("Error reading {}: {}", self.name, e))),
+            Err(_) => {
+                return Err(ReaderError::ReadingError(self.name.clone()))
+            }
         };
 
         match raw_content.trim().parse::<f32>() {
             Ok(c) => Ok(c),
-            Err(_) => Err(Cow::Owned(format!("Invalid value from {}", self.name))),
+            Err(_) => Err(ReaderError::InvalidValue(self.name.clone())),
         }
     }
 }
