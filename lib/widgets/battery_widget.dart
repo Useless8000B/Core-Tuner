@@ -21,9 +21,7 @@ class BatteryWidget extends StatelessWidget {
         bool isCharging = data?.isCharging ?? false;
 
         double progress = (level / 100).clamp(0.0, 1.0);
-        Color accentColor = isCharging
-            ? Colors.greenAccent
-            : AppColors.royalBlue;
+        Color accentColor = isCharging ? AppColors.green : AppColors.royalBlue;
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -32,7 +30,7 @@ class BatteryWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.lightBlack,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.01)),
+            border: Border.all(color: AppColors.white.withValues(alpha: 0.01)),
           ),
           child: Stack(
             children: [
@@ -92,7 +90,7 @@ class BatteryWidget extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.greenAccent.withValues(
+                                color: AppColors.green.withValues(
                                   alpha: 0.1,
                                 ),
                                 borderRadius: BorderRadius.circular(4),
@@ -100,7 +98,7 @@ class BatteryWidget extends StatelessWidget {
                               child: const Text(
                                 "CHR",
                                 style: TextStyle(
-                                  color: Colors.greenAccent,
+                                  color: AppColors.green,
                                   fontSize: 9,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -118,8 +116,8 @@ class BatteryWidget extends StatelessWidget {
                               "${current.abs()} mA",
                               style: TextStyle(
                                 color: isCharging
-                                    ? Colors.greenAccent
-                                    : Colors.redAccent,
+                                    ? AppColors.green
+                                    : AppColors.red,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -154,7 +152,7 @@ class BatteryWidget extends StatelessWidget {
                         height: 4,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: AppColors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(2),
                         ),
                         child: FractionallySizedBox(
