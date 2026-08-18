@@ -57,30 +57,6 @@ To ensure maximum efficiency and performance, Core Tuner uses a **hybrid archite
 
 ---
 
-## 🛠️ Requirements & Troubleshooting (ZRAM/Swap)
-
-### 🇧🇷 Português
-Para que as funcionalidades de **ZRAM/Swap** funcionem corretamente:
-
-1.  **BusyBox:** Ainda recomendado para funções legadas de Shell, mas está sendo descontinuado em favor do motor em Rust.
-2.  **Módulo de Persistência:** Certifique-se de que o módulo Magisk incluído nas releases está ativo para que o Swappiness e o Governor persistam após o reboot.
-3.  **Magisk Mount Namespace:** Em algumas versões do Magisk, é necessário garantir que o app tenha visibilidade global:
-    * Abra o **Magisk** > **Configurações**.
-    * Selecione **"Namespace de Montagem Global"** (Global Mount Namespace).
-    * Reinicie o dispositivo.
-
----
-
-### 🇺🇸 English
-For **ZRAM/Swap** features to work properly:
-
-1.  **BusyBox:** Still recommended for legacy Shell functions, but being phased out in favor of the Rust engine.
-2.  **Persistence Module:** Ensure the included Magisk module is active so that Swappiness and Governor settings persist after reboot.
-3.  **Magisk Mount Namespace:** On some Magisk versions, you must ensure that the app has system-wide visibility:
-    * Open **Magisk** > **Settings**.
-    * Select **"Global Mount Namespace"**.
-    * Reboot your device.
-
 ## 🦀 Nova Arquitetura: Migração para Rust / Rust Migration
 
 ### 🇧🇷 Português
