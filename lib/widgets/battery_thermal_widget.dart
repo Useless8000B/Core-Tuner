@@ -70,7 +70,7 @@ class BatteryThermalWidget extends StatelessWidget {
                       Text(
                         temp > 0 ? temp.toStringAsFixed(1) : "--",
                         style: TextStyle(
-                          color: statusColor, // Cor dinâmica!
+                          color: statusColor,
                           fontSize: 68,
                           fontWeight: FontWeight.w600,
                         ),
