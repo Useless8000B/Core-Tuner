@@ -28,10 +28,11 @@ class CoresWidget extends StatelessWidget {
           ),
           itemCount: frequencies.length,
           itemBuilder: (context, index) {
-            return CoreCard(
-              key: ValueKey(index),
-              index: index,
-              freq: frequencies[index],
+            return RepaintBoundary(
+              child: CoreCard(
+                index: index,
+                freq: frequencies[index],
+              ),
             );
           },
         );
