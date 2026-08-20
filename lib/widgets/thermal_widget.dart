@@ -8,88 +8,90 @@ class ThermalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<double>(
-      stream: cpuServices.getCpuTemperatureStream(),
-      builder: (context, snapshot) {
-        double temp = snapshot.data ?? 0.0;
-
-        return Container(
-          padding: const EdgeInsets.all(24),
-          width: double.infinity,
-          height: 200,
-          decoration: BoxDecoration(
-            color: AppColors.lightBlack,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.01)),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -5,
-                right: -5,
-                child: Opacity(
-                  opacity: 0.1,
-                  child: Icon(
-                    Icons.thermostat,
-                    color: AppColors.gray,
-                    size: 80,
+    return RepaintBoundary(
+      child: StreamBuilder<double>(
+        stream: cpuServices.getCpuTemperatureStream(),
+        builder: (context, snapshot) {
+          double temp = snapshot.data ?? 0.0;
+      
+          return Container(
+            padding: const EdgeInsets.all(24),
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              color: AppColors.lightBlack,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.01)),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -5,
+                  right: -5,
+                  child: Opacity(
+                    opacity: 0.1,
+                    child: Icon(
+                      Icons.thermostat,
+                      color: AppColors.gray,
+                      size: 80,
+                    ),
                   ),
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "THERMAL INDEX",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                      color: AppColors.gray.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        temp > 0 ? temp.toStringAsFixed(0) : "--",
-                        style: TextStyle(
-                          color: AppColors.royalBlue,
-                          fontSize: 68,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        "°C",
-                        style: TextStyle(
-                          color: AppColors.royalBlue,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      temp > 50 ? "HIGH" : "OPTIMAL",
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "THERMAL INDEX",
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: temp > 50 ? Colors.orange : AppColors.royalBlue,
-                        letterSpacing: 1,
+                        letterSpacing: 2,
+                        color: AppColors.gray.withValues(alpha: 0.6),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          temp > 0 ? temp.toStringAsFixed(0) : "--",
+                          style: TextStyle(
+                            color: AppColors.royalBlue,
+                            fontSize: 68,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          "°C",
+                          style: TextStyle(
+                            color: AppColors.royalBlue,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        temp > 50 ? "HIGH" : "OPTIMAL",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: temp > 50 ? Colors.orange : AppColors.royalBlue,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

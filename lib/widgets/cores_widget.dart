@@ -8,35 +8,37 @@ class CoresWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<double>>(
-      stream: cpuServices.getCpuFrequenciesStream(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final frequencies = snapshot.data!;
-
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 2.0,
-          ),
-          itemCount: frequencies.length,
-          itemBuilder: (context, index) {
-            return RepaintBoundary(
-              child: CoreCard(
-                index: index,
-                freq: frequencies[index],
-              ),
-            );
-          },
-        );
-      },
+    return RepaintBoundary(
+      child: StreamBuilder<List<double>>(
+        stream: cpuServices.getCpuFrequenciesStream(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+      
+          final frequencies = snapshot.data!;
+      
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 2.0,
+            ),
+            itemCount: frequencies.length,
+            itemBuilder: (context, index) {
+              return RepaintBoundary(
+                child: CoreCard(
+                  index: index,
+                  freq: frequencies[index],
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
