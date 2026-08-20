@@ -22,7 +22,7 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
     let entry = properties
         .iter()
         .find(|v| v.name == "swappiness")
-        .ok_or("swappiness property not found")?;
+        .ok_or_else(|| "swappiness property not found")?;
 
     let safe_value = choice.clamp(0, 100);
     let cmd = format!("echo {} > {}", safe_value, entry.path);
@@ -64,15 +64,19 @@ pub fn fstrim() -> Result<(), String> {
 pub fn clear_logs() -> Result<(), String> {
     let properties = Property::storage_properties();
 
-    let tombstones = properties
-        .iter()
-        .find(|v| v.name == "tombstones")
-        .ok_or("tombstones property not found")?;
+    let mut tombstones = None;
+    let mut anr = None;
 
-    let anr = properties
-        .iter()
-        .find(|v| v.name == "anr")
-        .ok_or("anr property not found")?;
+    for property in properties {
+        match property.name.as_str() {
+            "tombstones" => tombstones = Some(property),
+            "anr" => anr = Some(property),
+            _ => {}
+        }
+    }
+
+    let tombstones = tombstones.ok_or_else(|| "tombstones property not found")?;
+    let anr = anr.ok_or_else(|| "anr property not found!")?;
 
     run_command::write_shell_command(
         "su",
@@ -86,14 +90,14 @@ pub fn clear_temp_files() -> Result<(), String> {
     let temp_files = properties
         .iter()
         .find(|v| v.name == "temp_files")
-        .ok_or("temp_files property not found")?;
+        .ok_or_else(|| "temp_files property not found")?;
 
     run_command::write_shell_command("su", &["-c", "rm -rf", &temp_files.path])
 }
 
 pub fn lmk_profile(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 3);
-    let profile = Lmk::from_input(safe_value).ok_or("Couldn't get from input")?;
+    let profile = Lmk::from_input(safe_value).ok_or_else(|| "Couldn't get from input")?;
 
     run_command::write_shell_command(
         "su",
