@@ -152,7 +152,7 @@ pub fn zram_info() -> Result<Zram, ReaderError> {
 
     for property in properties {
         match property.name.as_str() {
-            "mm_state" => mm_stat = Some(property),
+            "mm_stat" => mm_stat = Some(property),
             "disksize" => disksize = Some(property),
             _ => {}
         }
