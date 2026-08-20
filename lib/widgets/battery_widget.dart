@@ -16,7 +16,7 @@ class BatteryWidget extends StatelessWidget {
         builder: (context, snapshot) {
           final data = snapshot.data;
 
-          double level = data?.level.toDouble() ?? 0.0;
+          int level = data?.level ?? 0;
           double current = data?.current ?? 0.0;
           double voltage = data?.voltage ?? 0.0;
           bool isCharging = data?.isCharging ?? false;
@@ -69,7 +69,7 @@ class BatteryWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "${level.toInt()}",
+                            "$level",
                             style: TextStyle(
                               color: accentColor,
                               fontSize: 60,
@@ -134,7 +134,7 @@ class BatteryWidget extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "$voltage V",
+                                "${voltage.toStringAsFixed(2)} V",
                                 style: TextStyle(
                                   color: AppColors.gray.withValues(alpha: 0.7),
                                   fontSize: 13,
