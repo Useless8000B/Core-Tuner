@@ -25,8 +25,6 @@ class BatteryThermalWidget extends StatelessWidget {
           statusText = "CRITICAL";
         }
 
-        double progress = ((temp - 15) / (55 - 15)).clamp(0.0, 1.0);
-
         return Container(
           padding: const EdgeInsets.all(24),
           width: double.infinity,
@@ -82,25 +80,17 @@ class BatteryThermalWidget extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ProgressBar(
-                          progress: progress,
-                          color: statusColor,
-                        ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      statusText,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: statusColor,
+                        letterSpacing: 1,
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        statusText,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: statusColor,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -108,37 +98,6 @@ class BatteryThermalWidget extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _ProgressBar extends StatelessWidget {
-  final double progress;
-  final Color color;
-
-  const _ProgressBar({required this.progress, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 4,
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(2),
-      ),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: progress,
-        child: Container(
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-            boxShadow: [
-              BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 6),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
