@@ -12,7 +12,6 @@ class ThermalWidget extends StatelessWidget {
       stream: cpuServices.getCpuTemperatureStream(),
       builder: (context, snapshot) {
         double temp = snapshot.data ?? 0.0;
-        double progress = ((temp - 20) / (80 - 20)).clamp(0.0, 1.0);
 
         return Container(
           padding: const EdgeInsets.all(24),
@@ -73,48 +72,17 @@ class ThermalWidget extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: progress,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.royalBlue,
-                                borderRadius: BorderRadius.circular(2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.royalBlue.withValues(
-                                      alpha: 0.5,
-                                    ),
-                                    blurRadius: 6,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      temp > 50 ? "HIGH" : "OPTIMAL",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: temp > 50 ? Colors.orange : AppColors.royalBlue,
+                        letterSpacing: 1,
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        temp > 50 ? "HIGH" : "OPTIMAL",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: temp > 50
-                              ? Colors.orange
-                              : AppColors.royalBlue,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),

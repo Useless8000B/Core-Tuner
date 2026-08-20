@@ -20,7 +20,6 @@ class BatteryWidget extends StatelessWidget {
         double voltage = data?.voltage ?? 0.0;
         bool isCharging = data?.isCharging ?? false;
 
-        double progress = (level / 100).clamp(0.0, 1.0);
         Color accentColor = isCharging ? AppColors.green : AppColors.royalBlue;
 
         return Container(
@@ -90,9 +89,7 @@ class BatteryWidget extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.green.withValues(
-                                  alpha: 0.1,
-                                ),
+                                color: AppColors.green.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(
@@ -142,46 +139,6 @@ class BatteryWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-
-                  const SizedBox(height: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: 4,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: progress,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: accentColor,
-                              borderRadius: BorderRadius.circular(2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: accentColor.withValues(alpha: 0.3),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${level.toInt()}%",
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.gray.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
