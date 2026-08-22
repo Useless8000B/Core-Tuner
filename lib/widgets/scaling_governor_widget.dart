@@ -50,13 +50,13 @@ class _ScalingGovernorWidgetState extends State<ScalingGovernorWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "SCALING GOVERNOR",
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
-              color: AppColors.gray.withValues(alpha: 0.6),
+              color: AppColors.gray,
             ),
           ),
           const SizedBox(height: 8),
