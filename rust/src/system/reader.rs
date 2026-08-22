@@ -10,91 +10,47 @@ use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
 use crate::utils::extract_from_file::{extract_from_index, extract_from_label};
 
+const MILLIAMPS_TO_AMPS: f64 = 1000.0;
+const MICROVOLTS_TO_VOLTS: f64 = 1_000_000.0;
+const MILLIDEGREES_C_TO_CELSIUS: f64 = 1000.0;
+const KILOHERTZ_TO_GIGAHERTZ: f64 = 1_000_000.0;
+
 pub fn battery_info() -> Result<Battery, ReaderError> {
     let sensors = Sensor::battery_sensors();
     let properties = Property::battery_properties();
-
-    let mut level = None;
-    let mut current = None;
-    let mut voltage = None;
-    let mut is_charging = None;
-
-    for property in properties {
-        match property.name.as_str() {
-            "level" => level = Some(property),
-            "is_charging" => is_charging = Some(property),
-            _ => {}
-        }
-    }
-
-    for sensor in sensors {
-        match sensor.name.as_str() {
-            "current" => current = Some(sensor),
-            "voltage" => voltage = Some(sensor),
-            _ => {}
-        }
-    }
-
-    let level = level
-        .ok_or_else(|| ReaderError::PropertyNotFound("LEVEL property not found".to_string()))?
-        .read_property()?;
-
-    let current = current
-        .ok_or_else(|| ReaderError::SensorNotFound("".to_string()))?
-        .read_sensor()?;
-
-    let is_charging = is_charging
-        .ok_or_else(|| {
-            ReaderError::PropertyNotFound("IS_CHARGING property not found!".to_string())
-        })?
-        .read_property()?;
-
-    let is_charging = is_charging == "Charging";
-
-    let voltage = voltage
-        .ok_or_else(|| ReaderError::SensorNotFound("VOLTAGE sensor not found!".to_string()))?
-        .read_sensor()?;
+    let level = Property::find_property(&properties, "level")?.read_property()?;
+    let current = Sensor::find_sensor(&sensors, "current")?.read_sensor()?;
+    let is_charging = Property::find_property(&properties, "is_charging")?.read_property()? == "Charging";
+    let voltage = Sensor::find_sensor(&sensors, "voltage")?.read_sensor()?;
 
     Ok(Battery {
         level: level
             .parse::<u8>()
             .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?,
-        current: current / 1000.0,
+        current: current / MILLIAMPS_TO_AMPS,
         is_charging,
-        voltage: voltage / 1000000.0,
+        voltage: voltage / MICROVOLTS_TO_VOLTS,
     })
 }
 
 pub fn battery_temperature() -> Result<f64, ReaderError> {
     let sensors = Sensor::battery_sensors();
+    let temperature = Sensor::find_sensor(&sensors, "temperature")?.read_sensor()?;
 
-    let temperature = sensors
-        .iter()
-        .find(|v| v.name == "temperature")
-        .ok_or_else(|| ReaderError::SensorNotFound("TEMPERATURE sensor not found".to_string()))?
-        .read_sensor()?;
-
-    Ok(temperature as f64 / 1000.0)
+    Ok(temperature as f64 / MILLIDEGREES_C_TO_CELSIUS)
 }
 
-pub fn cpu_temperature() -> Result<f32, ReaderError> {
+pub fn cpu_temperature() -> Result<f64, ReaderError> {
     let sensors = Sensor::cpu_sensors();
+    let cpu_temperature = Sensor::find_sensor(&sensors, "performance_core")?.read_sensor()?;
 
-    let cpu_temperature = sensors
-        .iter()
-        .find(|v| v.name == "performance_core")
-        .ok_or_else(|| {
-            ReaderError::SensorNotFound("PERFORMANCE_CORE sensor not found".to_string())
-        })?
-        .read_sensor()?;
-
-    Ok(cpu_temperature / 1000.0)
+    Ok(cpu_temperature / MILLIDEGREES_C_TO_CELSIUS)
 }
 
 pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
     let mut frequencies: Vec<f64> = Vec::new();
 
-    for i in 0..16 {
+    for i in 0..10 {
         let path = format!("/sys/devices/system/cpu/cpu{i}/cpufreq/scaling_cur_freq");
 
         if !std::path::Path::new(&path).exists() {
@@ -107,7 +63,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
                 .parse::<f64>()
                 .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
 
-            frequencies.push(value / 1000000.0);
+            frequencies.push(value / KILOHERTZ_TO_GIGAHERTZ);
         } else {
             frequencies.push(0.0);
         }
@@ -118,24 +74,14 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
 
 pub fn cpu_governor() -> Result<String, ReaderError> {
     let properties = Property::cpu_path_properties();
-
-    let governor = properties
-        .iter()
-        .find(|v| v.name == "governor")
-        .ok_or_else(|| ReaderError::PropertyNotFound("GOVERNOR property not found".to_string()))?
-        .read_property()?;
+    let governor = Property::find_property(&properties, "governor")?.read_property()?;
 
     Ok(governor)
 }
 
 pub fn ram_info() -> Result<Ram, ReaderError> {
     let properties = Property::ram_properties();
-
-    let mem_info = properties
-        .iter()
-        .find(|v| v.name == "mem_info")
-        .ok_or_else(|| ReaderError::PropertyNotFound("MEM_INFO property not found".to_string()))?;
-
+    let mem_info = Property::find_property(&properties, "mem_info")?;
     let total = extract_from_label(&mem_info.path, "MemTotal")?;
     let available = extract_from_label(&mem_info.path, "MemAvailable")?;
 
@@ -147,23 +93,8 @@ pub fn ram_info() -> Result<Ram, ReaderError> {
 
 pub fn zram_info() -> Result<Zram, ReaderError> {
     let properties = Property::zram_properties();
-    let mut mm_stat = None;
-    let mut disksize = None;
-
-    for property in properties {
-        match property.name.as_str() {
-            "mm_stat" => mm_stat = Some(property),
-            "disksize" => disksize = Some(property),
-            _ => {}
-        }
-    }
-
-    let mm_stat = mm_stat
-        .ok_or_else(|| ReaderError::PropertyNotFound("MM_STAT property not found!".to_string()))?;
-
-    let disksize = disksize
-        .ok_or_else(|| ReaderError::PropertyNotFound("DISKSIZE property not found!".to_string()))?;
-
+    let mm_stat = Property::find_property(&properties, "mm_stat")?;
+    let disksize = Property::find_property(&properties, "disksize")?;
     let origin = extract_from_index(&mm_stat.path, 0)?;
     let compressed = extract_from_index(&mm_stat.path, 1)?;
     let used = extract_from_index(&mm_stat.path, 2)?;
@@ -191,13 +122,7 @@ pub fn zram_info() -> Result<Zram, ReaderError> {
 
 pub fn swappiness() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-
-    let swappiness = properties
-        .iter()
-        .find(|v| v.name == "swappiness")
-        .ok_or_else(|| ReaderError::PropertyNotFound("SWAPPINESS property not found!".to_string()))?
-        .read_property()?;
-
+    let swappiness = Property::find_property(&properties, "swappiness")?.read_property()?;
     let parsed_value: u8 = swappiness
         .parse()
         .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
@@ -208,13 +133,7 @@ pub fn swappiness() -> Result<u8, ReaderError> {
 pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
 
-    let dirty_ratio = properties
-        .iter()
-        .find(|v| v.name == "dirty_ratio")
-        .ok_or_else(|| {
-            ReaderError::PropertyNotFound("DIRTY_RATIO property not found!".to_string())
-        })?
-        .read_property()?;
+    let dirty_ratio = Property::find_property(&properties, "dirty_ratio")?.read_property()?;
 
     let parsed_value = dirty_ratio
         .parse::<u8>()
@@ -225,14 +144,7 @@ pub fn dirty_ratio() -> Result<u8, ReaderError> {
 
 pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-    let dirty_background_ratio = properties
-        .iter()
-        .find(|v| v.name == "dirty_background_ratio")
-        .ok_or_else(|| {
-            ReaderError::PropertyNotFound("DIRTY_BACKGROUND_RATIO property not found".to_string())
-        })?
-        .read_property()?;
-
+    let dirty_background_ratio = Property::find_property(&properties, "dirty_background_ratio")?.read_property()?;
     let parsed_value = dirty_background_ratio
         .parse::<u8>()
         .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
