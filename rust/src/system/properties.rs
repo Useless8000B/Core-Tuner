@@ -31,10 +31,6 @@ impl Property {
         vec![
             Property::new("is_charging", "/sys/class/power_supply/battery/status"),
             Property::new("level", "/sys/class/power_supply/battery/capacity"),
-            Property::new(
-                "input_suspend",
-                "/sys/class/power_supply/battery/input_suspend",
-            ),
         ]
     }
 
@@ -83,5 +79,12 @@ impl Property {
             Property::new("temp_files", "/data/local/tmp/*"),
             Property::new("anr", "/data/anr/*"),
         ]
+    }
+
+    pub fn find_property<'a>(properties: &'a [Property], name: &'a str) -> Result<&'a Property, ReaderError> {
+        properties
+            .iter()
+            .find(|v| v.name == name)
+            .ok_or_else(|| ReaderError::PropertyNotFound(format!("{name} property not found")))
     }
 }
