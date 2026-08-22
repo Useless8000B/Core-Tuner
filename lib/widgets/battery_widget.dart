@@ -4,12 +4,11 @@ import 'package:core_tuner/src/rust/models/battery.dart';
 import 'package:flutter/material.dart';
 
 class BatteryWidget extends StatelessWidget {
-  const BatteryWidget({super.key});
+  const BatteryWidget({super.key, required this.batteryServices});
+  final BatteryServices batteryServices;
 
   @override
   Widget build(BuildContext context) {
-    final BatteryServices batteryServices = BatteryServices();
-
     return RepaintBoundary(
       child: StreamBuilder<Battery>(
         stream: batteryServices.getBatteryStream(),
@@ -54,13 +53,13 @@ class BatteryWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "BATTERY STATUS",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
-                        color: AppColors.gray.withValues(alpha: 0.5),
+                        color: AppColors.gray,
                       ),
                     ),
 
@@ -94,7 +93,7 @@ class BatteryWidget extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.green.withValues(alpha: 0.1),
+                                  color: AppColors.green,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(
