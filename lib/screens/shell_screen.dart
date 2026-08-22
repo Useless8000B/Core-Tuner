@@ -31,7 +31,7 @@ class _ShellScreenState extends State<ShellScreen> {
 
   late final List<Map<String, dynamic>> _pages = [
     {
-      'title': 'Dashboard',
+      'title': 'Storage',
       'screen': StorageScreen(storageServices: storageServices),
     },
     {'title': 'CPU', 'screen': CpuScreen(cpuServices: cpuServices)},
