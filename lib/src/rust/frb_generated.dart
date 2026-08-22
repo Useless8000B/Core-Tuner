@@ -268,7 +268,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_f_32,
+          decodeSuccessData: sse_decode_f_64,
           decodeErrorData:
               sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError,
         ),
@@ -774,8 +774,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return Battery(
       level: dco_decode_u_8(arr[0]),
-      voltage: dco_decode_f_32(arr[1]),
-      current: dco_decode_f_32(arr[2]),
+      voltage: dco_decode_f_64(arr[1]),
+      current: dco_decode_f_64(arr[2]),
       isCharging: dco_decode_bool(arr[3]),
     );
   }
@@ -784,12 +784,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool dco_decode_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
-  }
-
-  @protected
-  double dco_decode_f_32(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as double;
   }
 
   @protected
@@ -904,8 +898,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Battery sse_decode_battery(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_level = sse_decode_u_8(deserializer);
-    var var_voltage = sse_decode_f_32(deserializer);
-    var var_current = sse_decode_f_32(deserializer);
+    var var_voltage = sse_decode_f_64(deserializer);
+    var var_current = sse_decode_f_64(deserializer);
     var var_isCharging = sse_decode_bool(deserializer);
     return Battery(
       level: var_level,
@@ -919,12 +913,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
-  }
-
-  @protected
-  double sse_decode_f_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getFloat32();
   }
 
   @protected
@@ -1043,8 +1031,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_battery(Battery self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_8(self.level, serializer);
-    sse_encode_f_32(self.voltage, serializer);
-    sse_encode_f_32(self.current, serializer);
+    sse_encode_f_64(self.voltage, serializer);
+    sse_encode_f_64(self.current, serializer);
     sse_encode_bool(self.isCharging, serializer);
   }
 
@@ -1052,12 +1040,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
-  }
-
-  @protected
-  void sse_encode_f_32(double self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putFloat32(self);
   }
 
   @protected

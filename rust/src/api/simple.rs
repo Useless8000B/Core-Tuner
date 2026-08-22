@@ -23,7 +23,7 @@ pub fn set_wifi_throttle(enable: bool) -> Result<(), String> {
     writer::wifi_throttle(enable)
 }
 
-pub fn get_cpu_temperature() -> Result<f32, ReaderError> {
+pub fn get_cpu_temperature() -> Result<f64, ReaderError> {
     reader::cpu_temperature()
 }
 

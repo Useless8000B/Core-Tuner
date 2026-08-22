@@ -768,8 +768,8 @@ impl SseDecode for crate::models::battery::Battery {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_level = <u8>::sse_decode(deserializer);
-        let mut var_voltage = <f32>::sse_decode(deserializer);
-        let mut var_current = <f32>::sse_decode(deserializer);
+        let mut var_voltage = <f64>::sse_decode(deserializer);
+        let mut var_current = <f64>::sse_decode(deserializer);
         let mut var_isCharging = <bool>::sse_decode(deserializer);
         return crate::models::battery::Battery {
             level: var_level,
@@ -784,13 +784,6 @@ impl SseDecode for bool {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         deserializer.cursor.read_u8().unwrap() != 0
-    }
-}
-
-impl SseDecode for f32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_f32::<NativeEndian>().unwrap()
     }
 }
 
@@ -1086,8 +1079,8 @@ impl SseEncode for crate::models::battery::Battery {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u8>::sse_encode(self.level, serializer);
-        <f32>::sse_encode(self.voltage, serializer);
-        <f32>::sse_encode(self.current, serializer);
+        <f64>::sse_encode(self.voltage, serializer);
+        <f64>::sse_encode(self.current, serializer);
         <bool>::sse_encode(self.is_charging, serializer);
     }
 }
@@ -1096,13 +1089,6 @@ impl SseEncode for bool {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         serializer.cursor.write_u8(self as _).unwrap();
-    }
-}
-
-impl SseEncode for f32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_f32::<NativeEndian>(self).unwrap();
     }
 }
 
