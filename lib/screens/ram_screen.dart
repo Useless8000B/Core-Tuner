@@ -42,43 +42,38 @@ class _RamScreenState extends State<RamScreen> {
                 onAction: (value) async {
                   await widget.kernelServices.applyLmkProfile(value);
                 },
-
-                kernelServices: widget.kernelServices,
               ),
               TweakSlider(
                 title: 'Swappiness',
                 storageKey: 'swappiness',
                 labelLeft: 'Performance',
                 labelRight: 'Multitasking',
+                loadInitialValue: () => widget.kernelServices.getCurrentSwappiness(),
                 onAction: (value) async {
                   await widget.kernelServices.applySwappiness(value);
                 },
-
-                kernelServices: widget.kernelServices,
               ),
               TweakSlider(
                 title: 'Vm Dirty Ratio',
                 storageKey: 'vm_dirty_ratio',
                 labelLeft: 'Integrity',
                 labelRight: 'Performance',
+                loadInitialValue: () => widget.kernelServices.getCurrentDirtyRatio(),
                 onAction: (value) async {
                   await widget.kernelServices.applyVmDirtyRatio(value);
                 },
-
-                kernelServices: widget.kernelServices,
               ),
               TweakSlider(
                 title: 'Vm Dirty Background Ratio',
                 storageKey: 'vm_dirty_background_ratio',
                 labelLeft: 'Responsiveness',
                 labelRight: 'Throughput',
+                loadInitialValue: () => widget.kernelServices.getDirtyBackgroundRatio(),
                 onAction: (value) async {
                   await widget.kernelServices.applyVmDirtyBackgroundRatio(
                     value,
                   );
                 },
-
-                kernelServices: widget.kernelServices,
               ),
             ],
           ),

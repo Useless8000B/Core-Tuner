@@ -1,5 +1,4 @@
 import 'package:core_tuner/colors.dart';
-import 'package:core_tuner/services/kernel_services.dart';
 import 'package:core_tuner/widgets/core_snack_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +12,8 @@ class TweakSlider extends StatefulWidget {
   final String labelLeft;
   final String labelRight;
   final double defaultValue;
-  final Function(int) onAction;
+  final Future<int> Function()? loadInitialValue;
+  final ValueChanged<int> onAction;
 
   const TweakSlider({
     super.key,
@@ -26,10 +26,8 @@ class TweakSlider extends StatefulWidget {
     this.labelLeft = "Min",
     this.labelRight = "Max",
     this.defaultValue = 0,
-    required this.kernelServices,
+    this.loadInitialValue,
   });
-
-  final KernelServices kernelServices;
 
   @override
   State<TweakSlider> createState() => _TweakSliderState();
@@ -48,37 +46,49 @@ class _TweakSliderState extends State<TweakSlider> {
 
   Future<void> _loadValue() async {
     final prefs = await SharedPreferences.getInstance();
-
     int? savedValue = prefs.getInt(widget.storageKey);
 
-    if (savedValue == null || (savedValue == 0 && widget.defaultValue != 0)) {
-      int raw = 0;
-
-      if (widget.storageKey == 'vm_dirty_ratio') {
-        raw = await widget.kernelServices.getCurrentDirtyRatio();
-      } else if (widget.storageKey == 'swappiness_value') {
-        raw = await widget.kernelServices.getCurrentSwappiness();
-      } else if (widget.storageKey == 'vm_dirty_background_ratio') {
-        raw = await widget.kernelServices.getDirtyBackgroundRatio();
-      }
-
+    if ((savedValue == null || savedValue == 0) && widget.loadInitialValue != null) {
+      final raw = await widget.loadInitialValue!();
       if (raw != 0) {
         savedValue = raw;
         await prefs.setInt(widget.storageKey, savedValue);
       }
     }
 
-    if (mounted) {
-      setState(() {
-        _currentValue = (savedValue ?? widget.defaultValue.toInt()).toDouble();
-        _isLoading = false;
-      });
+    if (!mounted) return;
+
+    setState(() {
+      _currentValue = (savedValue ?? widget.defaultValue.toInt()).toDouble();
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _handleSliderChangeEnd(double value) async {
+    final int val = value.round();
+
+    try {
+      widget.onAction(val);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(widget.storageKey, val);
+
+      if (!mounted) return;
+      CoreSnack.show(context, '${widget.title} set to $val');
+    } catch (e) {
+      if (!mounted) return;
+      CoreSnack.show(context, 'Error: $e', isError: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const SizedBox(height: 100);
+    if (_isLoading) {
+      return const SizedBox(
+        height: 100,
+        child: Center(child: CircularProgressIndicator.adaptive()),
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -132,25 +142,7 @@ class _TweakSliderState extends State<TweakSlider> {
                 _currentValue = value;
               });
             },
-            onChangeEnd: (value) async {
-              final int val = value.round();
-
-              final BuildContext currentContext = context;
-
-              try {
-                await widget.onAction(val);
-
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setInt(widget.storageKey, val);
-
-                if (!currentContext.mounted) return;
-
-                CoreSnack.show(currentContext, '${widget.title} set to $val');
-              } catch (e) {
-                if (!currentContext.mounted) return;
-                CoreSnack.show(currentContext, 'Error: $e', isError: true);
-              }
-            },
+            onChangeEnd: _handleSliderChangeEnd,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
