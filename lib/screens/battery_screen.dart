@@ -23,7 +23,7 @@ class BatteryScreen extends StatelessWidget {
           padding: EdgeInsets.all(20),
           child: Column(
             children: [
-              BatteryWidget(),
+              BatteryWidget(batteryServices: batteryServices,),
               const SizedBox(height: 12),
               BatteryThermalWidget(batteryServices: batteryServices),
               const SizedBox(height: 12),
