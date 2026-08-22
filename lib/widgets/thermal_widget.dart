@@ -25,7 +25,7 @@ class ThermalWidget extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                Positioned(
+                const Positioned(
                   top: -5,
                   right: -5,
                   child: Opacity(
@@ -62,7 +62,7 @@ class ThermalWidget extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        const Text(
                           "°C",
                           style: TextStyle(
                             color: AppColors.royalBlue,
