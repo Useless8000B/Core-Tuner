@@ -84,7 +84,7 @@ class ZramWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              "${ratio}x",
+                              "${ratio.toStringAsFixed(2)}x",
                               style: const TextStyle(
                                 color: AppColors.purple,
                                 fontSize: 18,
