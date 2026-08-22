@@ -25,7 +25,7 @@ class BatteryServices {
         debugPrint("Error reading battery temperature: $e");
       }
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 4));
     }
   }
 }

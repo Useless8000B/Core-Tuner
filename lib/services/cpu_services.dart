@@ -12,7 +12,7 @@ class CpuServices {
         debugPrint("Error reading cpu temperature: $e");
       }
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
     }
   }
 
@@ -32,7 +32,7 @@ class CpuServices {
         debugPrint("Couldn't read cpu frequencies: $e");
       }
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
     }
   }
 

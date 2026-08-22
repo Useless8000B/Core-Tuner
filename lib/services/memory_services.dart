@@ -14,7 +14,7 @@ class MemoryServices {
         debugPrint("Error reading ramStream: $e");
       }
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
     }
   }
 
@@ -26,7 +26,7 @@ class MemoryServices {
         debugPrint("Error reading ZramStream: $e");
       }
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
     }
   }
 }
