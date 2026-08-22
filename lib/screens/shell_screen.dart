@@ -75,12 +75,7 @@ class _ShellScreenState extends State<ShellScreen> {
         onTap: navigateFromDrawer,
         currentIndex: _currentIndex,
       ),
-      body: SafeArea(
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _pages.map((e) => e['screen'] as Widget).toList(),
-        ),
-      ),
+      body: SafeArea(child: _pages[_currentIndex]['screen'] as Widget),
     );
   }
 }
