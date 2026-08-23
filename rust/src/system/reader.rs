@@ -26,7 +26,7 @@ pub fn battery_info() -> Result<Battery, ReaderError> {
     Ok(Battery {
         level: level
             .parse::<u8>()
-            .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?,
+            .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value: {level}")))?,
         current: current / MILLIAMPS_TO_AMPS,
         is_charging,
         voltage: voltage / MICROVOLTS_TO_VOLTS,
