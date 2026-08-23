@@ -79,7 +79,7 @@ class CoreCard extends StatelessWidget {
           Text(
             "${freq.toStringAsFixed(1)} GHz",
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
