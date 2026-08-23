@@ -92,6 +92,6 @@ impl Property {
         properties
             .iter()
             .find(|v| v.name == name)
-            .ok_or_else(|| ReaderError::PropertyNotFound(format!("{name} property not found")))
+            .ok_or_else(|| ReaderError::PropertyNotFound(format!("{name} property not found!")))
     }
 }
