@@ -68,3 +68,6 @@ Future<void> writeClearTempFiles() =>
 
 Future<void> writeLmkProfile({required int choice}) =>
     RustLib.instance.api.crateApiSimpleWriteLmkProfile(choice: choice);
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>>
+abstract class Str implements RustOpaqueInterface {}

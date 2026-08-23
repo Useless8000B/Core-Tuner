@@ -132,6 +132,12 @@ abstract class RustLibApi extends BaseApi {
   get rust_arc_decrement_strong_count_ReaderError;
 
   CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ReaderErrorPtr;
+
+  RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_Str;
+
+  RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_Str;
+
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_StrPtr;
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -325,7 +331,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_storage,
-          decodeErrorData: sse_decode_String,
+          decodeErrorData:
+              sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr,
         ),
         constMeta: kCrateApiSimpleGetStorageConstMeta,
         argValues: [],
@@ -742,6 +749,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   get rust_arc_decrement_strong_count_ReaderError => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError;
 
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_Str => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_Str => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr;
+
   @protected
   ReaderError
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
@@ -752,12 +767,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  Str
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return StrImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ReaderError
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ReaderErrorImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  Str
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return StrImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -876,12 +909,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  Str
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return StrImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   ReaderError
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ReaderErrorImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  Str
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return StrImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1010,6 +1067,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    Str self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as StrImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerReaderError(
     ReaderError self,
     SseSerializer serializer,
@@ -1017,6 +1087,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ReaderErrorImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    Str self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as StrImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
@@ -1138,5 +1221,25 @@ class ReaderErrorImpl extends RustOpaque implements ReaderError {
         RustLib.instance.api.rust_arc_decrement_strong_count_ReaderError,
     rustArcDecrementStrongCountPtr:
         RustLib.instance.api.rust_arc_decrement_strong_count_ReaderErrorPtr,
+  );
+}
+
+@sealed
+class StrImpl extends RustOpaque implements Str {
+  // Not to be used by end users
+  StrImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  StrImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_Str,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_Str,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_StrPtr,
   );
 }
