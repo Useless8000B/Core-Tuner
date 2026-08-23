@@ -43,7 +43,7 @@ impl Sensor {
 
     pub fn find_sensor<'a>(
         sensors: &'a [Sensor],
-        name: &'a str,
+        name: &str,
     ) -> Result<&'a Sensor, ReaderError> {
         sensors
             .iter()
