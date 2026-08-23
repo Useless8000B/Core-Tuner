@@ -33,9 +33,9 @@ impl Property {
     }
 
     pub fn ram_properties() -> &'static [Property] {
-        const ZRAM_PROPERTIES: &[Property] = &[Property::new("mem_info", "/proc/meminfo")];
+        const RAM_PROPERTIES: &[Property] = &[Property::new("mem_info", "/proc/meminfo")];
 
-        ZRAM_PROPERTIES
+        RAM_PROPERTIES
     }
 
     pub fn zram_properties() -> &'static [Property] {
