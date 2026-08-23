@@ -38,9 +38,7 @@ impl Sensor {
         raw_content
             .trim()
             .parse::<f64>()
-            .map_err(|e| ReaderError::InvalidValue(format!(
-                "Invalid value: {e}"
-            )))
+            .map_err(|e| ReaderError::InvalidValue(format!("Invalid value: {e}")))
     }
 
     pub fn find_sensor<'a>(
