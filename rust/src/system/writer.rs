@@ -4,8 +4,8 @@ use crate::system::properties::Property;
 use crate::utils::run_command;
 
 pub fn set_cpu_governor(choice: &str) -> Result<(), String> {
-    let properties = Property::cpu_cores_properties();
-    let gov = Governor::from_input(choice).ok_or("Error reading from input")?;
+    let properties = Property::cpu_properties();
+    let gov = Governor::from_input(choice).ok_or_else(|| "Error reading from input")?;
 
     let entry = properties
         .iter()
@@ -64,19 +64,8 @@ pub fn fstrim() -> Result<(), String> {
 pub fn clear_logs() -> Result<(), String> {
     let properties = Property::storage_properties();
 
-    let mut tombstones = None;
-    let mut anr = None;
-
-    for property in properties {
-        match property.name.as_str() {
-            "tombstones" => tombstones = Some(property),
-            "anr" => anr = Some(property),
-            _ => {}
-        }
-    }
-
-    let tombstones = tombstones.ok_or_else(|| "tombstones property not found")?;
-    let anr = anr.ok_or_else(|| "anr property not found!")?;
+    let tombstones = Property::find_property(&properties, "tombstones")?;
+    let anr = Property::find_property(&properties, "anr")?;
 
     run_command::write_shell_command(
         "su",
@@ -86,11 +75,7 @@ pub fn clear_logs() -> Result<(), String> {
 
 pub fn clear_temp_files() -> Result<(), String> {
     let properties = Property::storage_properties();
-
-    let temp_files = properties
-        .iter()
-        .find(|v| v.name == "temp_files")
-        .ok_or_else(|| "temp_files property not found")?;
+    let temp_files = Property::find_property(&properties, "temp_files")?;
 
     run_command::write_shell_command("su", &["-c", "rm -rf", &temp_files.path])
 }

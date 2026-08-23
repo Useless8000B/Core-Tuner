@@ -73,7 +73,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
 }
 
 pub fn cpu_governor() -> Result<String, ReaderError> {
-    let properties = Property::cpu_path_properties();
+    let properties = Property::cpu_properties();
     let governor = Property::find_property(&properties, "governor")?.read_property()?;
 
     Ok(governor)
@@ -82,8 +82,8 @@ pub fn cpu_governor() -> Result<String, ReaderError> {
 pub fn ram_info() -> Result<Ram, ReaderError> {
     let properties = Property::ram_properties();
     let mem_info = Property::find_property(&properties, "mem_info")?;
-    let total = extract_from_label(&mem_info.path, "MemTotal")?;
-    let available = extract_from_label(&mem_info.path, "MemAvailable")?;
+    let total = extract_from_label(mem_info.path, "MemTotal")?;
+    let available = extract_from_label(mem_info.path, "MemAvailable")?;
 
     Ok(Ram {
         total: total / (1024.0 * 1024.0),
@@ -95,10 +95,10 @@ pub fn zram_info() -> Result<Zram, ReaderError> {
     let properties = Property::zram_properties();
     let mm_stat = Property::find_property(&properties, "mm_stat")?;
     let disksize = Property::find_property(&properties, "disksize")?;
-    let origin = extract_from_index(&mm_stat.path, 0)?;
-    let compressed = extract_from_index(&mm_stat.path, 1)?;
-    let used = extract_from_index(&mm_stat.path, 2)?;
-    let total = extract_from_index(&disksize.path, 0)?;
+    let origin = extract_from_index(mm_stat.path, 0)?;
+    let compressed = extract_from_index(mm_stat.path, 1)?;
+    let used = extract_from_index(mm_stat.path, 2)?;
+    let total = extract_from_index(disksize.path, 0)?;
 
     let safe_compression = if compressed >= 1e15 || compressed <= 0.0 {
         used
@@ -132,9 +132,7 @@ pub fn swappiness() -> Result<u8, ReaderError> {
 
 pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-
     let dirty_ratio = Property::find_property(&properties, "dirty_ratio")?.read_property()?;
-
     let parsed_value = dirty_ratio
         .parse::<u8>()
         .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
