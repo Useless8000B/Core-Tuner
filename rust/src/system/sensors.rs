@@ -32,23 +32,15 @@ impl Sensor {
     }
 
     pub fn read_sensor(&self) -> Result<f64, ReaderError> {
-        let raw_content = match fs::read_to_string(&self.path) {
-            Ok(c) => c,
-            Err(_) => {
-                return Err(ReaderError::ReadingError(format!(
-                    "Error reading sensor {}",
-                    self.name
-                )))
-            }
-        };
+        let raw_content = fs::read_to_string(&self.path)
+            .map_err(|e| ReaderError::ReadingError(format!("Error reading sensor: {e}")))?;
 
-        match raw_content.trim().parse::<f64>() {
-            Ok(c) => Ok(c),
-            Err(_) => Err(ReaderError::InvalidValue(format!(
-                "Invalid value from sensor {}",
-                self.name
-            ))),
-        }
+        raw_content
+            .trim()
+            .parse::<f64>()
+            .map_err(|e| ReaderError::InvalidValue(format!(
+                "Invalid value: {e}"
+            )))
     }
 
     pub fn find_sensor<'a>(
