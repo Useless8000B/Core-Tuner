@@ -125,7 +125,7 @@ pub fn swappiness() -> Result<u8, ReaderError> {
     let swappiness = Property::find_property(&properties, "swappiness")?.read_property()?;
     let parsed_value: u8 = swappiness
         .parse()
-        .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
+        .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value?: {swappiness}")))?;
 
     Ok(parsed_value)
 }
@@ -135,7 +135,7 @@ pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let dirty_ratio = Property::find_property(&properties, "dirty_ratio")?.read_property()?;
     let parsed_value = dirty_ratio
         .parse::<u8>()
-        .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
+        .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value: {dirty_ratio}")))?;
 
     Ok(parsed_value)
 }
@@ -145,16 +145,16 @@ pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     let dirty_background_ratio = Property::find_property(&properties, "dirty_background_ratio")?.read_property()?;
     let parsed_value = dirty_background_ratio
         .parse::<u8>()
-        .map_err(|_| ReaderError::InvalidValue("Error parsing value".to_string()))?;
+        .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value: {dirty_background_ratio}")))?;
 
     Ok(parsed_value)
 }
 
-pub fn storage() -> Result<Storage, String> {
+pub fn storage() -> Result<Storage, &'static str> {
     let disks = Disks::new_with_refreshed_list();
 
     if disks.is_empty() {
-        return Err("No partitons found!".to_string());
+        return Err("No partitons found!");
     }
 
     let data_partition = disks
@@ -173,6 +173,6 @@ pub fn storage() -> Result<Storage, String> {
             })
         }
 
-        None => Err("Couldn't isolate the /data partition!".to_string()),
+        None => Err("Couldn't isolate the /data partition!"),
     }
 }
