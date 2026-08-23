@@ -18,10 +18,10 @@ const KILOHERTZ_TO_GIGAHERTZ: f64 = 1_000_000.0;
 pub fn battery_info() -> Result<Battery, ReaderError> {
     let sensors = Sensor::battery_sensors();
     let properties = Property::battery_properties();
-    let level = Property::find_property(&properties, "level")?.read_property()?;
-    let current = Sensor::find_sensor(&sensors, "current")?.read_sensor()?;
-    let is_charging = Property::find_property(&properties, "is_charging")?.read_property()? == "Charging";
-    let voltage = Sensor::find_sensor(&sensors, "voltage")?.read_sensor()?;
+    let level = Property::find_property(properties, "level")?.read_property()?;
+    let current = Sensor::find_sensor(sensors, "current")?.read_sensor()?;
+    let is_charging = Property::find_property(properties, "is_charging")?.read_property()? == "Charging";
+    let voltage = Sensor::find_sensor(sensors, "voltage")?.read_sensor()?;
 
     Ok(Battery {
         level: level
@@ -35,14 +35,14 @@ pub fn battery_info() -> Result<Battery, ReaderError> {
 
 pub fn battery_temperature() -> Result<f64, ReaderError> {
     let sensors = Sensor::battery_sensors();
-    let temperature = Sensor::find_sensor(&sensors, "temperature")?.read_sensor()?;
+    let temperature = Sensor::find_sensor(sensors, "temperature")?.read_sensor()?;
 
-    Ok(temperature as f64 / MILLIDEGREES_C_TO_CELSIUS)
+    Ok(temperature / MILLIDEGREES_C_TO_CELSIUS)
 }
 
 pub fn cpu_temperature() -> Result<f64, ReaderError> {
     let sensors = Sensor::cpu_sensors();
-    let cpu_temperature = Sensor::find_sensor(&sensors, "performance_core")?.read_sensor()?;
+    let cpu_temperature = Sensor::find_sensor(sensors, "performance_core")?.read_sensor()?;
 
     Ok(cpu_temperature / MILLIDEGREES_C_TO_CELSIUS)
 }
@@ -74,14 +74,14 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
 
 pub fn cpu_governor() -> Result<String, ReaderError> {
     let properties = Property::cpu_properties();
-    let governor = Property::find_property(&properties, "governor")?.read_property()?;
+    let governor = Property::find_property(properties, "governor")?.read_property()?;
 
     Ok(governor)
 }
 
 pub fn ram_info() -> Result<Ram, ReaderError> {
     let properties = Property::ram_properties();
-    let mem_info = Property::find_property(&properties, "mem_info")?;
+    let mem_info = Property::find_property(properties, "mem_info")?;
     let total = extract_from_label(mem_info.path, "MemTotal")?;
     let available = extract_from_label(mem_info.path, "MemAvailable")?;
 
@@ -93,8 +93,8 @@ pub fn ram_info() -> Result<Ram, ReaderError> {
 
 pub fn zram_info() -> Result<Zram, ReaderError> {
     let properties = Property::zram_properties();
-    let mm_stat = Property::find_property(&properties, "mm_stat")?;
-    let disksize = Property::find_property(&properties, "disksize")?;
+    let mm_stat = Property::find_property(properties, "mm_stat")?;
+    let disksize = Property::find_property(properties, "disksize")?;
     let origin = extract_from_index(mm_stat.path, 0)?;
     let compressed = extract_from_index(mm_stat.path, 1)?;
     let used = extract_from_index(mm_stat.path, 2)?;
@@ -122,7 +122,7 @@ pub fn zram_info() -> Result<Zram, ReaderError> {
 
 pub fn swappiness() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-    let swappiness = Property::find_property(&properties, "swappiness")?.read_property()?;
+    let swappiness = Property::find_property(properties, "swappiness")?.read_property()?;
     let parsed_value: u8 = swappiness
         .parse()
         .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value?: {swappiness}")))?;
@@ -132,7 +132,7 @@ pub fn swappiness() -> Result<u8, ReaderError> {
 
 pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-    let dirty_ratio = Property::find_property(&properties, "dirty_ratio")?.read_property()?;
+    let dirty_ratio = Property::find_property(properties, "dirty_ratio")?.read_property()?;
     let parsed_value = dirty_ratio
         .parse::<u8>()
         .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value: {dirty_ratio}")))?;
@@ -142,7 +142,7 @@ pub fn dirty_ratio() -> Result<u8, ReaderError> {
 
 pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-    let dirty_background_ratio = Property::find_property(&properties, "dirty_background_ratio")?.read_property()?;
+    let dirty_background_ratio = Property::find_property(properties, "dirty_background_ratio")?.read_property()?;
     let parsed_value = dirty_background_ratio
         .parse::<u8>()
         .map_err(|_| ReaderError::InvalidValue(format!("Error parsing value: {dirty_background_ratio}")))?;

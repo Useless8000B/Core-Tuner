@@ -32,7 +32,7 @@ impl Sensor {
     }
 
     pub fn read_sensor(&self) -> Result<f64, ReaderError> {
-        let raw_content = fs::read_to_string(&self.path)
+        let raw_content = fs::read_to_string(self.path)
             .map_err(|e| ReaderError::ReadingError(format!("Error reading sensor: {e}")))?;
 
         raw_content

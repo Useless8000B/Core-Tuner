@@ -5,12 +5,12 @@ use crate::utils::run_command;
 
 pub fn set_cpu_governor(choice: &str) -> Result<(), String> {
     let properties = Property::cpu_properties();
-    let gov = Governor::from_input(choice).ok_or_else(|| "Error reading from input")?;
+    let gov = Governor::from_input(choice).ok_or("Error reading from input")?;
 
     let entry = properties
         .iter()
         .find(|v| v.name == "cpu_core")
-        .ok_or_else(|| "cpu_core property not found")?;
+        .ok_or("cpu_core property not found")?;
 
     let cmd = format!("printf %s \"{}\" | tee {}", gov.as_string(), entry.path);
 
@@ -22,7 +22,7 @@ pub fn set_swappiness(choice: u8) -> Result<(), String> {
     let entry = properties
         .iter()
         .find(|v| v.name == "swappiness")
-        .ok_or_else(|| "swappiness property not found")?;
+        .ok_or("swappiness property not found")?;
 
     let safe_value = choice.clamp(0, 100);
     let cmd = format!("echo {} > {}", safe_value, entry.path);
@@ -64,25 +64,25 @@ pub fn fstrim() -> Result<(), String> {
 pub fn clear_logs() -> Result<(), String> {
     let properties = Property::storage_properties();
 
-    let tombstones = Property::find_property(&properties, "tombstones")?;
-    let anr = Property::find_property(&properties, "anr")?;
+    let tombstones = Property::find_property(properties, "tombstones")?;
+    let anr = Property::find_property(properties, "anr")?;
 
     run_command::write_shell_command(
         "su",
-        &["-c", "rm -rf", &tombstones.path, "&&", "rm -rf", &anr.path],
+        &["-c", "rm -rf", tombstones.path, "&&", "rm -rf", anr.path],
     )
 }
 
 pub fn clear_temp_files() -> Result<(), String> {
     let properties = Property::storage_properties();
-    let temp_files = Property::find_property(&properties, "temp_files")?;
+    let temp_files = Property::find_property(properties, "temp_files")?;
 
-    run_command::write_shell_command("su", &["-c", "rm -rf", &temp_files.path])
+    run_command::write_shell_command("su", &["-c", "rm -rf", temp_files.path])
 }
 
 pub fn lmk_profile(choice: u8) -> Result<(), String> {
     let safe_value = choice.clamp(0, 3);
-    let profile = Lmk::from_input(safe_value).ok_or_else(|| "Couldn't get from input")?;
+    let profile = Lmk::from_input(safe_value).ok_or("Couldn't get from input")?;
 
     run_command::write_shell_command(
         "su",
