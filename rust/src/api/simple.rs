@@ -71,7 +71,7 @@ pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), String> {
     writer::set_background_ratio(choice)
 }
 
-pub fn get_storage() -> Result<Storage, String> {
+pub fn get_storage() -> Result<Storage, &'static str> {
     reader::storage()
 }
 
