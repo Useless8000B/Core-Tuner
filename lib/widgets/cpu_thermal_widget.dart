@@ -2,8 +2,8 @@ import 'package:core_tuner/colors.dart';
 import 'package:core_tuner/services/cpu_services.dart';
 import 'package:flutter/material.dart';
 
-class ThermalWidget extends StatelessWidget {
-  const ThermalWidget({super.key, required this.cpuServices});
+class CpuThermalWidget extends StatelessWidget {
+  const CpuThermalWidget({super.key, required this.cpuServices});
   final CpuServices cpuServices;
 
   @override
@@ -13,7 +13,7 @@ class ThermalWidget extends StatelessWidget {
         stream: cpuServices.getCpuTemperatureStream(),
         builder: (context, snapshot) {
           double temp = snapshot.data ?? 0.0;
-      
+
           return Container(
             padding: const EdgeInsets.all(24),
             width: double.infinity,
@@ -21,7 +21,9 @@ class ThermalWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.lightBlack,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.01)),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.01),
+              ),
             ),
             child: Stack(
               children: [
@@ -80,7 +82,9 @@ class ThermalWidget extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: temp > 50 ? Colors.orange : AppColors.royalBlue,
+                          color: temp > 50
+                              ? Colors.orange
+                              : AppColors.royalBlue,
                           letterSpacing: 1,
                         ),
                       ),

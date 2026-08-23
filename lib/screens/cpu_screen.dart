@@ -1,7 +1,7 @@
 import 'package:core_tuner/services/cpu_services.dart';
 import 'package:core_tuner/widgets/cores_widget.dart';
 import 'package:core_tuner/widgets/scaling_governor_widget.dart';
-import 'package:core_tuner/widgets/thermal_widget.dart';
+import 'package:core_tuner/widgets/cpu_thermal_widget.dart';
 import 'package:flutter/material.dart';
 
 class CpuScreen extends StatelessWidget {
@@ -16,7 +16,7 @@ class CpuScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              ThermalWidget(cpuServices: cpuServices),
+              CpuThermalWidget(cpuServices: cpuServices),
               const SizedBox(height: 20),
               ScalingGovernorWidget(cpuServices: cpuServices),
               const SizedBox(height: 20),
