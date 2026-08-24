@@ -150,11 +150,11 @@ pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     Ok(parsed_value)
 }
 
-pub fn storage() -> Result<Storage, &'static str> {
+pub fn storage() -> Result<Storage, String> {
     let disks = Disks::new_with_refreshed_list();
 
     if disks.is_empty() {
-        return Err("No partitons found!");
+        return Err("No partitons found!".to_string());
     }
 
     let data_partition = disks
@@ -173,6 +173,6 @@ pub fn storage() -> Result<Storage, &'static str> {
             })
         }
 
-        None => Err("Couldn't isolate the /data partition!"),
+        None => Err("Couldn't isolate the /data partition!".to_string()),
     }
 }
