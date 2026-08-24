@@ -1,4 +1,5 @@
 use crate::errors::reader_error::ReaderError;
+use crate::errors::writer_error::WriterError;
 use crate::models::ram::Ram;
 use crate::models::storage::Storage;
 use crate::models::zram::Zram;
@@ -19,7 +20,7 @@ pub fn get_battery_temperature() -> Result<f64, ReaderError> {
     reader::battery_temperature()
 }
 
-pub fn set_wifi_throttle(enable: bool) -> Result<(), String> {
+pub fn set_wifi_throttle(enable: bool) -> Result<(), WriterError> {
     writer::wifi_throttle(enable)
 }
 
@@ -35,7 +36,7 @@ pub fn get_cpu_governor() -> Result<String, ReaderError> {
     reader::cpu_governor()
 }
 
-pub fn set_governor(governor: &str) -> Result<(), String> {
+pub fn set_governor(governor: &str) -> Result<(), WriterError> {
     writer::set_cpu_governor(governor)
 }
 
@@ -51,7 +52,7 @@ pub fn get_swappiness() -> Result<u8, ReaderError> {
     reader::swappiness()
 }
 
-pub fn set_swappiness(choice: u8) -> Result<(), String> {
+pub fn set_swappiness(choice: u8) -> Result<(), WriterError> {
     writer::set_swappiness(choice)
 }
 
@@ -59,7 +60,7 @@ pub fn get_vm_dirty_ratio() -> Result<u8, ReaderError> {
     reader::dirty_ratio()
 }
 
-pub fn set_vm_dirty_ratio(choice: u8) -> Result<(), String> {
+pub fn set_vm_dirty_ratio(choice: u8) -> Result<(), WriterError> {
     writer::set_dirty_ratio(choice)
 }
 
@@ -67,26 +68,26 @@ pub fn get_vm_dirty_background_ratio() -> Result<u8, ReaderError> {
     reader::dirty_background_ratio()
 }
 
-pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), String> {
+pub fn set_vm_background_dirty_ratio(choice: u8) -> Result<(), WriterError> {
     writer::set_background_ratio(choice)
 }
 
-pub fn get_storage() -> Result<Storage, &'static str> {
+pub fn get_storage() -> Result<Storage, String> {
     reader::storage()
 }
 
-pub fn write_fstrim() -> Result<(), String> {
+pub fn write_fstrim() -> Result<(), WriterError> {
     writer::fstrim()
 }
 
-pub fn write_clear_logs() -> Result<(), String>  {
+pub fn write_clear_logs() -> Result<(), WriterError>  {
     writer::clear_logs()
 }
 
-pub fn write_clear_temp_files() -> Result<(), String> {
+pub fn write_clear_temp_files() -> Result<(), WriterError> {
     writer::clear_temp_files()
 }
 
-pub fn write_lmk_profile(choice: u8) -> Result<(), String> {
+pub fn write_lmk_profile(choice: u8) -> Result<(), WriterError> {
     writer::lmk_profile(choice)
 }
