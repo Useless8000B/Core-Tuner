@@ -26,8 +26,8 @@
 
 // Section: imports
 
-use crate::api::simple::*;
 use crate::errors::reader_error::*;
+use crate::errors::writer_error::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
@@ -264,10 +264,7 @@ fn wire__crate__api__simple__get_storage_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<
-                    _,
-                    RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>>,
-                >((move || {
+                transform_result_sse::<_, String>((move || {
                     let output_ok = crate::api::simple::get_storage()?;
                     Ok(output_ok)
                 })())
@@ -462,7 +459,7 @@ fn wire__crate__api__simple__set_governor_impl(
             let api_governor = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::set_governor(&api_governor)?;
                     Ok(output_ok)
                 })())
@@ -495,7 +492,7 @@ fn wire__crate__api__simple__set_swappiness_impl(
             let api_choice = <u8>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::set_swappiness(api_choice)?;
                     Ok(output_ok)
                 })())
@@ -528,7 +525,7 @@ fn wire__crate__api__simple__set_vm_background_dirty_ratio_impl(
             let api_choice = <u8>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::set_vm_background_dirty_ratio(api_choice)?;
                     Ok(output_ok)
                 })())
@@ -561,7 +558,7 @@ fn wire__crate__api__simple__set_vm_dirty_ratio_impl(
             let api_choice = <u8>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::set_vm_dirty_ratio(api_choice)?;
                     Ok(output_ok)
                 })())
@@ -594,7 +591,7 @@ fn wire__crate__api__simple__set_wifi_throttle_impl(
             let api_enable = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::set_wifi_throttle(api_enable)?;
                     Ok(output_ok)
                 })())
@@ -626,7 +623,7 @@ fn wire__crate__api__simple__write_clear_logs_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::write_clear_logs()?;
                     Ok(output_ok)
                 })())
@@ -658,7 +655,7 @@ fn wire__crate__api__simple__write_clear_temp_files_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::write_clear_temp_files()?;
                     Ok(output_ok)
                 })())
@@ -690,7 +687,7 @@ fn wire__crate__api__simple__write_fstrim_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::write_fstrim()?;
                     Ok(output_ok)
                 })())
@@ -723,7 +720,7 @@ fn wire__crate__api__simple__write_lmk_profile_impl(
             let api_choice = <u8>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
-                transform_result_sse::<_, String>((move || {
+                transform_result_sse::<_, WriterError>((move || {
                     let output_ok = crate::api::simple::write_lmk_profile(api_choice)?;
                     Ok(output_ok)
                 })())
@@ -738,7 +735,7 @@ flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>
 );
 
 // Section: dart2rust
@@ -748,6 +745,16 @@ impl SseDecode for ReaderError {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode for WriterError {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueMoi<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
@@ -763,7 +770,9 @@ impl SseDecode
     }
 }
 
-impl SseDecode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>> {
+impl SseDecode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>
+{
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <usize>::sse_decode(deserializer);
@@ -987,6 +996,21 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ReaderError>> for ReaderError 
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<WriterError> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<WriterError> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<WriterError>> for WriterError {
+    fn into_into_dart(self) -> FrbWrapper<WriterError> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::models::battery::Battery {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -1072,6 +1096,13 @@ impl SseEncode for ReaderError {
     }
 }
 
+impl SseEncode for WriterError {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode
     for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ReaderError>>
 {
@@ -1083,7 +1114,9 @@ impl SseEncode
     }
 }
 
-impl SseEncode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>> {
+impl SseEncode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>
+{
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         let (ptr, size) = self.sse_encode_raw();
@@ -1213,8 +1246,8 @@ mod io {
     // Section: imports
 
     use super::*;
-    use crate::api::simple::*;
     use crate::errors::reader_error::*;
+    use crate::errors::writer_error::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
@@ -1240,17 +1273,17 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_core_tuner_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    pub extern "C" fn frbgen_core_tuner_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWriterError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>>::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_core_tuner_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    pub extern "C" fn frbgen_core_tuner_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWriterError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>>::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>::decrement_strong_count(ptr as _);
     }
 }
 #[cfg(not(target_family = "wasm"))]
@@ -1265,8 +1298,8 @@ mod web {
     // Section: imports
 
     use super::*;
-    use crate::api::simple::*;
     use crate::errors::reader_error::*;
+    use crate::errors::writer_error::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
     };
@@ -1294,17 +1327,17 @@ mod web {
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWriterError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>>::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerstr(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWriterError(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<str>>::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<WriterError>>::decrement_strong_count(ptr as _);
     }
 }
 #[cfg(target_family = "wasm")]
