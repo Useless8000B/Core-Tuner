@@ -27,7 +27,7 @@ pub fn battery_info() -> Result<Battery, ReaderError> {
     Ok(Battery {
         level: level
             .parse::<u8>()
-            .map_err(|e| ReaderError::InvalidValue(format!("Error parsing value {level}: {e}")))?,
+            .map_err(|e| ReaderError::InvalidValue(format!("Couldn't parse {level}: {e}")))?,
         current: current / MILLIAMPS_TO_AMPS,
         is_charging,
         voltage: voltage / MICROVOLTS_TO_VOLTS,
@@ -60,7 +60,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
 
         if let Ok(content) = fs::read_to_string(&path) {
             let value = content.trim().parse::<f64>().map_err(|e| {
-                ReaderError::InvalidValue(format!("Error parsing value {content}: {e}"))
+                ReaderError::InvalidValue(format!("Couldn't parse {content}: {e}"))
             })?;
 
             frequencies.push(value / KILOHERTZ_TO_GIGAHERTZ);
@@ -124,7 +124,7 @@ pub fn swappiness() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
     let swappiness = Property::find_property(properties, "swappiness")?.read_property()?;
     let parsed_value: u8 = swappiness.parse().map_err(|e| {
-        ReaderError::InvalidValue(format!("Error parsing value: {swappiness}: {e}"))
+        ReaderError::InvalidValue(format!("Couldn't parse: {swappiness}: {e}"))
     })?;
 
     Ok(parsed_value)
@@ -134,7 +134,7 @@ pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
     let dirty_ratio = Property::find_property(properties, "dirty_ratio")?.read_property()?;
     let parsed_value = dirty_ratio.parse::<u8>().map_err(|e| {
-        ReaderError::InvalidValue(format!("Error parsing value {dirty_ratio}: {e}"))
+        ReaderError::InvalidValue(format!("Couldn't parse {dirty_ratio}: {e}"))
     })?;
 
     Ok(parsed_value)
@@ -145,7 +145,7 @@ pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     let dirty_background_ratio =
         Property::find_property(properties, "dirty_background_ratio")?.read_property()?;
     let parsed_value = dirty_background_ratio.parse::<u8>().map_err(|e| {
-        ReaderError::InvalidValue(format!("Error parsing value {dirty_background_ratio}: {e}"))
+        ReaderError::InvalidValue(format!("Couldn't parse {dirty_background_ratio}: {e}"))
     })?;
 
     Ok(parsed_value)
