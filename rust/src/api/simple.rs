@@ -1,11 +1,11 @@
 use crate::errors::reader_error::ReaderError;
 use crate::errors::writer_error::WriterError;
+use crate::models::battery::Battery;
 use crate::models::ram::Ram;
 use crate::models::storage::Storage;
 use crate::models::zram::Zram;
 use crate::system::reader;
 use crate::system::writer;
-use crate::models::battery::Battery;
 
 #[flutter_rust_bridge::frb(init)]
 pub fn init_app() {
@@ -44,7 +44,7 @@ pub fn get_ram_info() -> Result<Ram, ReaderError> {
     reader::ram_info()
 }
 
-pub fn get_swap_info() -> Result <Zram, ReaderError> {
+pub fn get_swap_info() -> Result<Zram, ReaderError> {
     reader::zram_info()
 }
 
@@ -80,7 +80,7 @@ pub fn write_fstrim() -> Result<(), WriterError> {
     writer::fstrim()
 }
 
-pub fn write_clear_logs() -> Result<(), WriterError>  {
+pub fn write_clear_logs() -> Result<(), WriterError> {
     writer::clear_logs()
 }
 

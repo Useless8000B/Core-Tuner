@@ -17,7 +17,7 @@ impl fmt::Display for ReaderError {
             ReaderError::PropertyNotFound(e) => write!(f, "Property not found: {e}"),
             ReaderError::InvalidValue(e) => write!(f, "Invalid value: {e}"),
             ReaderError::ReadingError(e) => write!(f, "Reading error: {e}"),
-            ReaderError::Io(e) => write!(f, "Io error: {e}")
+            ReaderError::Io(e) => write!(f, "Io error: {e}"),
         }
     }
 }

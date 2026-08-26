@@ -3,7 +3,7 @@ use crate::errors::{reader_error::ReaderError, shell_command_error::ShellCommand
 pub enum WriterError {
     Reader(ReaderError),
     Shell(ShellCommandError),
-    InvalidValue
+    InvalidValue,
 }
 
 impl From<ReaderError> for WriterError {

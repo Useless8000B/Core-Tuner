@@ -41,10 +41,7 @@ impl Sensor {
             .map_err(|e| ReaderError::InvalidValue(format!("Invalid value: {e}")))
     }
 
-    pub fn find_sensor<'a>(
-        sensors: &'a [Sensor],
-        name: &str,
-    ) -> Result<&'a Sensor, ReaderError> {
+    pub fn find_sensor<'a>(sensors: &'a [Sensor], name: &str) -> Result<&'a Sensor, ReaderError> {
         sensors
             .iter()
             .find(|v| v.name == name)

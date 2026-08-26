@@ -3,9 +3,8 @@ use std::fs;
 use crate::errors::reader_error::ReaderError;
 
 pub fn extract_from_label(path: &'static str, label: &'static str) -> Result<f64, ReaderError> {
-    let content =
-        fs::read_to_string(path)
-            .map_err(|_| ReaderError::ReadingError("Error reading file".to_string()))?;
+    let content = fs::read_to_string(path)
+        .map_err(|_| ReaderError::ReadingError("Error reading file".to_string()))?;
 
     let memory_value = content
         .lines()
