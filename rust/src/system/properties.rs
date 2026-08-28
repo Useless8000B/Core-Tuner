@@ -1,5 +1,5 @@
 use crate::errors::reader_error::ReaderError;
-use std::fs;
+use std::{fs, path::Path};
 
 pub struct Property {
     pub name: &'static str,
@@ -85,13 +85,17 @@ impl Property {
         STORAGE_PROPERTIES
     }
 
+    fn exists(&self) -> bool {
+        Path::new(self.path).exists()
+    }
+
     pub fn find_property<'a>(
         properties: &'a [Property],
         name: &'a str,
     ) -> Result<&'a Property, ReaderError> {
         properties
             .iter()
-            .find(|v| v.name == name)
+            .find(|v| v.name == name && v.exists())
             .ok_or_else(|| ReaderError::PropertyNotFound(format!("{name} property not found!")))
     }
 }
