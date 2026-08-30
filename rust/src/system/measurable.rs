@@ -12,8 +12,8 @@ pub trait Measurable: Sized {
 
     fn find<'a>(entry: &'a [Self], name: &str) -> Result<&'a Self, ReaderError> {
         entry
-        .iter()
-        .find(|v| v.name() == name && v.exists())
-        .ok_or_else(|| ReaderError::ElementNotFound(format!("{name}")))
+            .iter()
+            .find(|v| v.name() == name && v.exists())
+            .ok_or_else(|| ReaderError::ElementNotFound(format!("{name}")))
     }
 }

@@ -59,9 +59,10 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
         }
 
         if let Ok(content) = fs::read_to_string(&path) {
-            let value = content.trim().parse::<f64>().map_err(|e| {
-                ReaderError::InvalidValue(format!("{content}: {e}"))
-            })?;
+            let value = content
+                .trim()
+                .parse::<f64>()
+                .map_err(|e| ReaderError::InvalidValue(format!("{content}: {e}")))?;
 
             frequencies.push(value / KILOHERTZ_TO_GIGAHERTZ);
         } else {
@@ -123,9 +124,9 @@ pub fn zram_info() -> Result<Zram, ReaderError> {
 pub fn swappiness() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
     let swappiness = Property::find(properties, "swappiness")?.read_property()?;
-    let parsed_value: u8 = swappiness.parse().map_err(|e| {
-        ReaderError::InvalidValue(format!("{swappiness}: {e}"))
-    })?;
+    let parsed_value: u8 = swappiness
+        .parse()
+        .map_err(|e| ReaderError::InvalidValue(format!("{swappiness}: {e}")))?;
 
     Ok(parsed_value)
 }
@@ -133,9 +134,9 @@ pub fn swappiness() -> Result<u8, ReaderError> {
 pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
     let dirty_ratio = Property::find(properties, "dirty_ratio")?.read_property()?;
-    let parsed_value = dirty_ratio.parse::<u8>().map_err(|e| {
-        ReaderError::InvalidValue(format!("{dirty_ratio}: {e}"))
-    })?;
+    let parsed_value = dirty_ratio
+        .parse::<u8>()
+        .map_err(|e| ReaderError::InvalidValue(format!("{dirty_ratio}: {e}")))?;
 
     Ok(parsed_value)
 }
@@ -144,9 +145,9 @@ pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
     let dirty_background_ratio =
         Property::find(properties, "dirty_background_ratio")?.read_property()?;
-    let parsed_value = dirty_background_ratio.parse::<u8>().map_err(|e| {
-        ReaderError::InvalidValue(format!("{dirty_background_ratio}: {e}"))
-    })?;
+    let parsed_value = dirty_background_ratio
+        .parse::<u8>()
+        .map_err(|e| ReaderError::InvalidValue(format!("{dirty_background_ratio}: {e}")))?;
 
     Ok(parsed_value)
 }
