@@ -1,9 +1,19 @@
-use crate::errors::reader_error::ReaderError;
-use std::{fs, path::Path};
+use crate::{errors::reader_error::ReaderError, system::measurable::Measurable};
+use std::fs;
 
 pub struct Property {
     pub name: &'static str,
     pub path: &'static str,
+}
+
+impl Measurable for Property {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+
+    fn path(&self) -> &'static str {
+        self.path
+    }
 }
 
 impl Property {
@@ -83,19 +93,5 @@ impl Property {
         ];
 
         STORAGE_PROPERTIES
-    }
-
-    fn exists(&self) -> bool {
-        Path::new(self.path).exists()
-    }
-
-    pub fn find_property<'a>(
-        properties: &'a [Property],
-        name: &'a str,
-    ) -> Result<&'a Property, ReaderError> {
-        properties
-            .iter()
-            .find(|v| v.name == name && v.exists())
-            .ok_or_else(|| ReaderError::PropertyNotFound(format!("{name} property not found!")))
     }
 }

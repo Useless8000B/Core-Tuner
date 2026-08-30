@@ -1,6 +1,6 @@
-use std::{fs, path::Path};
+use std::fs;
 
-use crate::errors::reader_error::ReaderError;
+use crate::{errors::reader_error::ReaderError, system::measurable::Measurable};
 
 pub struct Sensor {
     pub name: &'static str,
@@ -8,7 +8,7 @@ pub struct Sensor {
 }
 
 impl Sensor {
-    pub const fn new(name: &'static str, path: &'static str) -> Self {
+    const fn new(name: &'static str, path: &'static str) -> Self {
         Self { name, path }
     }
 
@@ -31,10 +31,6 @@ impl Sensor {
         CPU_SENSORS
     }
 
-    fn exists(&self) -> bool {
-        Path::new(self.path).exists()
-    }
-
     pub fn read_sensor(&self) -> Result<f64, ReaderError> {
         let raw_content = fs::read_to_string(self.path)
             .map_err(|e| ReaderError::ReadingError(format!("Error reading sensor: {e}")))?;
@@ -44,11 +40,14 @@ impl Sensor {
             .parse::<f64>()
             .map_err(|e| ReaderError::InvalidValue(format!("Invalid value: {e}")))
     }
+}
 
-    pub fn find_sensor<'a>(sensors: &'a [Sensor], name: &str) -> Result<&'a Sensor, ReaderError> {
-        sensors
-            .iter()
-            .find(|v| v.name == name && v.exists())
-            .ok_or_else(|| ReaderError::SensorNotFound(format!("{name} sensor not found!")))
+impl Measurable for Sensor {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+
+    fn path(&self) -> &'static str {
+        self.path
     }
 }
