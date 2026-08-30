@@ -1,13 +1,14 @@
 use crate::errors::writer_error::WriterError;
 use crate::system::governor::Governor;
 use crate::system::lmk::Lmk;
+use crate::system::measurable::Measurable;
 use crate::system::properties::Property;
 use crate::utils::run_command;
 
 pub fn set_cpu_governor(choice: &str) -> Result<(), WriterError> {
     let properties = Property::cpu_properties();
     let gov = Governor::from_input(choice).ok_or(WriterError::InvalidValue)?;
-    let entry = Property::find_property(properties, "cpu_core")?;
+    let entry = Property::find(properties, "cpu_core")?;
     let cmd = format!("printf %s \"{}\" | tee {}", gov.as_string(), entry.path);
 
     run_command::write_shell_command("su", &["-c", &cmd])?;
@@ -17,7 +18,7 @@ pub fn set_cpu_governor(choice: &str) -> Result<(), WriterError> {
 
 pub fn set_swappiness(choice: u8) -> Result<(), WriterError> {
     let properties = Property::kernel_properties();
-    let entry = Property::find_property(properties, "swappiness")?;
+    let entry = Property::find(properties, "swappiness")?;
 
     let safe_value = choice.clamp(0, 100);
     let cmd = format!("echo {} > {}", safe_value, entry.path);
@@ -69,8 +70,8 @@ pub fn fstrim() -> Result<(), WriterError> {
 pub fn clear_logs() -> Result<(), WriterError> {
     let properties = Property::storage_properties();
 
-    let tombstones = Property::find_property(properties, "tombstones")?;
-    let anr = Property::find_property(properties, "anr")?;
+    let tombstones = Property::find(properties, "tombstones")?;
+    let anr = Property::find(properties, "anr")?;
 
     run_command::write_shell_command(
         "su",
@@ -82,7 +83,7 @@ pub fn clear_logs() -> Result<(), WriterError> {
 
 pub fn clear_temp_files() -> Result<(), WriterError> {
     let properties = Property::storage_properties();
-    let temp_files = Property::find_property(properties, "temp_files")?;
+    let temp_files = Property::find(properties, "temp_files")?;
 
     run_command::write_shell_command("su", &["-c", "rm -rf", temp_files.path])?;
 

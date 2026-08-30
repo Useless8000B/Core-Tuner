@@ -6,6 +6,7 @@ use crate::models::battery::Battery;
 use crate::models::ram::Ram;
 use crate::models::storage::Storage;
 use crate::models::zram::Zram;
+use crate::system::measurable::Measurable;
 use crate::system::properties::Property;
 use crate::system::sensors::Sensor;
 use crate::utils::extract_from_file::{extract_from_index, extract_from_label};
@@ -18,16 +19,15 @@ const KILOHERTZ_TO_GIGAHERTZ: f64 = 1_000_000.0;
 pub fn battery_info() -> Result<Battery, ReaderError> {
     let sensors = Sensor::battery_sensors();
     let properties = Property::battery_properties();
-    let level = Property::find_property(properties, "level")?.read_property()?;
-    let current = Sensor::find_sensor(sensors, "current")?.read_sensor()?;
-    let is_charging =
-        Property::find_property(properties, "is_charging")?.read_property()? == "Charging";
-    let voltage = Sensor::find_sensor(sensors, "voltage")?.read_sensor()?;
+    let level = Property::find(properties, "level")?.read_property()?;
+    let current = Sensor::find(sensors, "current")?.read_sensor()?;
+    let is_charging = Property::find(properties, "is_charging")?.read_property()? == "Charging";
+    let voltage = Sensor::find(sensors, "voltage")?.read_sensor()?;
 
     Ok(Battery {
         level: level
             .parse::<u8>()
-            .map_err(|e| ReaderError::InvalidValue(format!("Couldn't parse {level}: {e}")))?,
+            .map_err(|e| ReaderError::InvalidValue(format!("{level}: {e}")))?,
         current: current / MILLIAMPS_TO_AMPS,
         is_charging,
         voltage: voltage / MICROVOLTS_TO_VOLTS,
@@ -36,14 +36,14 @@ pub fn battery_info() -> Result<Battery, ReaderError> {
 
 pub fn battery_temperature() -> Result<f64, ReaderError> {
     let sensors = Sensor::battery_sensors();
-    let temperature = Sensor::find_sensor(sensors, "temperature")?.read_sensor()?;
+    let temperature = Sensor::find(sensors, "temperature")?.read_sensor()?;
 
     Ok(temperature / MILLIDEGREES_C_TO_CELSIUS)
 }
 
 pub fn cpu_temperature() -> Result<f64, ReaderError> {
     let sensors = Sensor::cpu_sensors();
-    let cpu_temperature = Sensor::find_sensor(sensors, "performance_core")?.read_sensor()?;
+    let cpu_temperature = Sensor::find(sensors, "performance_core")?.read_sensor()?;
 
     Ok(cpu_temperature / MILLIDEGREES_C_TO_CELSIUS)
 }
@@ -60,7 +60,7 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
 
         if let Ok(content) = fs::read_to_string(&path) {
             let value = content.trim().parse::<f64>().map_err(|e| {
-                ReaderError::InvalidValue(format!("Couldn't parse {content}: {e}"))
+                ReaderError::InvalidValue(format!("{content}: {e}"))
             })?;
 
             frequencies.push(value / KILOHERTZ_TO_GIGAHERTZ);
@@ -74,14 +74,14 @@ pub fn cpu_frequencies() -> Result<Vec<f64>, ReaderError> {
 
 pub fn cpu_governor() -> Result<String, ReaderError> {
     let properties = Property::cpu_properties();
-    let governor = Property::find_property(properties, "governor")?.read_property()?;
+    let governor = Property::find(properties, "governor")?.read_property()?;
 
     Ok(governor)
 }
 
 pub fn ram_info() -> Result<Ram, ReaderError> {
     let properties = Property::ram_properties();
-    let mem_info = Property::find_property(properties, "mem_info")?;
+    let mem_info = Property::find(properties, "mem_info")?;
     let total = extract_from_label(mem_info.path, "MemTotal")?;
     let available = extract_from_label(mem_info.path, "MemAvailable")?;
 
@@ -93,8 +93,8 @@ pub fn ram_info() -> Result<Ram, ReaderError> {
 
 pub fn zram_info() -> Result<Zram, ReaderError> {
     let properties = Property::zram_properties();
-    let mm_stat = Property::find_property(properties, "mm_stat")?;
-    let disksize = Property::find_property(properties, "disksize")?;
+    let mm_stat = Property::find(properties, "mm_stat")?;
+    let disksize = Property::find(properties, "disksize")?;
     let origin = extract_from_index(mm_stat.path, 0)?;
     let compressed = extract_from_index(mm_stat.path, 1)?;
     let used = extract_from_index(mm_stat.path, 2)?;
@@ -122,9 +122,9 @@ pub fn zram_info() -> Result<Zram, ReaderError> {
 
 pub fn swappiness() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-    let swappiness = Property::find_property(properties, "swappiness")?.read_property()?;
+    let swappiness = Property::find(properties, "swappiness")?.read_property()?;
     let parsed_value: u8 = swappiness.parse().map_err(|e| {
-        ReaderError::InvalidValue(format!("Couldn't parse: {swappiness}: {e}"))
+        ReaderError::InvalidValue(format!("{swappiness}: {e}"))
     })?;
 
     Ok(parsed_value)
@@ -132,9 +132,9 @@ pub fn swappiness() -> Result<u8, ReaderError> {
 
 pub fn dirty_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
-    let dirty_ratio = Property::find_property(properties, "dirty_ratio")?.read_property()?;
+    let dirty_ratio = Property::find(properties, "dirty_ratio")?.read_property()?;
     let parsed_value = dirty_ratio.parse::<u8>().map_err(|e| {
-        ReaderError::InvalidValue(format!("Couldn't parse {dirty_ratio}: {e}"))
+        ReaderError::InvalidValue(format!("{dirty_ratio}: {e}"))
     })?;
 
     Ok(parsed_value)
@@ -143,9 +143,9 @@ pub fn dirty_ratio() -> Result<u8, ReaderError> {
 pub fn dirty_background_ratio() -> Result<u8, ReaderError> {
     let properties = Property::kernel_properties();
     let dirty_background_ratio =
-        Property::find_property(properties, "dirty_background_ratio")?.read_property()?;
+        Property::find(properties, "dirty_background_ratio")?.read_property()?;
     let parsed_value = dirty_background_ratio.parse::<u8>().map_err(|e| {
-        ReaderError::InvalidValue(format!("Couldn't parse {dirty_background_ratio}: {e}"))
+        ReaderError::InvalidValue(format!("{dirty_background_ratio}: {e}"))
     })?;
 
     Ok(parsed_value)
