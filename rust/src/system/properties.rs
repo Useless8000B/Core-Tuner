@@ -24,7 +24,7 @@ impl Property {
     pub fn read_property(&self) -> Result<String, ReaderError> {
         let content = fs::read_to_string(self.path).map_err(|e| {
             if e.kind() == std::io::ErrorKind::NotFound {
-                ReaderError::FileNotFound(format!("{:?} not found!", self.path))
+                ReaderError::FileNotFound(format!("{:?}", self.path))
             } else {
                 ReaderError::Io(e)
             }
