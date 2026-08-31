@@ -23,8 +23,8 @@ pub fn extract_from_label(path: &'static str, label: &'static str) -> Result<f64
 }
 
 pub fn extract_from_index(path: &'static str, index: usize) -> Result<f64, ReaderError> {
-    let content = fs::read_to_string(path)
-        .map_err(|_| ReaderError::ReadingError(format!("{:?}", path)))?;
+    let content =
+        fs::read_to_string(path).map_err(|_| ReaderError::ReadingError(format!("{:?}", path)))?;
 
     let content = content
         .split_whitespace()

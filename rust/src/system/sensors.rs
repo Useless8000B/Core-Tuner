@@ -51,4 +51,3 @@ impl Sensor {
             .map_err(|e| ReaderError::InvalidValue(format!("Invalid value: {e}")))
     }
 }
-
