@@ -14,7 +14,7 @@ impl fmt::Display for ReaderError {
             ReaderError::FileNotFound(e) => write!(f, "File not found: {e}"),
             ReaderError::ElementNotFound(e) => write!(f, "Element not found: {e}"),
             ReaderError::InvalidValue(e) => write!(f, "Invalid value: {e}"),
-            ReaderError::ReadingError(e) => write!(f, "Reading error: {e}"),
+            ReaderError::ReadingError(e) => write!(f, "Error reading {e}"),
             ReaderError::Io(e) => write!(f, "Io error: {e}"),
         }
     }
