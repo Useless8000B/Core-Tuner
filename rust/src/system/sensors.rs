@@ -7,6 +7,16 @@ pub struct Sensor {
     path: &'static str,
 }
 
+impl Measurable for Sensor {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+
+    fn path(&self) -> &'static str {
+        self.path
+    }
+}
+
 impl Sensor {
     const fn new(name: &'static str, path: &'static str) -> Self {
         Self { name, path }
@@ -42,12 +52,3 @@ impl Sensor {
     }
 }
 
-impl Measurable for Sensor {
-    fn name(&self) -> &'static str {
-        self.name
-    }
-
-    fn path(&self) -> &'static str {
-        self.path
-    }
-}
